@@ -1,0 +1,819 @@
+<!doctype html>
+<!--
+  User-to-Builder — FINAL TEST (single-file, no build step)
+  ───────────────────────────────────────────────────────────
+  Participant-facing web app for the workshop's last session.
+  Flow: intro (name/email/code) → test (questions from ft_questions_public / questions.json fallback, 8 topics) → done screen.
+  Bilingual EN/TH · autosave to localStorage · soft 60:00 countdown (no auto-submit).
+  Questions loaded from ft_questions_public (Supabase) or questions.json (offline fallback).
+  Submission via Supabase RPCs: redeem_code + submit_test.
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Final Test · User-to-Builder — Airportels</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#f5f6fa; --surface:#ffffff; --fg:#0f172a; --muted:#64748b; --border:#e2e8f0;
+      --indigo:#4f46e5; --indigo-600:#4338ca; --indigo-soft:#eef2ff;
+      --emerald:#059669; --emerald-soft:#ecfdf5;
+      --amber:#d97706; --amber-soft:#fffbeb;
+      --rose:#e11d48; --rose-soft:#fff1f2;
+      --ink-hero:#1e1b4b;
+      --radius:14px; --radius-sm:10px;
+      --font:'Inter','Sarabun',-apple-system,BlinkMacSystemFont,system-ui,sans-serif;
+      --mono:'SF Mono',ui-monospace,'JetBrains Mono',Menlo,monospace;
+    }
+    *,*::before,*::after{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--font);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+    body[data-lang="th"]{font-family:'Sarabun','Inter',sans-serif;line-height:1.7}
+    button{font:inherit;cursor:pointer;color:inherit;border:0;background:none}
+    input,textarea{font:inherit}
+    h1,h2,h3{margin:0;letter-spacing:-0.02em}
+    .num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+    .wrap{max-width:760px;margin-inline:auto;padding-inline:20px}
+    .wide{max-width:940px}
+
+    /* header */
+    header.top{position:sticky;top:0;z-index:40;background:rgba(255,255,255,.9);backdrop-filter:blur(10px);border-bottom:1px solid var(--border)}
+    .top-inner{display:flex;align-items:center;gap:12px;padding:12px 20px;max-width:940px;margin-inline:auto}
+    .brand{font-weight:700;font-size:15px}
+    .brand span{color:var(--muted);font-weight:500}
+    .spacer{flex:1}
+    .timer{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:14px;font-weight:600;
+      padding:5px 11px;border-radius:999px;background:var(--indigo-soft);color:var(--indigo-600);border:1px solid #e0e2fb}
+    .timer.low{background:var(--amber-soft);color:var(--amber);border-color:#fde9c8}
+    .timer.over{background:var(--rose-soft);color:var(--rose);border-color:#fbd5db}
+    .timer[hidden]{display:none}
+    .langpill{display:flex;background:#fff;border:1px solid var(--border);border-radius:999px;padding:3px}
+    .langpill button{padding:5px 12px;border-radius:999px;font-size:12px;font-weight:600;color:var(--muted);transition:.15s}
+    .langpill button.on{background:var(--fg);color:#fff}
+    .progress{height:4px;background:#eef0f4}
+    .progress i{display:block;height:100%;background:var(--indigo);transition:width .3s}
+
+    /* hero */
+    .hero{background:linear-gradient(135deg,var(--ink-hero),#0f172a);color:#fff;position:relative;overflow:hidden}
+    .hero::after{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px);background-size:34px 34px;mask-image:radial-gradient(circle at 30% 20%,#000,transparent 75%)}
+    .hero-inner{position:relative;padding:56px 20px 60px;max-width:940px;margin-inline:auto}
+    .hero .badge{display:inline-flex;align-items:center;gap:8px;padding:5px 12px;border-radius:999px;font-size:12px;font-weight:600;
+      background:rgba(129,140,248,.16);color:#c7d2fe;border:1px solid rgba(129,140,248,.3);backdrop-filter:blur(4px)}
+    .hero h1{font-size:clamp(34px,6vw,52px);line-height:1.05;font-weight:800;margin-top:18px}
+    .hero h1 .accent{background:linear-gradient(90deg,#818cf8,#67e8f9);-webkit-background-clip:text;background-clip:text;color:transparent}
+    .hero p{margin-top:16px;max-width:60ch;color:#cbd5e1;font-size:17px}
+    .hero .facts{margin-top:20px;display:flex;flex-wrap:wrap;gap:8px 18px;color:#94a3b8;font-size:14px}
+    .hero .facts b{color:#e2e8f0;font-weight:600}
+
+    .note{margin:26px 0;padding:14px 16px;border-radius:var(--radius-sm);background:var(--indigo-soft);color:#3730a3;font-size:14px;border:1px solid #e0e2fb}
+    .note b{font-weight:700}
+    .note-offline{margin:10px 0 18px;padding:10px 14px;border-radius:var(--radius-sm);background:var(--amber-soft);color:#92400e;font-size:13px;border:1px solid #f6e4bf}
+
+    /* card + form */
+    .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:22px;box-shadow:0 1px 2px rgba(15,23,42,.04)}
+    .field{margin-bottom:18px}
+    .field label{display:block;font-size:13px;font-weight:600;color:#334155;margin-bottom:6px}
+    .field input{width:100%;padding:12px 14px;border:1px solid var(--border);border-radius:var(--radius-sm);background:#f8fafc;color:var(--fg);transition:.15s}
+    .field input:focus{outline:0;border-color:var(--indigo);background:#fff;box-shadow:0 0 0 3px var(--indigo-soft)}
+    .field input.bad{border-color:var(--rose);box-shadow:0 0 0 3px var(--rose-soft)}
+    .err{color:var(--rose);font-size:12.5px;margin-top:5px}
+
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 22px;border-radius:var(--radius-sm);font-weight:600;font-size:15px;transition:.15s;border:1px solid transparent}
+    .btn:active{transform:translateY(1px)}
+    .btn-primary{background:var(--indigo);color:#fff}
+    .btn-primary:hover{background:var(--indigo-600)}
+    .btn-primary:disabled{background:#cbd5e1;cursor:not-allowed}
+    .btn-emerald{background:var(--emerald);color:#fff}
+    .btn-emerald:hover{filter:brightness(.94)}
+    .btn-ghost{background:#fff;border-color:var(--border);color:#334155}
+    .btn-ghost:hover{border-color:#94a3b8}
+    .btn-rose{background:#fff;border-color:#fbd5db;color:var(--rose)}
+    .btn-rose:hover{background:var(--rose-soft)}
+    .btn-block{width:100%}
+
+    /* part banner */
+    .part{margin-top:34px;scroll-margin-top:90px}
+    .part-head{display:flex;align-items:center;gap:14px;padding:16px 20px;border-radius:var(--radius);border:1px solid;margin-bottom:16px}
+    .part-head .emoji{font-size:26px;line-height:1}
+    .part-head .lab{font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase}
+    .part-head h2{font-size:20px;font-weight:700;color:var(--fg)}
+    .part-A .part-head{background:linear-gradient(90deg,var(--indigo-soft),#fff);border-color:#dfe2fb} .part-A .lab{color:var(--indigo-600)}
+    .part-B .part-head{background:linear-gradient(90deg,var(--emerald-soft),#fff);border-color:#c8ecdc} .part-B .lab{color:var(--emerald)}
+    .part-C .part-head{background:linear-gradient(90deg,var(--amber-soft),#fff);border-color:#f6e4bf} .part-C .lab{color:var(--amber)}
+    .part-D .part-head{background:linear-gradient(90deg,var(--rose-soft),#fff);border-color:#fbd5db} .part-D .lab{color:var(--rose)}
+    /* generic part styling for 8-topic keys */
+    .part-deploy .part-head,.part-data .part-head,.part-secrets .part-head,.part-prompt .part-head,
+    .part-verify .part-head,.part-iterate .part-head,.part-risk .part-head,.part-escalate .part-head,
+    .part-other .part-head{background:linear-gradient(90deg,var(--indigo-soft),#fff);border-color:#dfe2fb}
+    .part-deploy .lab,.part-data .lab,.part-secrets .lab,.part-prompt .lab,
+    .part-verify .lab,.part-iterate .lab,.part-risk .lab,.part-escalate .lab,.part-other .lab{color:var(--indigo-600)}
+    .part-data .part-head,.part-iterate .part-head{background:linear-gradient(90deg,var(--emerald-soft),#fff);border-color:#c8ecdc}
+    .part-data .lab,.part-iterate .lab{color:var(--emerald)}
+    .part-secrets .part-head,.part-risk .part-head{background:linear-gradient(90deg,var(--amber-soft),#fff);border-color:#f6e4bf}
+    .part-secrets .lab,.part-risk .lab{color:var(--amber)}
+    .part-escalate .part-head,.part-other .part-head{background:linear-gradient(90deg,var(--rose-soft),#fff);border-color:#fbd5db}
+    .part-escalate .lab,.part-other .lab{color:var(--rose)}
+    /* rank question */
+    .rank-items{margin-top:14px;display:flex;flex-direction:column;gap:9px}
+    .rank-row{display:flex;align-items:center;gap:12px;padding:11px 14px;border:1px solid var(--border);border-radius:var(--radius-sm);background:#f8fafc}
+    .rank-row select{flex:none;width:64px;padding:6px 8px;border:1px solid var(--border);border-radius:8px;background:#fff;color:var(--fg);font:inherit;font-size:14px;accent-color:var(--indigo);cursor:pointer}
+    .rank-row select:focus{outline:0;border-color:var(--indigo);box-shadow:0 0 0 3px var(--indigo-soft)}
+    .rank-row .rtext{flex:1;font-size:15px;color:#1e293b}
+    .rank-hint{font-size:12.5px;color:var(--muted);margin-top:6px;font-style:italic}
+    .part-warn{margin-bottom:14px;padding:10px 14px;border-radius:var(--radius-sm);background:var(--rose-soft);color:#9f1239;font-size:13.5px;font-weight:500;border:1px solid #fbd5db}
+
+    /* question */
+    .q{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px 22px;margin-bottom:14px;box-shadow:0 1px 2px rgba(15,23,42,.04)}
+    .q-prompt{font-weight:600;font-size:16.5px;line-height:1.5;display:flex;gap:10px}
+    .q-num{flex:none;min-width:30px;height:30px;padding:0 8px;display:inline-flex;align-items:center;justify-content:center;border-radius:8px;background:#f1f5f9;color:#475569;font-family:var(--mono);font-size:13px;font-weight:600}
+    .q-quote{margin:12px 0 4px;padding:10px 14px;border-left:3px solid var(--indigo);background:#f8fafc;border-radius:0 8px 8px 0;font-size:14.5px;color:#334155}
+    .q-quote .mono{font-family:var(--mono)}
+    .opts{margin-top:14px;display:flex;flex-direction:column;gap:9px}
+    .opt{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;border:1px solid var(--border);border-radius:var(--radius-sm);background:#f8fafc;cursor:pointer;transition:.12s}
+    .opt:hover{background:#f1f5f9}
+    .opt.sel{border-color:var(--indigo);background:var(--indigo-soft)}
+    .opt input{margin-top:3px;width:17px;height:17px;accent-color:var(--indigo);flex:none}
+    .opt .otext{font-size:15px;color:#1e293b}
+    .opt .oletter{font-weight:700;color:#475569;margin-right:5px}
+    textarea.sa{width:100%;min-height:92px;resize:vertical;padding:12px 14px;border:1px solid var(--border);border-radius:var(--radius-sm);background:#f8fafc;color:var(--fg);line-height:1.6}
+    textarea.sa:focus{outline:0;border-color:var(--indigo);background:#fff;box-shadow:0 0 0 3px var(--indigo-soft)}
+    .charcount{text-align:right;font-size:12px;color:#94a3b8;margin-top:4px}
+    .multi-hint{font-size:12.5px;color:var(--muted);margin-top:6px;font-style:italic}
+
+    .submit-row{margin:40px 0 24px;display:flex;flex-direction:column;align-items:center;gap:12px}
+
+    /* summary */
+    .sum-answer{margin-top:12px;padding:11px 14px;border-radius:var(--radius-sm);font-size:15px;white-space:pre-wrap}
+    .sum-answer.filled{background:var(--emerald-soft);color:#065f46;border:1px solid #c8ecdc}
+    .sum-answer.blank{background:#f8fafc;color:#94a3b8;font-style:italic;border:1px solid var(--border)}
+    .banner{display:flex;align-items:flex-start;gap:12px;padding:14px 16px;border-radius:var(--radius);font-size:14.5px;margin-bottom:18px}
+    .banner .ic{font-size:20px;line-height:1.2}
+    .banner.ok{background:var(--emerald-soft);color:#065f46;border:1px solid #c8ecdc}
+    .banner.warn{background:var(--amber-soft);color:#92400e;border:1px solid #f6e4bf}
+    .banner.err{background:var(--rose-soft);color:#9f1239;border:1px solid #fbd5db}
+    .actionbar{position:sticky;bottom:0;background:rgba(255,255,255,.95);backdrop-filter:blur(8px);border-top:1px solid var(--border);margin-top:26px}
+    .actionbar .inner{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:14px 20px;max-width:760px;margin-inline:auto}
+
+    /* done screen */
+    .done-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:28px;max-width:600px;margin:32px auto;box-shadow:0 1px 4px rgba(15,23,42,.06)}
+    .done-link{display:flex;align-items:center;gap:10px;background:#f8fafc;border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px;margin-top:10px;word-break:break-all;font-family:var(--mono);font-size:13px;color:#334155}
+    .done-link .copy-btn{flex:none;padding:6px 12px;border-radius:8px;background:var(--indigo);color:#fff;font-size:12px;font-weight:600;border:0;cursor:pointer;white-space:nowrap}
+    .done-link .copy-btn:hover{background:var(--indigo-600)}
+
+    footer{margin-top:40px;border-top:1px solid var(--border);background:#fff}
+    footer .inner{max-width:940px;margin-inline:auto;padding:22px 20px;display:flex;justify-content:space-between;color:var(--muted);font-size:13px;flex-wrap:wrap;gap:8px}
+
+    /* modal */
+    .modal-bg{position:fixed;inset:0;z-index:60;background:rgba(15,23,42,.55);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;padding:16px}
+    .modal{background:#fff;border-radius:var(--radius);max-width:440px;width:100%;box-shadow:0 24px 60px rgba(15,23,42,.35);overflow:hidden}
+    .modal .body{padding:22px 24px}
+    .modal h3{font-size:20px;font-weight:700}
+    .modal p{color:#475569;font-size:14.5px;margin:8px 0 0}
+    .modal .recap{margin-top:16px;background:#f8fafc;border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;font-size:14px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .modal .recap .k{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:#94a3b8;font-weight:600}
+    .modal .foot{display:flex;justify-content:flex-end;gap:10px;padding:14px 24px;background:#f8fafc;border-top:1px solid var(--border)}
+    .spin{width:16px;height:16px;border-radius:50%;border:2px solid rgba(255,255,255,.45);border-top-color:#fff;animation:sp .7s linear infinite;display:inline-block}
+    @keyframes sp{to{transform:rotate(360deg)}}
+    [hidden]{display:none!important}
+    @media(max-width:600px){.hero-inner{padding:40px 20px}.modal .recap{grid-template-columns:1fr}}
+  </style>
+</head>
+<body data-lang="en">
+  <header class="top">
+    <div class="top-inner">
+      <div class="brand">Airportels <span>· User-to-Builder</span></div>
+      <div class="spacer"></div>
+      <div class="timer" id="timer" hidden><span>⏱</span><span id="timer-val">60:00</span></div>
+      <div class="langpill" role="tablist" aria-label="Language">
+        <button id="lang-en" class="on" aria-pressed="true">EN</button>
+        <button id="lang-th" aria-pressed="false">TH</button>
+      </div>
+    </div>
+    <div class="progress"><i id="progress-bar" style="width:0%"></i></div>
+  </header>
+
+  <main id="app"></main>
+
+  <footer>
+    <div class="inner">
+      <span>Airportels · User-to-Builder · Final Test</span>
+      <span id="foot-count" class="num"></span>
+    </div>
+  </footer>
+
+  <div id="modal-root"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script>
+  /* ─── i18n strings ─── */
+  const T = {
+    heroBadge:{en:'Final Test · Week 4 / Week 8',th:'แบบทดสอบสุดท้าย · สัปดาห์ 4 / 8'},
+    titleLead:{en:'Final ',th:'แบบทดสอบ'}, titleAccent:{en:'Test',th:'สุดท้าย'},
+    facts:{en:'questions · 8 topics · ~60 min',th:'ข้อ · 8 หัวข้อ · ~60 นาที'},
+    introBadge:{en:'Before you start',th:'ก่อนเริ่ม'},
+    signTitle:{en:'Quick sign-in',th:'ลงชื่อสั้น ๆ'},
+    signBlurb:{en:'Enter your name, email, and test code. Your info stays on your device until you submit.',th:'กรอกชื่อ อีเมล และรหัสทดสอบ ข้อมูลอยู่บนเครื่องจนกว่าจะกดส่ง'},
+    name:{en:'Your name',th:'ชื่อของคุณ'}, namePh:{en:'e.g. Jane Doe',th:'เช่น สมหญิง ใจดี'},
+    email:{en:'Your email',th:'อีเมลของคุณ'}, emailPh:{en:'e.g. jane@airportels.asia',th:'เช่น somying@airportels.asia'},
+    code:{en:'Test code',th:'รหัสทดสอบ'}, codePh:{en:'Code from your facilitator',th:'รหัสที่ได้จาก facilitator'},
+    emailBad:{en:'Please enter a valid email address.',th:'กรุณากรอกอีเมลที่ถูกต้อง'},
+    nameBad:{en:'Please enter your name.',th:'กรุณากรอกชื่อของคุณ'},
+    codeBad:{en:'Please enter your test code.',th:'กรุณากรอกรหัสทดสอบ'},
+    codeInvalid:{en:'Invalid or unrecognized code.',th:'รหัสไม่ถูกต้องหรือไม่พบในระบบ'},
+    start:{en:'Start the test →',th:'เริ่มทำแบบทดสอบ →'},
+    verifying:{en:'Verifying code…',th:'กำลังตรวจสอบรหัส…'},
+    offlineNote:{en:'Offline mode — answers will download as a file.',th:'โหมดออฟไลน์ — คำตอบจะดาวน์โหลดเป็นไฟล์'},
+    noPenalty:{en:'No penalty for blanks — answer what you can. Your progress saves automatically.',th:'ไม่มีโทษถ้าตอบไม่ได้ — ตอบเท่าที่ทำได้ ข้อมูลถูกบันทึกอัตโนมัติ'},
+    part:{en:'Part',th:'ส่วนที่'}, pickAll:{en:'Pick all that apply',th:'เลือกทั้งหมดที่ใช่'},
+    rankHint:{en:'Assign a rank to each item — 1 = first',th:'กำหนดอันดับให้แต่ละรายการ — 1 = อันดับแรก'},
+    chars:{en:'characters',th:'ตัวอักษร'},
+    takingAs:{en:'Taking as',th:'ทำในนาม'}, edit:{en:'edit',th:'แก้ไข'},
+    needOne:{en:'Please attempt at least one answer in each Part before submitting.',th:'กรุณาตอบอย่างน้อย 1 ข้อในแต่ละส่วนก่อนส่ง'},
+    submit:{en:'Submit & review',th:'ส่งและดูสรุป'},
+    answered:{en:'answered',th:'ตอบแล้ว'},
+    timeUp:{en:"Time's up — but there's no penalty. Finish at your own pace and submit when ready.",th:'หมดเวลาแล้ว — แต่ไม่มีโทษ ทำต่อได้ตามสบาย แล้วกดส่งเมื่อพร้อม'},
+    sumTitle:{en:'Your answers',th:'คำตอบของคุณ'},
+    sumBlurb:{en:'Review below, then submit. A downloadable copy is always available as backup.',th:'ตรวจสอบด้านล่าง แล้วกดส่ง มีสำเนาให้ดาวน์โหลดเป็นข้อมูลสำรองเสมอ'},
+    blank:{en:'(blank)',th:'(ไม่ได้ตอบ)'},
+    back:{en:'← Back to test',th:'← กลับไปแก้ไข'},
+    download:{en:'Download my answers (backup)',th:'ดาวน์โหลดคำตอบ (สำรอง)'},
+    reset:{en:'Reset',th:'ล้างข้อมูล'},
+    resetConfirm:{en:'Clear all answers and start over? This cannot be undone.',th:'ล้างคำตอบทั้งหมดและเริ่มใหม่? ทำแล้วย้อนกลับไม่ได้'},
+    confirmTitle:{en:'Ready to submit?',th:'ยืนยันการส่ง?'},
+    confirmBlurb:{en:'Your answers will be sent to the workshop facilitator. You can still review and download after submitting.',th:'คำตอบจะถูกส่งให้ผู้ดูแลเวิร์กชอป หลังส่งแล้วยังตรวจและดาวน์โหลดได้'},
+    blanksWarn:{en:'You have {n} blank answer(s). That\'s OK — submit anyway?',th:'คุณยังไม่ตอบ {n} ข้อ ไม่เป็นไร ส่งเลยไหม?'},
+    cancel:{en:'Cancel',th:'ยกเลิก'}, confirmSend:{en:'Confirm & send',th:'ยืนยันและส่ง'}, sending:{en:'Sending…',th:'กำลังส่ง…'},
+    doneTitle:{en:'Submitted!',th:'ส่งสำเร็จ!'},
+    doneBlurb:{en:'Your answers were sent to the facilitator.',th:'คำตอบถูกส่งให้ผู้ดูแลเรียบร้อยแล้ว'},
+    resultLink:{en:'Your private result link:',th:'ลิงก์ผลของคุณ (ส่วนตัว):'},
+    copyLink:{en:'Copy',th:'คัดลอก'},
+    copiedLink:{en:'Copied!',th:'คัดลอกแล้ว!'},
+    offlineDoneTitle:{en:'Answers saved locally',th:'บันทึกคำตอบในเครื่องแล้ว'},
+    offlineDoneBlurb:{en:'Supabase is not connected. Download your answers and send the file to your facilitator.',th:'ยังไม่ได้เชื่อมต่อ Supabase กรุณาดาวน์โหลดคำตอบแล้วส่งไฟล์ให้ผู้ดูแล'},
+    sentFail:{en:'Send failed — please download your answers and send the file to your facilitator.',th:'ส่งไม่สำเร็จ — กรุณาดาวน์โหลดคำตอบแล้วส่งไฟล์ให้ผู้ดูแล'},
+    retry:{en:'Retry send',th:'ลองส่งใหม่'},
+    loading:{en:'Loading questions…',th:'กำลังโหลดคำถาม…'},
+    loadErr:{en:'Failed to load questions. Please refresh the page.',th:'โหลดคำถามไม่สำเร็จ กรุณารีเฟรชหน้า'},
+  };
+
+  /* ─── storage keys (per-code autosave) ─── */
+  const KEY_L='aft-lang-v1', KEY_N='aft-name-v1', KEY_E='aft-email-v1', KEY_S='aft-stage-v1', KEY_T='aft-started-v1', KEY_C='aft-code-v1', KEY_F='aft-form-v1';
+  const KEY_SUBMITSTATE='aft-submitstate-v1', KEY_TOKEN='aft-token-v1';
+  const answersKey=code=>'aft-answers-'+code;
+  const EMAIL_RE=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const DURATION=60*60;
+  const load=(k,d)=>{try{const v=localStorage.getItem(k);return v==null?d:v}catch{return d}};
+  const loadJSON=(k,d)=>{try{const v=JSON.parse(localStorage.getItem(k));return v&&typeof v==='object'?v:d}catch{return d}};
+
+  /* ─── mutable state ─── */
+  let lang=load(KEY_L,'en')==='th'?'th':'en';
+  let name=load(KEY_N,'');
+  let email=load(KEY_E,'');
+  let code=load(KEY_C,'');
+  let form=load(KEY_F,'A');
+  let answers=code?loadJSON(answersKey(code),{}):{};
+  let stage=load(KEY_S,'intro');
+  let startedAt=parseInt(load(KEY_T,'0'),10)||0;
+  let offline=false; // true when sbClient()===null
+  let DATA=null;     // loaded from questions.json
+  let TOTAL=0;
+  let showPartErr=false, submitState='idle', submitMsg='', tick=null;
+  let resultToken=null, resultId=null;
+  let intro_showErr=false, intro_codeErr='';
+  let intro_verifying=false;
+
+  if(!(name && EMAIL_RE.test(email) && code.trim()) && stage!=='done') stage='intro';
+
+  // Restore done-screen state if reloading into the done stage
+  if(stage==='done'){
+    const savedState=load(KEY_SUBMITSTATE,'');
+    if(savedState==='success'||savedState==='offline') submitState=savedState;
+    const savedToken=load(KEY_TOKEN,'');
+    if(savedToken) resultToken=savedToken;
+  }
+
+  const save=()=>{
+    localStorage.setItem(KEY_L,lang);
+    localStorage.setItem(KEY_N,name);
+    localStorage.setItem(KEY_E,email);
+    localStorage.setItem(KEY_C,code);
+    localStorage.setItem(KEY_F,form);
+    localStorage.setItem(KEY_S,stage);
+    if(startedAt) localStorage.setItem(KEY_T,String(startedAt));
+    if(code) localStorage.setItem(answersKey(code),JSON.stringify(answers));
+  };
+
+  const tr=o=>o[lang];
+  const letter=i=>String.fromCharCode(97+i).toUpperCase();
+  const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+  /* ─── variant resolver ─── */
+  const variant=(q)=>q.variants[form]||q.variants['A'];
+
+  /* ─── answer helpers ─── */
+  const isRankValid=(q)=>{
+    const v=variant(q);
+    const n=v.options?v.options.length:0;
+    const a=answers[q.id];
+    if(!Array.isArray(a)||a.length!==n)return false;
+    // all n option ids must appear exactly once, meaning ranks 1..n each assigned once
+    const ids=new Set(v.options.map(o=>o.id));
+    return a.length===n&&a.every(id=>ids.has(id))&&new Set(a).size===n;
+  };
+  const isAnswered=q=>{
+    const a=answers[q.id];
+    if(q.type==='multi')return Array.isArray(a)&&a.length>0;
+    if(q.type==='rank')return isRankValid(q);
+    return typeof a==='string'&&a.trim().length>0;
+  };
+  const answeredCount=()=>DATA?DATA.parts.flatMap(p=>p.questions).filter(isAnswered).length:0;
+  const partAttempted=p=>p.questions.some(isAnswered);
+  const canSubmit=()=>DATA&&DATA.parts.every(partAttempted);
+
+  /* ─── timer ─── */
+  function remaining(){if(!startedAt)return DURATION;return DURATION-Math.floor((Date.now()-startedAt)/1000);}
+  function fmt(s){const neg=s<0;s=Math.abs(s);const m=Math.floor(s/60),ss=String(s%60).padStart(2,'0');return (neg?'+':'')+m+':'+ss;}
+  function renderTimer(){
+    const el=document.getElementById('timer'),val=document.getElementById('timer-val');
+    if(stage!=='test'){el.hidden=true;return;}
+    el.hidden=false;const r=remaining();
+    val.textContent=fmt(r);
+    el.classList.toggle('low',r<=300&&r>0);
+    el.classList.toggle('over',r<=0);
+  }
+  function startTimerLoop(){clearInterval(tick);tick=setInterval(()=>{renderTimer();const b=document.getElementById('timeup-banner');if(b)b.hidden=remaining()>0;},1000);renderTimer();}
+
+  /* ─── progress ─── */
+  function renderProgress(){
+    if(!DATA){document.getElementById('progress-bar').style.width='0%';document.getElementById('foot-count').textContent='';return;}
+    const c=answeredCount();
+    document.getElementById('progress-bar').style.width=Math.round(c/TOTAL*100)+'%';
+    document.getElementById('foot-count').textContent=c+' / '+TOTAL+' '+tr(T.answered);
+  }
+
+  /* ─── render root ─── */
+  const app=()=>document.getElementById('app');
+  function render(){
+    document.body.dataset.lang=lang;document.documentElement.lang=lang;
+    document.getElementById('lang-en').classList.toggle('on',lang==='en');
+    document.getElementById('lang-en').setAttribute('aria-pressed',lang==='en');
+    document.getElementById('lang-th').classList.toggle('on',lang==='th');
+    document.getElementById('lang-th').setAttribute('aria-pressed',lang==='th');
+    if(stage==='intro')renderIntro();
+    else if(stage==='test')renderTest();
+    else if(stage==='summary')renderSummary();
+    else if(stage==='done')renderDone();
+    renderProgress();renderTimer();
+    save();
+  }
+
+  /* ─── INTRO ─── */
+  function renderIntro(){
+    const nameBad=intro_showErr&&!name.trim();
+    const emailBad=intro_showErr&&!EMAIL_RE.test(email.trim());
+    const codeBad=intro_showErr&&!code.trim();
+    const metaIntro=DATA?tr(DATA.meta.title):tr({en:'Final Test',th:'แบบทดสอบสุดท้าย'});
+    const introText=DATA&&DATA.intro?tr(DATA.intro):'Same shape as the baseline test — new scenarios. This measures what shifted across the workshop. No penalty for blanks: it is a learning measurement, not pass/fail.';
+    const factsStr=DATA?(TOTAL+' '+tr(T.facts)):tr(T.loading);
+    app().innerHTML=`
+    <section class="hero"><div class="hero-inner">
+      <span class="badge">👋 ${tr(T.introBadge)}</span>
+      <h1>${tr(T.titleLead)}<span class="accent">${tr(T.titleAccent)}</span></h1>
+      <p>${esc(introText)}</p>
+      <div class="facts"><span>⏱ <b>${factsStr}</b></span></div>
+    </div></section>
+    <div class="wrap"><div class="card" style="margin-top:26px">
+      <div style="font-weight:700;font-size:18px;margin-bottom:4px">${tr(T.signTitle)}</div>
+      <p style="color:var(--muted);font-size:14px;margin:0 0 18px">${tr(T.signBlurb)}</p>
+      ${offline?`<div class="note-offline">ℹ️ ${tr(T.offlineNote)}</div>`:''}
+      <div class="field"><label>${tr(T.name)}</label>
+        <input id="in-name" value="${esc(name)}" placeholder="${esc(tr(T.namePh))}" class="${nameBad?'bad':''}" autocomplete="name">
+        ${nameBad?`<div class="err">${tr(T.nameBad)}</div>`:''}</div>
+      <div class="field"><label>${tr(T.email)}</label>
+        <input id="in-email" value="${esc(email)}" placeholder="${esc(tr(T.emailPh))}" class="${emailBad?'bad':''}" inputmode="email" autocomplete="email" spellcheck="false">
+        ${emailBad?`<div class="err">${tr(T.emailBad)}</div>`:''}</div>
+      <div class="field"><label>${tr(T.code)}</label>
+        <input id="in-code" value="${esc(code)}" placeholder="${esc(tr(T.codePh))}" class="${codeBad||intro_codeErr?'bad':''}" autocomplete="off" spellcheck="false">
+        ${codeBad?`<div class="err">${tr(T.codeBad)}</div>`:intro_codeErr?`<div class="err">${intro_codeErr}</div>`:''}</div>
+      <button id="btn-start" class="btn btn-primary btn-block" ${intro_verifying?'disabled':''}>
+        ${intro_verifying?`<span class="spin"></span> ${tr(T.verifying)}`:tr(T.start)}
+      </button>
+      <p style="color:var(--muted);font-size:12.5px;margin:14px 0 0">${tr(T.noPenalty)}</p>
+    </div></div>`;
+    document.getElementById('in-name').addEventListener('input',e=>{name=e.target.value;save();});
+    document.getElementById('in-email').addEventListener('input',e=>{email=e.target.value;save();});
+    document.getElementById('in-code').addEventListener('input',e=>{code=e.target.value;intro_codeErr='';save();});
+    document.getElementById('btn-start').addEventListener('click',onStartClick);
+  }
+
+  async function onStartClick(){
+    if(!name.trim()||!EMAIL_RE.test(email.trim())||!code.trim()){intro_showErr=true;render();return;}
+    intro_codeErr='';
+    const sb=window.sbClient?window.sbClient():null;
+    if(!sb){
+      // offline fallback
+      offline=true; form='A';
+      answers=loadJSON(answersKey(code),{});
+      stage='test'; if(!startedAt)startedAt=Date.now(); startTimerLoop(); scrollTop(); render();
+      return;
+    }
+    intro_verifying=true; render();
+    try{
+      const {data,error}=await sb.rpc('redeem_code',{p_code:code.trim()});
+      if(error) throw new Error(error.message);
+      if(!data||data.length===0){
+        intro_codeErr=tr(T.codeInvalid); intro_verifying=false; render(); return;
+      }
+      form=data[0].form||'A';
+      answers=loadJSON(answersKey(code),{});
+      stage='test'; if(!startedAt)startedAt=Date.now();
+      intro_verifying=false; startTimerLoop(); scrollTop(); render();
+    }catch(e){
+      intro_codeErr=tr(T.codeInvalid); intro_verifying=false; render();
+    }
+  }
+
+  /* ─── TEST ─── */
+  function renderTest(){
+    if(!DATA){app().innerHTML=`<div class="wrap" style="padding-top:40px">${tr(T.loading)}</div>`;return;}
+    let idx=0;
+    const parts=DATA.parts.map(p=>{
+      const incomplete=showPartErr&&!partAttempted(p);
+      const qs=p.questions.map(q=>{idx++;return questionHTML(q,idx);}).join('');
+      return `<section class="part part-${p.id}" id="part-${p.id}">
+        <div class="part-head"><span class="emoji">${p.emoji}</span>
+          <div><div class="lab">${tr(T.part)} ${p.id}</div><h2>${tr(p.title)}</h2></div></div>
+        ${incomplete?`<div class="part-warn">${tr(T.needOne)}</div>`:''}
+        ${qs}</section>`;
+    }).join('');
+    const introText=DATA.intro?tr(DATA.intro):'';
+    app().innerHTML=`
+    <section class="hero"><div class="hero-inner">
+      <span class="badge">📝 ${tr(T.heroBadge)}</span>
+      <h1>${tr(T.titleLead)}<span class="accent">${tr(T.titleAccent)}</span></h1>
+      <p>${introText?esc(introText):''}</p>
+      <div class="facts"><span>⏱ <b>${TOTAL} ${tr(T.facts)}</b></span>${name.trim()?`<span>· 👤 ${tr(T.takingAs)}: <b>${esc(name.trim())}</b> <button id="edit-info" style="color:#a5b4fc;text-decoration:underline;font-size:13px">${tr(T.edit)}</button></span>`:''}</div>
+    </div></section>
+    <div class="wrap">
+      <div class="note"><b>${tr(T.noPenalty).split(' — ')[0]}</b> — ${tr(T.noPenalty).split(' — ')[1]||''}</div>
+      <div id="timeup-banner" class="banner warn" hidden><span class="ic">⏰</span><span>${tr(T.timeUp)}</span></div>
+      ${parts}
+      <div class="submit-row">
+        <button id="btn-submit" class="btn btn-primary" style="min-width:220px">${tr(T.submit)}</button>
+        <div style="color:var(--muted);font-size:13px" class="num">${answeredCount()} / ${TOTAL} ${tr(T.answered)}</div>
+      </div>
+    </div>`;
+    const ei=document.getElementById('edit-info');if(ei)ei.addEventListener('click',()=>{stage='intro';intro_showErr=false;intro_codeErr='';scrollTop();render();});
+    document.getElementById('btn-submit').addEventListener('click',onSubmitClick);
+    bindQuestionInputs();
+    if(!tick) startTimerLoop();
+  }
+
+  function questionHTML(q,idx){
+    const v=variant(q);
+    const a=answers[q.id];
+    let body='';
+    if(q.type==='single'||q.type==='multi'){
+      const arr=Array.isArray(a)?a:[];
+      body=`<div class="opts" data-qid="${q.id}" data-type="${q.type}">${v.options.map((o,i)=>{
+        const sel=q.type==='multi'?arr.includes(o.id):a===o.id;
+        return `<label class="opt ${sel?'sel':''}"><input type="${q.type==='multi'?'checkbox':'radio'}" name="${q.id}" value="${o.id}" ${sel?'checked':''}>
+          <span class="otext"><span class="oletter">${letter(i)}.</span>${esc(tr(o.text))}</span></label>`;
+      }).join('')}</div>${q.type==='multi'?`<div class="multi-hint">${tr(T.pickAll)}</div>`:''}`;
+    } else if(q.type==='rank'){
+      const n=v.options?v.options.length:0;
+      // currentOrder: map optionId -> rank (1-based) from stored array; 0 means unset
+      const orderedIds=Array.isArray(a)?a:[];
+      const rankOf=id=>{const pos=orderedIds.indexOf(id);return pos>=0?pos+1:0;};
+      const nums=Array.from({length:n},(_,i)=>i+1);
+      const rows=v.options.map(o=>{
+        const cur=rankOf(o.id);
+        const opts=`<option value="0"${cur===0?' selected':''}>—</option>`+nums.map(n=>`<option value="${n}"${cur===n?' selected':''}>${n}</option>`).join('');
+        return `<div class="rank-row"><select class="rank-sel" data-qid="${q.id}" data-optid="${o.id}">${opts}</select><span class="rtext">${esc(tr(o.text))}</span></div>`;
+      }).join('');
+      body=`<div class="rank-items" data-qid="${q.id}" data-type="rank">${rows}</div><div class="rank-hint">${tr(T.rankHint)}</div>`;
+    } else {
+      const val=typeof a==='string'?a:'';
+      body=`<textarea class="sa" data-qid="${q.id}" rows="${v.rows||3}" placeholder="…">${esc(val)}</textarea>
+        <div class="charcount"><span data-cc="${q.id}">${val.length}</span> ${tr(T.chars)}</div>`;
+    }
+    return `<div class="q"><div class="q-prompt"><span class="q-num">${q.id}</span><span>${esc(tr(v.q))}</span></div>
+      ${v.quote?`<div class="q-quote">${esc(tr(v.quote)).replace(/&quot;([^&]*)&quot;/,'&quot;<span class="mono">$1</span>&quot;')}</div>`:''}
+      ${body}</div>`;
+  }
+
+  function bindQuestionInputs(){
+    app().querySelectorAll('.opts').forEach(box=>{
+      const qid=box.dataset.qid,type=box.dataset.type;
+      box.querySelectorAll('input').forEach(inp=>inp.addEventListener('change',()=>{
+        if(type==='multi'){
+          const arr=Array.isArray(answers[qid])?answers[qid].slice():[];
+          const i=arr.indexOf(inp.value);if(inp.checked&&i<0)arr.push(inp.value);else if(!inp.checked&&i>=0)arr.splice(i,1);
+          answers[qid]=arr;
+        } else answers[qid]=inp.value;
+        box.querySelectorAll('.opt').forEach(l=>l.classList.toggle('sel',l.querySelector('input').checked));
+        save();renderProgress();
+      }));
+    });
+    // rank selects: recompute ordered-id array from all selectors in the group
+    app().querySelectorAll('.rank-items').forEach(container=>{
+      const qid=container.dataset.qid;
+      const recompute=()=>{
+        const sels=Array.from(container.querySelectorAll('.rank-sel'));
+        const n=sels.length;
+        // build rank->optId map
+        const byRank={};
+        let valid=true;
+        sels.forEach(s=>{
+          const rank=parseInt(s.value,10);
+          if(!rank){valid=false;return;}
+          if(byRank[rank]){valid=false;}// duplicate
+          byRank[rank]=s.dataset.optid;
+        });
+        if(!valid){answers[qid]=null;save();renderProgress();return;}
+        // check all 1..n present
+        const ordered=[];
+        for(let i=1;i<=n;i++){if(!byRank[i]){valid=false;break;}ordered.push(byRank[i]);}
+        answers[qid]=valid?ordered:null;
+        save();renderProgress();
+      };
+      container.querySelectorAll('.rank-sel').forEach(s=>s.addEventListener('change',recompute));
+    });
+    app().querySelectorAll('textarea.sa').forEach(ta=>{
+      const qid=ta.dataset.qid;
+      const grow=()=>{ta.style.height='auto';ta.style.height=ta.scrollHeight+'px';};grow();
+      ta.addEventListener('input',()=>{answers[qid]=ta.value;const cc=app().querySelector(`[data-cc="${qid}"]`);if(cc)cc.textContent=ta.value.length;grow();save();renderProgress();});
+    });
+  }
+
+  function onSubmitClick(){
+    if(!canSubmit()){
+      showPartErr=true;render();
+      const first=DATA.parts.find(p=>!partAttempted(p));
+      if(first){const el=document.getElementById('part-'+first.id);if(el)window.scrollTo({top:el.getBoundingClientRect().top+window.scrollY-80,behavior:'smooth'});}
+      return;
+    }
+    showPartErr=false;openConfirm();
+  }
+
+  /* ─── SUMMARY (review before submit, not the done screen) ─── */
+  function renderSummary(){
+    if(!DATA){app().innerHTML=`<div class="wrap" style="padding-top:40px">${tr(T.loading)}</div>`;return;}
+    let idx=0;
+    const parts=DATA.parts.map(p=>{
+      const qs=p.questions.map(q=>{idx++;const ans=renderAnswerText(q);const blank=ans==null;
+        const v=variant(q);
+        return `<div class="q"><div class="q-prompt"><span class="q-num">${q.id}</span><span>${esc(tr(v.q))}</span></div>
+          <div class="sum-answer ${blank?'blank':'filled'}">${blank?tr(T.blank):esc(ans)}</div></div>`;
+      }).join('');
+      return `<section class="part part-${p.id}">
+        <div class="part-head"><span class="emoji">${p.emoji}</span><div><div class="lab">${tr(T.part)} ${p.id}</div><h2>${tr(p.title)}</h2></div></div>
+        ${qs}</section>`;
+    }).join('');
+    const c=answeredCount();
+    app().innerHTML=`
+    <section class="hero"><div class="hero-inner">
+      <span class="badge">✓ ${c}/${TOTAL} ${tr(T.answered)}</span>
+      <h1><span class="accent">${tr(T.sumTitle)}</span></h1>
+      <p>${tr(T.sumBlurb)}</p>
+    </div></section>
+    <div class="wrap">${parts}</div>
+    <div class="actionbar"><div class="inner">
+      <button id="s-back" class="btn btn-ghost">${tr(T.back)}</button>
+      <button id="s-download" class="btn btn-emerald">${tr(T.download)}</button>
+      <button id="s-reset" class="btn btn-rose" style="margin-left:auto">${tr(T.reset)}</button>
+    </div></div>`;
+    document.getElementById('s-back').addEventListener('click',()=>{stage='test';scrollTop();render();});
+    document.getElementById('s-download').addEventListener('click',downloadBackup);
+    document.getElementById('s-reset').addEventListener('click',doReset);
+  }
+
+  function renderAnswerText(q){
+    const v=variant(q);
+    const a=answers[q.id];
+    if(q.type==='multi'){const ids=Array.isArray(a)?a:[];if(!ids.length)return null;return ids.map(id=>tr(v.options.find(o=>o.id===id).text)).join('\n');}
+    if(q.type==='single'){if(!a)return null;const o=v.options.find(o=>o.id===a);return o?tr(o.text):a;}
+    if(q.type==='rank'){
+      if(!Array.isArray(a)||!a.length)return null;
+      return a.map((id,i)=>{const o=v.options.find(o=>o.id===id);return (i+1)+'. '+(o?tr(o.text):id);}).join('\n');
+    }
+    return (typeof a==='string'&&a.trim())?a:null;
+  }
+
+  /* ─── DONE SCREEN ─── */
+  function renderDone(){
+    const isOffline=(submitState==='offline');
+    app().innerHTML=`
+    <section class="hero"><div class="hero-inner">
+      <span class="badge">${isOffline?'💾':'✅'} ${isOffline?tr(T.offlineDoneTitle):tr(T.doneTitle)}</span>
+      <h1>${tr(T.titleLead)}<span class="accent">${tr(T.titleAccent)}</span></h1>
+      <p>${isOffline?tr(T.offlineDoneBlurb):tr(T.doneBlurb)}</p>
+    </div></section>
+    <div class="wrap">
+      <div class="done-card" id="done-card">
+        ${isOffline
+          ? `<div class="banner warn"><span class="ic">ℹ️</span><span>${tr(T.offlineDoneBlurb)}</span></div>`
+          : `<div class="banner ok"><span class="ic">✅</span><span>${tr(T.doneBlurb)}</span></div>
+             ${resultToken?`<div style="margin-top:18px"><div style="font-weight:600;font-size:14px;margin-bottom:6px">${tr(T.resultLink)}</div>
+               <div class="done-link"><span id="result-url">result.html?token=${esc(resultToken)}</span>
+               <button class="copy-btn" id="copy-link">${tr(T.copyLink)}</button></div></div>`:''}`
+        }
+        <div style="margin-top:22px">
+          <button id="done-download" class="btn btn-emerald btn-block">${tr(T.download)}</button>
+        </div>
+      </div>
+    </div>`;
+    document.getElementById('done-download').addEventListener('click',downloadBackup);
+    const cl=document.getElementById('copy-link');
+    if(cl){
+      cl.addEventListener('click',()=>{
+        const url=window.location.origin+window.location.pathname.replace(/[^/]*$/,'')+`result.html?token=${resultToken}`;
+        navigator.clipboard.writeText(url).then(()=>{cl.textContent=tr(T.copiedLink);setTimeout(()=>{cl.textContent=tr(T.copyLink);},2000);}).catch(()=>{});
+      });
+    }
+  }
+
+  /* ─── BUILD SUBMIT PAYLOAD ─── */
+  function buildPayload(){
+    const allQ=DATA.parts.flatMap(p=>p.questions);
+    const answersArr=allQ.map(q=>{
+      const v=variant(q);
+      let ans=answers[q.id]??null;
+      // rank: only include if valid distinct array, otherwise null
+      if(q.type==='rank'){ans=isRankValid(q)?ans:null;}
+      return {id:q.id, type:q.type, question:tr(v.q), answer:ans};
+    });
+    return {
+      code:code.trim(), name:name.trim()||'anonymous', email:email.trim(), lang,
+      duration_seconds:startedAt?Math.floor((Date.now()-startedAt)/1000):null,
+      answered_count:answeredCount(), total_count:TOTAL,
+      answers:answersArr
+    };
+  }
+
+  async function doSubmit(fromRetry){
+    const sb=window.sbClient?window.sbClient():null;
+    if(!sb){
+      submitState='offline'; localStorage.setItem(KEY_SUBMITSTATE,'offline'); stage='done'; scrollTop(); closeModal(); render(); return;
+    }
+    submitState='sending'; updateModal();
+    try{
+      const p=buildPayload();
+      const {data,error}=await sb.rpc('submit_test',{
+        p_code:p.code, p_name:p.name, p_email:p.email, p_lang:p.lang,
+        p_duration:p.duration_seconds, p_answered:p.answered_count, p_total:p.total_count,
+        p_answers:p.answers
+      });
+      if(error) throw new Error(error.message);
+      if(data&&data.length>0){resultId=data[0].id;resultToken=data[0].result_token;}
+      submitState='success'; localStorage.setItem(KEY_SUBMITSTATE,'success'); if(resultToken) localStorage.setItem(KEY_TOKEN,resultToken); stage='done'; scrollTop(); closeModal(); render();
+    }catch(e){
+      submitState='error'; submitMsg=e.message||'network error'; updateModal();
+    }
+  }
+
+  function downloadBackup(){
+    const p=buildPayload();
+    const json=JSON.stringify(p,null,2);
+    const blob=new Blob([json],{type:'application/json'});
+    const slug=(name.trim().toLowerCase().replace(/[^a-z0-9ก-๙\s-]/g,'').replace(/\s+/g,'-')||'anonymous');
+    const d=new Date(),stamp=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`airportels-final-${slug}-${stamp}.json`;
+    document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(a.href);
+  }
+
+  function doReset(){
+    if(!confirm(tr(T.resetConfirm)))return;
+    [KEY_N,KEY_E,KEY_C,KEY_F,KEY_S,KEY_T,KEY_SUBMITSTATE,KEY_TOKEN].forEach(k=>localStorage.removeItem(k));
+    if(code)localStorage.removeItem(answersKey(code));
+    answers={};name='';email='';code='';form='A';stage='intro';startedAt=0;submitState='idle';
+    showPartErr=false;intro_showErr=false;intro_codeErr='';resultToken=null;resultId=null;offline=false;
+    clearInterval(tick);scrollTop();render();
+  }
+
+  /* ─── CONFIRM MODAL ─── */
+  function openConfirm(){
+    const c=answeredCount(),blanks=TOTAL-c;
+    document.getElementById('modal-root').innerHTML=`
+    <div class="modal-bg" id="modal-bg"><div class="modal">
+      <div class="body">
+        <h3>${tr(T.confirmTitle)}</h3><p>${tr(T.confirmBlurb)}</p>
+        <div class="recap">
+          <div><div class="k">${tr(T.name)}</div><div>${esc(name.trim()||'—')}</div></div>
+          <div><div class="k">${tr(T.email)}</div><div>${esc(email.trim()||'—')}</div></div>
+          <div><div class="k">${tr(T.code)}</div><div>${esc(code.trim()||'—')}</div></div>
+          <div><div class="k">${tr(T.answered)}</div><div class="num">${c}/${TOTAL}${blanks>0?` · <span style="color:var(--amber)">${tr(T.blanksWarn).replace('{n}',blanks)}</span>`:''}</div></div>
+        </div>
+        <div id="modal-err"></div>
+      </div>
+      <div class="foot">
+        <button id="m-cancel" class="btn btn-ghost">${tr(T.cancel)}</button>
+        <button id="m-confirm" class="btn btn-primary">${tr(T.confirmSend)}</button>
+      </div>
+    </div></div>`;
+    document.getElementById('modal-bg').addEventListener('click',e=>{if(e.target.id==='modal-bg'&&submitState!=='sending')closeModal();});
+    document.getElementById('m-cancel').addEventListener('click',()=>{if(submitState!=='sending')closeModal();});
+    document.getElementById('m-confirm').addEventListener('click',()=>doSubmit(false));
+  }
+
+  function updateModal(){
+    const btn=document.getElementById('m-confirm');if(!btn)return;
+    if(submitState==='sending'){btn.innerHTML=`<span class="spin"></span> ${tr(T.sending)}`;btn.disabled=true;}
+    else if(submitState==='error'){
+      btn.innerHTML=tr(T.retry);btn.disabled=false;
+      const errDetail=submitMsg?`<br><span style="font-size:12.5px;opacity:.8;font-family:var(--mono)">${esc(submitMsg)}</span>`:'';
+      document.getElementById('modal-err').innerHTML=`<div class="banner err" style="margin-top:14px;margin-bottom:0"><span class="ic">⚠️</span><span>${tr(T.sentFail)}${errDetail}</span></div>`;
+      const rb=btn;rb.onclick=()=>doSubmit(true);
+    }
+  }
+
+  function closeModal(){document.getElementById('modal-root').innerHTML='';}
+
+  /* ─── MISC ─── */
+  function scrollTop(){window.scrollTo({top:0,behavior:'smooth'});}
+  document.getElementById('lang-en').addEventListener('click',()=>{lang='en';render();});
+  document.getElementById('lang-th').addEventListener('click',()=>{lang='th';render();});
+  window.addEventListener('beforeunload',save);
+
+  /* ─── PART metadata (8 topics) ─── */
+  const PART_META={
+    deploy:  {emoji:'🚀', title:{en:'Web App & Deployment',          th:'เว็บแอปและการ Deploy'}},
+    data:    {emoji:'🗄️', title:{en:'Storage & Data',                th:'การเก็บข้อมูล'}},
+    secrets: {emoji:'🔐', title:{en:'Secrets & Security',            th:'ความลับและความปลอดภัย'}},
+    prompt:  {emoji:'💬', title:{en:'Prompting Claude',               th:'การสั่งงาน Claude'}},
+    verify:  {emoji:'🔬', title:{en:'Verification & Testing',        th:'การตรวจสอบและทดสอบ'}},
+    iterate: {emoji:'🔁', title:{en:'Iteration Discipline',          th:'การแก้ไขซ้ำอย่างมีวินัย'}},
+    risk:    {emoji:'⚠️', title:{en:'Risk Literacy & Real Data',     th:'ความเสี่ยงและข้อมูลจริง'}},
+    escalate:{emoji:'🤝', title:{en:'Escalation & Judgment',         th:'การขอความช่วยเหลือและวิจารณญาณ'}},
+  };
+  const PART_ORDER=['deploy','data','secrets','prompt','verify','iterate','risk','escalate'];
+
+  /* ─── reshape flat DB rows → DATA structure ─── */
+  function rowsToData(rows){
+    const byPart={};
+    rows.forEach(r=>{
+      const key=r.part||'other';
+      if(!byPart[key]) byPart[key]=[];
+      byPart[key].push(r);
+    });
+    // known topics first in fixed order, then any trailing "other" keys
+    const knownKeys=PART_ORDER.filter(k=>byPart[k]);
+    const otherKeys=Object.keys(byPart).filter(k=>!PART_META[k]);
+    const allKeys=[...knownKeys,...otherKeys];
+    const parts=allKeys.map(k=>{
+      const qs=byPart[k].slice().sort((a,b)=>a.ord-b.ord);
+      const meta=PART_META[k]||{emoji:'',title:{en:'Other',th:'อื่น ๆ'}};
+      return {
+        id:k,
+        emoji:meta.emoji,
+        title:meta.title,
+        questions:qs.map(r=>({id:r.id, type:r.type, points:r.points, variants:r.variants}))
+      };
+    });
+    // derive forms from the union of variant keys present across all rows
+    const formSet=new Set();
+    rows.forEach(r=>{ if(r.variants&&typeof r.variants==='object') Object.keys(r.variants).forEach(k=>formSet.add(k)); });
+    const forms=formSet.size>0?Array.from(formSet).sort():['A'];
+    return {
+      meta:{title:{en:'Final Test',th:'แบบทดสอบสุดท้าย'}, durationMinutes:60},
+      forms,
+      parts
+    };
+  }
+
+  /* ─── BOOTSTRAP: load questions (Supabase → questions.json fallback) then render ─── */
+  (async function bootstrap(){
+    try{
+      const sb=window.sbClient?window.sbClient():null;
+      let loaded=false;
+      if(sb){
+        try{
+          const {data:rows,error}=await sb.from('ft_questions_public').select('*');
+          if(!error&&rows&&rows.length>0){
+            DATA=rowsToData(rows);
+            loaded=true;
+          }
+        }catch(_){}
+      }
+      if(!loaded){
+        // offline fallback — fetch bundled questions.json
+        const resp=await fetch('questions.json');
+        if(!resp.ok) throw new Error('HTTP '+resp.status);
+        DATA=await resp.json();
+      }
+      TOTAL=DATA.parts.reduce((n,p)=>n+p.questions.length,0);
+      // determine offline state upfront (doesn't block render)
+      offline=!(window.sbClient&&window.sbClient()!==null);
+      // restore saved session if valid
+      if(stage==='test'&&startedAt) startTimerLoop();
+      render();
+    }catch(e){
+      app().innerHTML=`<div class="wrap" style="padding-top:60px"><div class="banner err"><span class="ic">⚠️</span><span>${tr(T.loadErr)}</span></div></div>`;
+    }
+  })();
+  </script>
+</body>
+</html>

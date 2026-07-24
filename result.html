@@ -1,0 +1,596 @@
+<!doctype html>
+<!--
+  User-to-Builder — RESULT PAGE
+  ─────────────────────────────
+  Participant reads their score via a private link: result.html?token=<uuid>
+  Read-only. Bilingual EN/TH. Shows submitted answers, correct answers, and per-question points.
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Your Result · User-to-Builder — Airportels</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#f5f6fa; --surface:#ffffff; --fg:#0f172a; --muted:#64748b; --border:#e2e8f0;
+      --indigo:#4f46e5; --indigo-600:#4338ca; --indigo-soft:#eef2ff;
+      --emerald:#059669; --emerald-soft:#ecfdf5;
+      --amber:#d97706; --amber-soft:#fffbeb;
+      --rose:#e11d48; --rose-soft:#fff1f2;
+      --ink-hero:#1e1b4b;
+      --radius:14px; --radius-sm:10px;
+      --font:'Inter','Sarabun',-apple-system,BlinkMacSystemFont,system-ui,sans-serif;
+      --mono:'SF Mono',ui-monospace,'JetBrains Mono',Menlo,monospace;
+    }
+    *,*::before,*::after{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--font);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+    body[data-lang="th"]{font-family:'Sarabun','Inter',sans-serif;line-height:1.7}
+    button{font:inherit;cursor:pointer;color:inherit;border:0;background:none}
+    h1,h2,h3{margin:0;letter-spacing:-0.02em}
+    .num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+    .wrap{max-width:760px;margin-inline:auto;padding-inline:20px}
+
+    /* header */
+    header.top{position:sticky;top:0;z-index:40;background:rgba(255,255,255,.9);backdrop-filter:blur(10px);border-bottom:1px solid var(--border)}
+    .top-inner{display:flex;align-items:center;gap:12px;padding:12px 20px;max-width:940px;margin-inline:auto}
+    .brand{font-weight:700;font-size:15px}
+    .brand span{color:var(--muted);font-weight:500}
+    .spacer{flex:1}
+    .langpill{display:flex;background:#fff;border:1px solid var(--border);border-radius:999px;padding:3px}
+    .langpill button{padding:5px 12px;border-radius:999px;font-size:12px;font-weight:600;color:var(--muted);transition:.15s}
+    .langpill button.on{background:var(--fg);color:#fff}
+
+    /* hero */
+    .hero{background:linear-gradient(135deg,var(--ink-hero),#0f172a);color:#fff;position:relative;overflow:hidden}
+    .hero::after{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px);background-size:34px 34px;mask-image:radial-gradient(circle at 30% 20%,#000,transparent 75%)}
+    .hero-inner{position:relative;padding:56px 20px 60px;max-width:940px;margin-inline:auto}
+    .hero .badge{display:inline-flex;align-items:center;gap:8px;padding:5px 12px;border-radius:999px;font-size:12px;font-weight:600;
+      background:rgba(129,140,248,.16);color:#c7d2fe;border:1px solid rgba(129,140,248,.3);backdrop-filter:blur(4px)}
+    .hero h1{font-size:clamp(28px,5vw,44px);line-height:1.1;font-weight:800;margin-top:18px}
+    .hero h1 .accent{background:linear-gradient(90deg,#818cf8,#67e8f9);-webkit-background-clip:text;background-clip:text;color:transparent}
+    .hero p{margin-top:12px;max-width:56ch;color:#cbd5e1;font-size:16px}
+
+    /* cards */
+    .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px;box-shadow:0 1px 2px rgba(15,23,42,.04)}
+    .main-content{padding:32px 0 56px}
+
+    /* neutral state messages */
+    .state-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:32px 28px;text-align:center;max-width:500px;margin:0 auto}
+    .state-box .icon{font-size:36px;margin-bottom:14px}
+    .state-box h2{font-size:20px;font-weight:700;margin-bottom:8px}
+    .state-box p{color:var(--muted);font-size:15px;margin:0}
+
+    /* spinner */
+    .spin-wrap{display:flex;justify-content:center;padding:40px 0}
+    .spin{width:30px;height:30px;border-radius:50%;border:3px solid var(--indigo-soft);border-top-color:var(--indigo);animation:sp .7s linear infinite}
+    @keyframes sp{to{transform:rotate(360deg)}}
+
+    /* score hero section */
+    .score-card{background:linear-gradient(135deg,#312e81,#1e1b4b);color:#fff;border-radius:var(--radius);padding:32px 28px;margin-bottom:24px;text-align:center}
+    .score-card .greeting{font-size:15px;color:#c7d2fe;font-weight:500;margin-bottom:6px}
+    .score-label{font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#a5b4fc;margin-bottom:4px}
+    .score-number{font-family:var(--mono);font-size:clamp(52px,10vw,80px);font-weight:800;line-height:1;color:#fff}
+    .score-number .score-max{color:#a5b4fc;font-weight:700}
+    .score-sub{font-size:14px;color:#a5b4fc;margin-top:6px}
+
+    /* per-question table */
+    .section-title{font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
+    .answer-list{display:flex;flex-direction:column;gap:8px}
+    .answer-row{display:flex;align-items:center;justify-content:space-between;padding:11px 16px;background:#f8fafc;border:1px solid var(--border);border-radius:var(--radius-sm)}
+    .answer-qkey{font-family:var(--mono);font-weight:600;font-size:14px;color:#334155}
+    .answer-pts{font-family:var(--mono);font-weight:700;font-size:14px;color:var(--indigo)}
+
+    /* notes */
+    .notes-box{margin-top:24px;padding:18px 20px;background:var(--indigo-soft);border:1px solid #e0e2fb;border-radius:var(--radius)}
+    .notes-box .notes-label{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--indigo-600);margin-bottom:8px}
+    .notes-box p{margin:0;color:#3730a3;font-size:15px;line-height:1.65;white-space:pre-wrap}
+
+    /* per-question items */
+    .q-list{display:flex;flex-direction:column;gap:12px}
+    .q-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:18px 20px;position:relative}
+    .q-item.correct{border-color:#6ee7b7;background:#f0fdf4}
+    .q-item.incorrect{border-color:#fca5a5;background:#fff5f5}
+    .q-item-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px}
+    .q-seq{font-family:var(--mono);font-size:12px;font-weight:700;color:var(--muted);flex:none;padding-top:2px}
+    .q-stem{font-size:15px;font-weight:600;color:var(--fg);flex:1;line-height:1.5}
+    .pts-chip{font-family:var(--mono);font-size:13px;font-weight:700;padding:3px 10px;border-radius:999px;white-space:nowrap;flex:none}
+    .pts-chip.correct{background:#d1fae5;color:#065f46}
+    .pts-chip.incorrect{background:#fee2e2;color:#991b1b}
+    .pts-chip.pending{background:#fef9c3;color:#854d0e}
+    .pts-chip.neutral{background:#f1f5f9;color:#334155}
+    .q-detail{display:flex;flex-direction:column;gap:6px;margin-top:2px}
+    .q-detail-row{font-size:14px;color:#334155;display:flex;gap:8px;align-items:flex-start}
+    .q-detail-label{font-weight:700;color:var(--muted);white-space:nowrap;min-width:110px;font-size:13px}
+    .q-detail-val{flex:1;color:#1e293b}
+    .q-detail-val.empty{color:var(--muted);font-style:italic}
+    .q-detail-val ol{margin:0;padding-left:18px}
+    .q-detail-val ol li{margin-bottom:2px}
+    .q-detail-val ul{margin:0;padding-left:18px;list-style:disc}
+    .q-detail-val ul li{margin-bottom:2px}
+    .manual-grade{font-size:13px;color:var(--muted);font-style:italic}
+
+    /* banner styles */
+    .banner{display:flex;align-items:flex-start;gap:12px;padding:16px 18px;border-radius:var(--radius);font-size:14.5px;margin-bottom:18px}
+    .banner .ic{font-size:20px;line-height:1.2;flex:none}
+    .banner.info{background:var(--indigo-soft);color:#3730a3;border:1px solid #e0e2fb}
+    .banner.warn{background:var(--amber-soft);color:#92400e;border:1px solid #f6e4bf}
+
+    footer{margin-top:40px;border-top:1px solid var(--border);background:#fff}
+    footer .inner{max-width:940px;margin-inline:auto;padding:22px 20px;display:flex;justify-content:space-between;color:var(--muted);font-size:13px;flex-wrap:wrap;gap:8px}
+
+    [hidden]{display:none!important}
+    @media(max-width:600px){.hero-inner{padding:40px 20px}.score-card{padding:24px 20px}}
+
+    .opt-list{display:flex;flex-direction:column;gap:6px;margin-top:4px}
+    .opt-row{display:flex;align-items:flex-start;gap:8px;padding:9px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);background:#f8fafc;font-size:14px;line-height:1.45}
+    .opt-row.correct{border-color:#6ee7b7;background:#f0fdf4}
+    .opt-row.wrong{border-color:#fca5a5;background:#fff5f5}
+    .opt-text{flex:1;color:#1e293b}
+    .opt-badges{display:flex;gap:5px;flex:none;flex-wrap:wrap}
+    .opt-badge{font-size:11px;font-weight:700;padding:2px 7px;border-radius:999px;white-space:nowrap}
+    .opt-badge.yours{background:#fee2e2;color:#991b1b}
+    .opt-badge.yours.on-correct{background:#d1fae5;color:#065f46}
+    .opt-badge.correct{background:#d1fae5;color:#065f46}
+    .rank-cols{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px}
+    .rank-col .rank-col-h{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+    .rank-col ol{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:5px}
+    .rank-col ol li{font-size:14px;color:#1e293b;padding:5px 8px;border-radius:8px;border:1px solid var(--border);background:#f8fafc;list-style-position:outside}
+    .rank-col ol li.match{border-color:#6ee7b7;background:#f0fdf4}
+    .rank-col ol li.miss{border-color:#fca5a5;background:#fff5f5}
+    .rank-empty{color:var(--muted);font-style:italic;font-size:14px}
+    .legend{display:flex;gap:16px;flex-wrap:wrap;margin:-8px 0 20px;font-size:13px;color:var(--muted)}
+    .legend .lg{display:inline-flex;align-items:center;gap:6px}
+    .legend .sw{width:12px;height:12px;border-radius:3px;border:1px solid}
+    .legend .sw.correct{background:#f0fdf4;border-color:#6ee7b7}
+    .legend .sw.wrong{background:#fff5f5;border-color:#fca5a5}
+    @media(max-width:600px){.rank-cols{grid-template-columns:1fr}}
+  </style>
+</head>
+<body data-lang="en">
+
+  <header class="top">
+    <div class="top-inner">
+      <div class="brand">Airportels <span>· User-to-Builder</span></div>
+      <div class="spacer"></div>
+      <div class="langpill" role="tablist" aria-label="Language">
+        <button id="lang-en" class="on" aria-pressed="true">EN</button>
+        <button id="lang-th" aria-pressed="false">TH</button>
+      </div>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="badge" id="hero-badge">Your Result</div>
+      <h1 id="hero-title"><span class="accent">Final Test</span> Result</h1>
+      <p id="hero-sub">User-to-Builder Workshop · Airportels</p>
+    </div>
+  </section>
+
+  <main class="wrap main-content">
+    <div id="app-root"></div>
+  </main>
+
+  <footer>
+    <div class="inner">
+      <span>Airportels · User-to-Builder · Final Test</span>
+      <span>Result</span>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script>
+  /* ── i18n ── */
+  const T = {
+    heroBadge:       { en: 'Your Result',       th: 'ผลการทดสอบของคุณ' },
+    heroTitle:       { en: 'Final Test Result',  th: 'ผลแบบทดสอบสุดท้าย' },
+    heroSub:         { en: 'User-to-Builder Workshop · Airportels', th: 'เวิร์กช็อป User-to-Builder · Airportels' },
+
+    noToken:         { en: "No result token in this link.",
+                       th: "ลิงก์นี้ไม่มีโทเค็นผลการทดสอบ" },
+    noTokenSub:      { en: "Please use the private link you received after submitting the test.",
+                       th: "กรุณาใช้ลิงก์ส่วนตัวที่ได้รับหลังส่งแบบทดสอบ" },
+
+    noSupabase:      { en: "Results aren't available in this preview.",
+                       th: "ยังไม่สามารถแสดงผลในโหมดพรีวิวได้" },
+    noSupabaseSub:   { en: "This page needs a live Supabase connection configured in config.js.",
+                       th: "หน้านี้ต้องการการเชื่อมต่อ Supabase ที่กำหนดค่าใน config.js" },
+
+    loading:         { en: "Loading your result…",     th: "กำลังโหลดผลการทดสอบ…" },
+
+    notFound:        { en: "We couldn't find a result for this link.",
+                       th: "ไม่พบผลการทดสอบสำหรับลิงก์นี้" },
+    notFoundSub:     { en: "The link may be incorrect or expired. Please check the link and try again.",
+                       th: "ลิงก์อาจไม่ถูกต้องหรือหมดอายุ กรุณาตรวจสอบลิงก์แล้วลองอีกครั้ง" },
+
+    notReleased:     { en: "Your result isn't ready yet.",
+                       th: "ผลการทดสอบยังไม่พร้อม" },
+    notReleasedSub:  { en: "Check back after your facilitator reviews it — you'll see your score here once it's released.",
+                       th: "กลับมาตรวจสอบหลังจากที่ผู้ดูแลตรวจแล้ว คุณจะเห็นคะแนนที่นี่เมื่อเผยแพร่แล้ว" },
+
+    greeting:        { en: 'Hello,',              th: 'สวัสดี,' },
+    totalLabel:      { en: 'Total Score',         th: 'คะแนนรวม' },
+    totalSub:        { en: 'points',              th: 'คะแนน' },
+    breakdown:       { en: 'Score Breakdown',     th: 'คะแนนแต่ละข้อ' },
+    points:          { en: 'pts',                 th: 'คะแนน' },
+    notesLabel:      { en: "Facilitator's Notes", th: 'หมายเหตุจากผู้ดูแล' },
+
+    yourAnswer:      { en: 'Your Answer',          th: 'คำตอบของคุณ' },
+    correctAnswer:   { en: 'Correct Answer',       th: 'คำตอบที่ถูกต้อง' },
+    notAnswered:     { en: '—',                    th: '—' },
+    gradedManually:  { en: 'Graded manually',      th: 'ตรวจให้คะแนนโดยผู้ดูแล' },
+    pending:         { en: 'pending',              th: 'รอตรวจ' },
+
+    badgeYours:     { en: 'Your answer',  th: 'คำตอบของคุณ' },
+    badgeCorrect:   { en: 'Correct',      th: 'คำตอบที่ถูก' },
+    yourOrder:      { en: 'Your order',   th: 'ลำดับของคุณ' },
+    correctOrder:   { en: 'Correct order',th: 'ลำดับที่ถูกต้อง' },
+    legendCorrect:  { en: 'Correct choice',   th: 'ตัวเลือกที่ถูกต้อง' },
+    legendWrong:    { en: 'Your wrong pick',  th: 'ตัวเลือกที่คุณเลือกผิด' },
+    choicesLabel:   { en: 'Choices',      th: 'ตัวเลือก' },
+
+    errTitle:        { en: 'Something went wrong.',   th: 'เกิดข้อผิดพลาด' },
+    errSub:          { en: 'Unable to load your result. Please try again.',
+                       th: 'ไม่สามารถโหลดผลการทดสอบได้ กรุณาลองอีกครั้ง' },
+  };
+
+  /* ── language ── */
+  let lang = 'en';
+  function t(key) { return (T[key] && T[key][lang]) || T[key]?.en || key; }
+
+  function setLang(l) {
+    lang = l;
+    document.body.setAttribute('data-lang', l);
+    document.getElementById('lang-en').classList.toggle('on', l === 'en');
+    document.getElementById('lang-en').setAttribute('aria-pressed', String(l === 'en'));
+    document.getElementById('lang-th').classList.toggle('on', l === 'th');
+    document.getElementById('lang-th').setAttribute('aria-pressed', String(l === 'th'));
+    renderHero();
+    renderContent();
+  }
+
+  document.getElementById('lang-en').addEventListener('click', () => setLang('en'));
+  document.getElementById('lang-th').addEventListener('click', () => setLang('th'));
+
+  /* ── hero ── */
+  function renderHero() {
+    document.getElementById('hero-badge').textContent = t('heroBadge');
+    document.getElementById('hero-title').innerHTML =
+      '<span class="accent">' + (lang === 'th' ? 'แบบทดสอบสุดท้าย' : 'Final Test') + '</span> ' +
+      (lang === 'th' ? '' : 'Result');
+    document.getElementById('hero-sub').textContent = t('heroSub');
+    document.title = (lang === 'th' ? 'ผลการทดสอบ' : 'Your Result') + ' · User-to-Builder — Airportels';
+  }
+
+  /* ── app state ── */
+  let currentState = 'loading';  // loading | no-token | no-supabase | not-found | not-released | released | error
+  let resultData = null;
+
+  /* ── render ── */
+  function renderContent() {
+    const root = document.getElementById('app-root');
+    root.innerHTML = '';
+
+    if (currentState === 'loading') {
+      root.innerHTML = '<div class="spin-wrap"><div class="spin" role="status" aria-label="Loading"></div></div>';
+      return;
+    }
+
+    if (currentState === 'no-token') {
+      root.appendChild(stateBox('🔗', t('noToken'), t('noTokenSub')));
+      return;
+    }
+
+    if (currentState === 'no-supabase') {
+      root.appendChild(stateBox('⚙️', t('noSupabase'), t('noSupabaseSub')));
+      return;
+    }
+
+    if (currentState === 'not-found') {
+      root.appendChild(stateBox('🔍', t('notFound'), t('notFoundSub')));
+      return;
+    }
+
+    if (currentState === 'not-released') {
+      const box = document.createElement('div');
+      box.innerHTML = `
+        <div class="banner info">
+          <span class="ic">⏳</span>
+          <div>
+            <strong>${t('notReleased')}</strong><br>
+            <span style="font-size:14px">${t('notReleasedSub')}</span>
+          </div>
+        </div>`;
+      root.appendChild(box);
+      return;
+    }
+
+    if (currentState === 'error') {
+      root.appendChild(stateBox('⚠️', t('errTitle'), t('errSub')));
+      return;
+    }
+
+    if (currentState === 'released' && resultData) {
+      renderReleased(root, resultData);
+      return;
+    }
+  }
+
+  function stateBox(icon, title, sub) {
+    const div = document.createElement('div');
+    div.className = 'state-box';
+    div.innerHTML = `<div class="icon">${icon}</div><h2>${esc(title)}</h2><p>${esc(sub)}</p>`;
+    return div;
+  }
+
+  /* ── helpers for resolving answer ids to text ── */
+  function stemText(q) {
+    if (q && typeof q === 'object') return q[lang] || q.en || '';
+    return q == null ? '' : String(q);   // tolerate old flat-string shape
+  }
+
+  function resolveOptions(options) {
+    /* build a map: id -> text string (prefer current lang, fallback en) */
+    const map = {};
+    if (!Array.isArray(options)) return map;
+    options.forEach(function(opt) {
+      const txt = opt.text && (opt.text[lang] || opt.text['en'] || '');
+      map[opt.id] = txt || String(opt.id);
+    });
+    return map;
+  }
+
+  function resolveAnswer(type, answer, options) {
+    /* Returns an object: { html, isEmpty } */
+    if (answer === null || answer === undefined ||
+        (Array.isArray(answer) && answer.length === 0) ||
+        (typeof answer === 'string' && answer.trim() === '')) {
+      return { html: '<span class="q-detail-val empty">' + esc(t('notAnswered')) + '</span>', isEmpty: true };
+    }
+    const map = resolveOptions(options);
+
+    if (type === 'single') {
+      const txt = map[answer] || esc(String(answer));
+      return { html: '<span class="q-detail-val">' + esc(txt) + '</span>', isEmpty: false };
+    }
+    if (type === 'multi') {
+      const ids = Array.isArray(answer) ? answer : [answer];
+      const items = ids.map(function(id) { return '<li>' + esc(map[id] || String(id)) + '</li>'; });
+      return { html: '<div class="q-detail-val"><ul>' + items.join('') + '</ul></div>', isEmpty: false };
+    }
+    if (type === 'rank') {
+      const ids = Array.isArray(answer) ? answer : [answer];
+      const items = ids.map(function(id) { return '<li>' + esc(map[id] || String(id)) + '</li>'; });
+      return { html: '<div class="q-detail-val"><ol>' + items.join('') + '</ol></div>', isEmpty: false };
+    }
+    /* short */
+    return { html: '<span class="q-detail-val">' + esc(String(answer)) + '</span>', isEmpty: false };
+  }
+
+  function buildMarkedList(type, opts, yourAnswer, correct) {
+    const yourSet = new Set(Array.isArray(yourAnswer) ? yourAnswer : (yourAnswer==null?[]:[yourAnswer]));
+    const corrSet = new Set(Array.isArray(correct) ? correct : (correct==null?[]:[correct]));
+    const rows = (opts||[]).map(function(o){
+      const txt = (o.text && (o.text[lang]||o.text.en)) || String(o.id);
+      const isC = corrSet.has(o.id), isY = yourSet.has(o.id);
+      let cls = 'opt-row'; if (isC) cls+=' correct'; else if (isY) cls+=' wrong';
+      let badges = '';
+      if (isY) badges += '<span class="opt-badge yours'+(isC?' on-correct':'')+'">'+esc(t('badgeYours'))+'</span>';
+      if (isC) badges += '<span class="opt-badge correct">'+esc(t('badgeCorrect'))+'</span>';
+      return '<div class="'+cls+'"><span class="opt-text">'+esc(txt)+'</span>'+
+             (badges?'<span class="opt-badges">'+badges+'</span>':'')+'</div>';
+    });
+    return '<div class="opt-list">'+rows.join('')+'</div>';
+  }
+
+  function buildRankCols(opts, yourAnswer, correct) {
+    const map = resolveOptions(opts);
+    const your = Array.isArray(yourAnswer)?yourAnswer:[];
+    const corr = Array.isArray(correct)?correct:[];
+    const n = Math.max(your.length, corr.length);
+    let yourLis = '', corrLis = '';
+    for (let i=0;i<n;i++){
+      const yId=your[i], cId=corr[i], match = yId!=null && cId!=null && yId===cId;
+      if (yId!=null) yourLis += '<li class="'+(match?'match':'miss')+'">'+esc(map[yId]||String(yId))+'</li>';
+      if (cId!=null) corrLis += '<li class="'+(match?'match':'')+'">'+esc(map[cId]||String(cId))+'</li>';
+    }
+    if (!your.length) yourLis = '<li class="rank-empty" style="list-style:none">'+esc(t('notAnswered'))+'</li>';
+    return '<div class="rank-cols">'+
+      '<div class="rank-col"><div class="rank-col-h">'+esc(t('yourOrder'))+'</div><ol>'+yourLis+'</ol></div>'+
+      '<div class="rank-col"><div class="rank-col-h">'+esc(t('correctOrder'))+'</div><ol>'+corrLis+'</ol></div>'+
+    '</div>';
+  }
+
+  function buildItemEl(item) {
+    const el = document.createElement('div');
+    el.className = 'q-item';
+
+    /* tint by correctness */
+    const hasCorrect = item.correct !== null && item.correct !== undefined &&
+                       !(Array.isArray(item.correct) && item.correct.length === 0);
+    if (item.points !== null && item.points !== undefined) {
+      if (item.points === item.max) {
+        el.classList.add('correct');
+      } else if (item.points === 0 && hasCorrect) {
+        el.classList.add('incorrect');
+      }
+    }
+
+    /* points chip */
+    let chipClass = 'neutral';
+    let chipText;
+    if (item.points === null || item.points === undefined) {
+      chipClass = 'pending';
+      chipText = '— / ' + item.max + ' · ' + t('pending');
+    } else if (item.points === item.max) {
+      chipClass = 'correct';
+      chipText = item.points + ' / ' + item.max;
+    } else if (item.points === 0 && hasCorrect) {
+      chipClass = 'incorrect';
+      chipText = item.points + ' / ' + item.max;
+    } else {
+      chipClass = 'neutral';
+      chipText = item.points + ' / ' + item.max;
+    }
+
+    /* header: seq + stem + chip */
+    const header = document.createElement('div');
+    header.className = 'q-item-header';
+    header.innerHTML =
+      '<span class="q-seq">Q' + esc(String(item.seq)) + '</span>' +
+      '<span class="q-stem">' + esc(stemText(item.question)) + '</span>' +
+      '<span class="pts-chip ' + chipClass + '">' + esc(chipText) + '</span>';
+    el.appendChild(header);
+
+    /* detail rows */
+    const detail = document.createElement('div');
+    detail.className = 'q-detail';
+    if (item.type === 'short') {
+      // short: typed answer + graded manually
+      const your = resolveAnswer(item.type, item.your_answer, item.options);
+      detail.innerHTML =
+        '<div class="q-detail-row"><span class="q-detail-label">'+esc(t('yourAnswer'))+':</span>'+your.html+'</div>'+
+        '<div class="q-detail-row"><span class="q-detail-label">'+esc(t('correctAnswer'))+':</span>'+
+          '<span class="manual-grade">'+esc(t('gradedManually'))+'</span></div>';
+    } else if (item.type === 'rank') {
+      detail.innerHTML = buildRankCols(item.options, item.your_answer, item.correct);
+    } else {
+      // single / multi → marked full list
+      detail.innerHTML = buildMarkedList(item.type, item.options, item.your_answer, item.correct);
+    }
+    el.appendChild(detail);
+    return el;
+  }
+
+  function renderReleased(root, data) {
+    const frag = document.createDocumentFragment();
+
+    /* score card */
+    const scoreCard = document.createElement('div');
+    scoreCard.className = 'score-card';
+    const scoreItems = Array.isArray(data.items) ? data.items : [];
+    const maxTotal = scoreItems.reduce(function(s, it){ return s + (Number(it.max) || 0); }, 0);
+    const gained = Number(data.total_points) || 0;
+    const numHtml = maxTotal > 0
+      ? gained + ' <span class="score-max">/ ' + maxTotal + '</span>'
+      : String(gained);
+    const pct = maxTotal > 0 ? Math.round(gained / maxTotal * 100) + '%' : '';
+    const subHtml = pct ? pct + ' · ' + t('totalSub') : t('totalSub');
+    scoreCard.innerHTML =
+      '<div class="greeting">' + t('greeting') + ' <strong>' + esc(data.name) + '</strong></div>' +
+      '<div class="score-label">' + t('totalLabel') + '</div>' +
+      '<div class="score-number num">' + numHtml + '</div>' +
+      '<div class="score-sub">' + subHtml + '</div>';
+    frag.appendChild(scoreCard);
+
+    /* legend */
+    const legend = document.createElement('div');
+    legend.className = 'legend';
+    legend.innerHTML =
+      '<span class="lg"><span class="sw correct"></span>'+esc(t('legendCorrect'))+'</span>'+
+      '<span class="lg"><span class="sw wrong"></span>'+esc(t('legendWrong'))+'</span>';
+    frag.appendChild(legend);
+
+    /* per-question items */
+    const items = Array.isArray(data.items) ? data.items : [];
+    if (items.length > 0) {
+      const section = document.createElement('div');
+      section.className = 'card';
+      section.style.marginBottom = '16px';
+
+      const titleEl = document.createElement('div');
+      titleEl.className = 'section-title';
+      titleEl.textContent = t('breakdown');
+      section.appendChild(titleEl);
+
+      const list = document.createElement('div');
+      list.className = 'q-list';
+      items.forEach(function(item) {
+        list.appendChild(buildItemEl(item));
+      });
+      section.appendChild(list);
+      frag.appendChild(section);
+    }
+
+    /* facilitator notes */
+    if (data.notes && String(data.notes).trim()) {
+      const notesBox = document.createElement('div');
+      notesBox.className = 'notes-box';
+      notesBox.innerHTML =
+        '<div class="notes-label">' + t('notesLabel') + '</div>' +
+        '<p>' + esc(String(data.notes).trim()) + '</p>';
+      frag.appendChild(notesBox);
+    }
+
+    root.appendChild(frag);
+  }
+
+  /* ── html escape ── */
+  function esc(s) {
+    return String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  /* ── bootstrap ── */
+  async function init() {
+    renderHero();
+    currentState = 'loading';
+    renderContent();
+
+    /* 1. parse token */
+    const params = new URLSearchParams(location.search);
+    const token = params.get('token');
+    if (!token) {
+      currentState = 'no-token';
+      renderContent();
+      return;
+    }
+
+    /* 2. check supabase client */
+    const client = window.sbClient ? window.sbClient() : null;
+    if (!client) {
+      currentState = 'no-supabase';
+      renderContent();
+      return;
+    }
+
+    /* 3. call RPC */
+    try {
+      const { data, error } = await client.rpc('get_result', { p_token: token });
+      if (error) throw error;
+
+      if (!data || !data.found) {
+        currentState = 'not-found';
+        renderContent();
+        return;
+      }
+
+      if (!data.released) {
+        currentState = 'not-released';
+        renderContent();
+        return;
+      }
+
+      /* released */
+      resultData = data;
+      currentState = 'released';
+      renderContent();
+
+    } catch (err) {
+      console.error('[result] RPC error:', err);
+      currentState = 'error';
+      renderContent();
+    }
+  }
+
+  init();
+  </script>
+</body>
+</html>

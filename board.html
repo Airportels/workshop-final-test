@@ -1,0 +1,297 @@
+<!doctype html>
+<!--
+  User-to-Builder — RESULTS BOARD
+  ─────────────────────────────
+  Public leaderboard fed by the get_board() RPC.
+  Anonymous by default (rank only); shows real names when the facilitator enables show_names.
+  Bilingual EN/TH. Read-only.
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Results Board · User-to-Builder — Airportels</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#f5f6fa; --surface:#ffffff; --fg:#0f172a; --muted:#64748b; --border:#e2e8f0;
+      --indigo:#4f46e5; --indigo-600:#4338ca; --indigo-soft:#eef2ff;
+      --emerald:#059669; --emerald-soft:#ecfdf5;
+      --amber:#d97706; --amber-soft:#fffbeb;
+      --rose:#e11d48; --rose-soft:#fff1f2;
+      --ink-hero:#1e1b4b;
+      --radius:14px; --radius-sm:10px;
+      --font:'Inter','Sarabun',-apple-system,BlinkMacSystemFont,system-ui,sans-serif;
+      --mono:'SF Mono',ui-monospace,'JetBrains Mono',Menlo,monospace;
+    }
+    *,*::before,*::after{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--font);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+    body[data-lang="th"]{font-family:'Sarabun','Inter',sans-serif;line-height:1.7}
+    button{font:inherit;cursor:pointer;color:inherit;border:0;background:none}
+    h1,h2,h3{margin:0;letter-spacing:-0.02em}
+    .num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+    .wrap{max-width:760px;margin-inline:auto;padding-inline:20px}
+
+    /* header */
+    header.top{position:sticky;top:0;z-index:40;background:rgba(255,255,255,.9);backdrop-filter:blur(10px);border-bottom:1px solid var(--border)}
+    .top-inner{display:flex;align-items:center;gap:12px;padding:12px 20px;max-width:940px;margin-inline:auto}
+    .brand{font-weight:700;font-size:15px}
+    .brand span{color:var(--muted);font-weight:500}
+    .spacer{flex:1}
+    .langpill{display:flex;background:#fff;border:1px solid var(--border);border-radius:999px;padding:3px}
+    .langpill button{padding:5px 12px;border-radius:999px;font-size:12px;font-weight:600;color:var(--muted);transition:.15s}
+    .langpill button.on{background:var(--fg);color:#fff}
+
+    /* hero */
+    .hero{background:linear-gradient(135deg,var(--ink-hero),#0f172a);color:#fff;position:relative;overflow:hidden}
+    .hero::after{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px);background-size:34px 34px;mask-image:radial-gradient(circle at 30% 20%,#000,transparent 75%)}
+    .hero-inner{position:relative;padding:56px 20px 60px;max-width:940px;margin-inline:auto}
+    .hero .badge{display:inline-flex;align-items:center;gap:8px;padding:5px 12px;border-radius:999px;font-size:12px;font-weight:600;
+      background:rgba(129,140,248,.16);color:#c7d2fe;border:1px solid rgba(129,140,248,.3);backdrop-filter:blur(4px)}
+    .hero h1{font-size:clamp(28px,5vw,44px);line-height:1.1;font-weight:800;margin-top:18px}
+    .hero h1 .accent{background:linear-gradient(90deg,#818cf8,#67e8f9);-webkit-background-clip:text;background-clip:text;color:transparent}
+    .hero p{margin-top:12px;max-width:56ch;color:#cbd5e1;font-size:16px}
+
+    /* cards */
+    .main-content{padding:32px 0 56px}
+
+    /* neutral state messages */
+    .state-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:32px 28px;text-align:center;max-width:500px;margin:0 auto}
+    .state-box .icon{font-size:36px;margin-bottom:14px}
+    .state-box h2{font-size:20px;font-weight:700;margin-bottom:8px}
+    .state-box p{color:var(--muted);font-size:15px;margin:0}
+
+    /* spinner */
+    .spin-wrap{display:flex;justify-content:center;padding:40px 0}
+    .spin{width:30px;height:30px;border-radius:50%;border:3px solid var(--indigo-soft);border-top-color:var(--indigo);animation:sp .7s linear infinite}
+    @keyframes sp{to{transform:rotate(360deg)}}
+
+    footer{margin-top:40px;border-top:1px solid var(--border);background:#fff}
+    footer .inner{max-width:940px;margin-inline:auto;padding:22px 20px;display:flex;justify-content:space-between;color:var(--muted);font-size:13px;flex-wrap:wrap;gap:8px}
+
+    [hidden]{display:none!important}
+    @media(max-width:600px){.hero-inner{padding:40px 20px}}
+
+    /* board modules */
+    .banner-private{background:#eef2ff;border:1px solid #e0e2fb;color:#3730a3;font-size:13px;font-weight:600;padding:10px 14px;border-radius:var(--radius);margin-bottom:16px}
+    .stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+    .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
+    .stat-card .stat-label{font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.05em}
+    .stat-card .stat-val{font-family:var(--mono);font-size:26px;font-weight:800;color:var(--fg);margin-top:4px}
+    .stat-card .stat-sub{font-size:12px;color:var(--muted);margin-top:2px}
+    .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:16px}
+    .section-title{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
+    .hist{display:flex;align-items:stretch;gap:6px;height:140px}
+    .hist-bar{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
+    .hist-bar .bar-wrap{flex:1;width:100%;display:flex;align-items:flex-end}
+    .hist-bar .bar{width:100%;background:var(--indigo);border-radius:5px 5px 0 0;min-height:2px}
+    .hist-bar .bar-count{font-family:var(--mono);font-size:11px;color:var(--muted)}
+    .hist-bar .bar-lab{font-size:10px;color:var(--muted);text-align:center;line-height:1.2}
+    .rank-list{display:flex;flex-direction:column;gap:8px}
+    .rank-row{display:flex;align-items:center;gap:12px;padding:11px 14px;border:1px solid var(--border);border-radius:var(--radius-sm);background:#f8fafc}
+    .rank-row.top1{border-color:#fbbf24;background:#fffbeb}
+    .rank-row.top2{border-color:#cbd5e1;background:#f8fafc}
+    .rank-row.top3{border-color:#d8b4a0;background:#fdf6f0}
+    .rank-badge{font-family:var(--mono);font-weight:800;font-size:16px;min-width:40px;color:var(--indigo)}
+    .rank-name{flex:1;font-weight:600;color:var(--fg)}
+    .rank-score{font-family:var(--mono);font-weight:700;color:var(--fg)}
+    .rank-pct{font-family:var(--mono);font-size:12px;color:var(--muted);margin-left:8px}
+    @media(max-width:600px){.stat-row{grid-template-columns:repeat(2,1fr)}}
+  </style>
+</head>
+<body data-lang="en">
+
+  <header class="top">
+    <div class="top-inner">
+      <div class="brand">Airportels <span>· User-to-Builder</span></div>
+      <div class="spacer"></div>
+      <div class="langpill" role="tablist" aria-label="Language">
+        <button id="lang-en" class="on" aria-pressed="true">EN</button>
+        <button id="lang-th" aria-pressed="false">TH</button>
+      </div>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="badge" id="hero-badge">Results Board</div>
+      <h1 id="hero-title"><span class="accent">Final Test</span> Results</h1>
+      <p id="hero-sub">User-to-Builder Workshop · Airportels</p>
+    </div>
+  </section>
+
+  <main class="wrap main-content">
+    <div id="app-root"></div>
+  </main>
+
+  <footer>
+    <div class="inner">
+      <span>Airportels · User-to-Builder · Final Test</span>
+      <span>Board</span>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script>
+  /* ── i18n ── */
+  const T = {
+    heroBadge:  { en: 'Results Board', th: 'กระดานผลคะแนน' },
+    heroTitle:  { en: 'Final Test Results', th: 'ผลแบบทดสอบสุดท้าย' },
+    heroSub:    { en: 'User-to-Builder Workshop · Airportels', th: 'เวิร์กช็อป User-to-Builder · Airportels' },
+    statParticipants: { en: 'Participants', th: 'ผู้เข้าสอบ' },
+    statAverage: { en: 'Average', th: 'คะแนนเฉลี่ย' },
+    statTop:     { en: 'Top score', th: 'คะแนนสูงสุด' },
+    statMedian:  { en: 'Median', th: 'มัธยฐาน' },
+    distTitle:   { en: 'Score distribution', th: 'การกระจายคะแนน' },
+    rankingTitle:{ en: 'Ranking', th: 'อันดับ' },
+    privateView: { en: 'Private view — names revealed for this link.', th: 'มุมมองส่วนตัว — เปิดเผยชื่อสำหรับลิงก์นี้' },
+    empty:       { en: 'No results published yet.', th: 'ยังไม่มีผลที่เผยแพร่' },
+    emptySub:    { en: 'Check back once the facilitator publishes the board.', th: 'กลับมาตรวจสอบเมื่อผู้ดูแลเผยแพร่กระดานผล' },
+    noSupabase:  { en: "Board isn't available in this preview.", th: 'ยังไม่สามารถแสดงกระดานผลในโหมดพรีวิวได้' },
+    loading:     { en: 'Loading the board…', th: 'กำลังโหลดกระดานผล…' },
+    pts:         { en: 'pts', th: 'คะแนน' }
+  };
+
+  /* ── language ── */
+  let lang = 'en';
+  function t(key) { return (T[key] && T[key][lang]) || T[key]?.en || key; }
+
+  function setLang(l) {
+    lang = l;
+    document.body.setAttribute('data-lang', l);
+    document.getElementById('lang-en').classList.toggle('on', l === 'en');
+    document.getElementById('lang-en').setAttribute('aria-pressed', String(l === 'en'));
+    document.getElementById('lang-th').classList.toggle('on', l === 'th');
+    document.getElementById('lang-th').setAttribute('aria-pressed', String(l === 'th'));
+    renderHero();
+    renderBoard();
+  }
+
+  document.getElementById('lang-en').addEventListener('click', () => setLang('en'));
+  document.getElementById('lang-th').addEventListener('click', () => setLang('th'));
+
+  /* ── hero ── */
+  function renderHero() {
+    document.getElementById('hero-badge').textContent = t('heroBadge');
+    document.getElementById('hero-title').innerHTML =
+      '<span class="accent">' + (lang === 'th' ? 'แบบทดสอบสุดท้าย' : 'Final Test') + '</span> ' +
+      (lang === 'th' ? 'ผลคะแนน' : 'Results');
+    document.getElementById('hero-sub').textContent = t('heroSub');
+    document.title = t('heroTitle') + ' · User-to-Builder — Airportels';
+  }
+
+  /* ── html escape ── */
+  function esc(s) {
+    return String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  /* ── stats + histogram ── */
+  function computeStats(entries, maxTotal){
+    const pts = entries.map(e => Number(e.points) || 0);
+    const n = pts.length;
+    if (!n) return { n:0, avg:0, top:0, median:0 };
+    const sum = pts.reduce((s,x)=>s+x,0);
+    const sorted = pts.slice().sort((a,b)=>a-b);
+    const mid = Math.floor(n/2);
+    const median = n % 2 ? sorted[mid] : (sorted[mid-1]+sorted[mid])/2;
+    return { n, avg: sum/n, top: Math.max.apply(null,pts), median };
+  }
+  function buildHistogram(entries, maxTotal){
+    const bins = 10; // 10 equal bands of maxTotal
+    const counts = new Array(bins).fill(0);
+    const size = maxTotal > 0 ? maxTotal / bins : 1;
+    entries.forEach(function(e){
+      let idx = size > 0 ? Math.floor((Number(e.points)||0) / size) : 0;
+      if (idx >= bins) idx = bins - 1; if (idx < 0) idx = 0;
+      counts[idx]++;
+    });
+    const maxCount = Math.max(1, Math.max.apply(null, counts));
+    let bars = '';
+    for (let i=0;i<bins;i++){
+      const lo = Math.round(i*size), hi = Math.round((i+1)*size);
+      const h = Math.round(counts[i] / maxCount * 100);
+      bars += '<div class="hist-bar"><span class="bar-count">'+counts[i]+'</span>'+
+              '<div class="bar-wrap"><div class="bar" style="height:'+h+'%"></div></div>'+
+              '<span class="bar-lab">'+lo+'–'+hi+'</span></div>';
+    }
+    return '<div class="hist">'+bars+'</div>';
+  }
+
+  /* ── app state ── */
+  let boardState = 'loading';
+  let boardData = null;
+
+  /* ── render ── */
+  function renderBoard(){
+    const root = document.getElementById('app-root'); root.innerHTML = '';
+    if (boardState === 'loading'){ root.innerHTML = '<div class="spin-wrap"><div class="spin" role="status" aria-label="Loading"></div></div>'; return; }
+    if (boardState === 'no-supabase'){ root.appendChild(stateBox('⚙️', t('noSupabase'), '')); return; }
+    const entries = (boardData && Array.isArray(boardData.entries)) ? boardData.entries : [];
+    if (!entries.length){ root.appendChild(stateBox('🏁', t('empty'), t('emptySub'))); return; }
+    const maxTotal = Number(boardData.max_total) || 0;
+    const st = computeStats(entries, maxTotal);
+    const frag = document.createDocumentFragment();
+    // private-view banner (names revealed via ?reveal passcode while board is anonymous)
+    if (boardData && boardData.revealed && !boardData.show_names){
+      const pv = document.createElement('div'); pv.className = 'banner-private';
+      pv.textContent = t('privateView'); frag.appendChild(pv);
+    }
+    // stats
+    const pctAvg = maxTotal>0 ? ' · '+Math.round(st.avg/maxTotal*100)+'%' : '';
+    const statRow = document.createElement('div'); statRow.className = 'stat-row';
+    statRow.innerHTML =
+      statCard(t('statParticipants'), st.n, '') +
+      statCard(t('statAverage'), (Math.round(st.avg*10)/10), maxTotal? '/ '+maxTotal+pctAvg : '') +
+      statCard(t('statTop'), st.top, maxTotal? '/ '+maxTotal : '') +
+      statCard(t('statMedian'), (Math.round(st.median*10)/10), maxTotal? '/ '+maxTotal : '');
+    frag.appendChild(statRow);
+    // histogram
+    const hcard = document.createElement('div'); hcard.className='card';
+    hcard.innerHTML = '<div class="section-title">'+t('distTitle')+'</div>'+buildHistogram(entries, maxTotal);
+    frag.appendChild(hcard);
+    // ranking
+    const rcard = document.createElement('div'); rcard.className='card';
+    let rows = '';
+    entries.forEach(function(e){
+      const topCls = e.rank===1?' top1':(e.rank===2?' top2':(e.rank===3?' top3':''));
+      const label = e.name ? esc(e.name) : '—';
+      const pct = maxTotal>0 ? '<span class="rank-pct">'+Math.round((Number(e.points)||0)/maxTotal*100)+'%</span>' : '';
+      rows += '<div class="rank-row'+topCls+'"><span class="rank-badge">#'+e.rank+'</span>'+
+              '<span class="rank-name">'+label+'</span>'+
+              '<span class="rank-score">'+(Number(e.points)||0)+(maxTotal?' / '+maxTotal:'')+'</span>'+pct+'</div>';
+    });
+    rcard.innerHTML = '<div class="section-title">'+t('rankingTitle')+'</div><div class="rank-list">'+rows+'</div>';
+    frag.appendChild(rcard);
+    root.appendChild(frag);
+  }
+  function statCard(label, val, sub){
+    return '<div class="stat-card"><div class="stat-label">'+esc(String(label))+'</div>'+
+           '<div class="stat-val num">'+esc(String(val))+'</div>'+
+           (sub? '<div class="stat-sub">'+esc(String(sub))+'</div>':'')+'</div>';
+  }
+  function stateBox(icon,title,sub){ const d=document.createElement('div'); d.className='state-box';
+    d.innerHTML='<div class="icon">'+icon+'</div><h2>'+esc(title)+'</h2>'+(sub?'<p>'+esc(sub)+'</p>':''); return d; }
+
+  /* ── bootstrap ── */
+  async function init(){
+    renderHero(); boardState='loading'; renderBoard();
+    const client = window.sbClient ? window.sbClient() : null;
+    if (!client){ boardState='no-supabase'; renderBoard(); return; }
+    try {
+      const reveal = new URLSearchParams(location.search).get('reveal');
+      const { data, error } = await client.rpc('get_board', { p_reveal: reveal });
+      if (error) throw error;
+      boardData = data; boardState='ready'; renderBoard();
+    } catch(err){ console.error('[board]', err); boardState='no-supabase'; renderBoard(); }
+  }
+  init();
+  </script>
+</body>
+</html>

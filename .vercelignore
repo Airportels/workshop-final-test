@@ -1,0 +1,8 @@
+answer-key.json
+.superpowers
+docs
+supabase
+*.md
+critique.json
+.gitignore
+.vercelignore

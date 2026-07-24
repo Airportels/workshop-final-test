@@ -1,0 +1,2577 @@
+{
+  "meta": {
+    "title": {
+      "en": "Final Test",
+      "th": "แบบทดสอบสุดท้าย"
+    },
+    "durationMinutes": 60
+  },
+  "forms": [
+    "A",
+    "B",
+    "C"
+  ],
+  "parts": [
+    {
+      "id": "deploy",
+      "emoji": "🚀",
+      "title": {
+        "en": "Web App & Deployment",
+        "th": "เว็บแอปและการ Deploy"
+      },
+      "questions": [
+        {
+          "id": "A1",
+          "type": "single",
+          "points": 1,
+          "variants": {
+            "A": {
+              "q": {
+                "en": "Which best describes what happens when you \"deploy\" a Vercel app?",
+                "th": "ข้อใดอธิบายได้ดีที่สุดว่าเกิดอะไรขึ้นเมื่อคุณ \"deploy\" แอปบน Vercel?"
+              },
+              "options": [
+                {
+                  "id": "a",
+                  "text": {
+                    "en": "Your computer becomes a server that hosts the app",
+                    "th": "เครื่องคุณกลายเป็น server ที่ host แอป"
+                  }
+                },
+                {
+                  "id": "b",
+                  "text": {
+                    "en": "Your code is copied to Vercel's servers and made accessible at a public URL",
+                    "th": "code ถูก copy ไป server ของ Vercel แล้วเปิดให้เข้าถึงผ่าน URL สาธารณะ"
+                  }
+                },
+                {
+                  "id": "c",
+                  "text": {
+                    "en": "The app is sent as an email attachment",
+                    "th": "แอปถูกส่งเป็น attachment ทางอีเมล"
+                  }
+                },
+                {
+                  "id": "d",
+                  "text": {
+                    "en": "A new copy of the app is installed on every user's computer",
+                    "th": "แอปถูก install บนเครื่องของ user ทุกคน"
+                  }
+                }
+              ]
+            },
+            "B": {
+              "q": {
+                "en": "A teammate just clicked \"Deploy\" on Netlify. Which statement best explains what that action does?",
+                "th": "เพื่อนคุณเพิ่งกด \"Deploy\" บน Netlify ข้อใดอธิบายได้ดีที่สุดว่าการกดนั้นทำอะไร?"
+              },
+              "options": [
+                {
+                  "id": "d",
+                  "text": {
+                    "en": "A separate copy of the app is downloaded and installed on every visitor's device",
+                    "th": "แอปถูกดาวน์โหลดและติดตั้งบนอุปกรณ์ของผู้เข้าชมทุกคน"
+                  }
+                },
+                {
+                  "id": "b",
+                  "text": {
+                    "en": "The code is uploaded to Netlify's servers and published at a public web address",
+                    "th": "code ถูกอัปโหลดไปยัง server ของ Netlify แล้วเผยแพร่ผ่านที่อยู่เว็บสาธารณะ"
+                  }
+                },
+                {
+                  "id": "a",
+                  "text": {
+                    "en": "Your laptop starts acting as the web server for that site",
+                    "th": "แล็ปท็อปของคุณเริ่มทำงานเป็น web server ของเว็บนั้น"
+                  }
+                },
+                {
+                  "id": "c",
+                  "text": {
+                    "en": "The app is zipped and shared via a messaging app",
+                    "th": "แอปถูกบีบอัดและแชร์ผ่านแอปส่งข้อความ"
+                  }
+                }
+              ]
+            },
+            "C": {
+              "q": {
+                "en": "You push your project to GitHub and trigger an auto-deploy on Railway. What actually happens to your code?",
+                "th": "คุณ push โปรเจกต์ไป GitHub แล้วเกิด auto-deploy บน Railway ขึ้น จริง ๆ แล้วเกิดอะไรขึ้นกับ code ของคุณ?"
+              },
+              "options": [
+                {
+                  "id": "c",
+                  "text": {
+                    "en": "It is attached to an automated email sent to subscribers",
+                    "th": "code ถูกแนบไปในอีเมลอัตโนมัติที่ส่งให้ผู้ติดตาม"
+                  }
+                },
+                {
+                  "id": "a",
+                  "text": {
+                    "en": "Your own machine serves the app to anyone who visits the link",
+                    "th": "เครื่องของคุณเองให้บริการแอปแก่ผู้ที่เข้าเยี่ยมชมลิงก์"
+                  }
+                },
+                {
+                  "id": "d",
+                  "text": {
+                    "en": "The app installs itself on every user's phone automatically",
+                    "th": "แอปติดตั้งตัวเองบนโทรศัพท์ของ user ทุกคนโดยอัตโนมัติ"
+                  }
+                },
+                {
+                  "id": "b",
+                  "text": {
+                    "en": "Railway pulls the code onto its servers and makes it reachable at a live URL",
+                    "th": "Railway ดึง code ไปไว้บน server ของตัวเองแล้วเปิดให้เข้าถึงผ่าน URL จริง"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": "A4",
+          "type": "single",
+          "points": 1,
+          "variants": {
+            "A": {
+              "q": {
+                "en": "Why does the workshop ask you to commit and push to GitHub regularly?",
+                "th": "ทำไมเวิร์กชอปให้คุณ commit + push ขึ้น GitHub บ่อย ๆ?"
+              },
+              "options": [
+                {
+                  "id": "a",
+                  "text": {
+                    "en": "So you can show off your code to friends",
+                    "th": "เพื่อโชว์ code ให้เพื่อน"
+                  }
+                },
+                {
+                  "id": "b",
+                  "text": {
+                    "en": "So you have a save history and can recover if something breaks",
+                    "th": "มีประวัติ save ไว้ ย้อนกลับได้ถ้าพัง"
+                  }
+                },
+                {
+                  "id": "c",
+                  "text": {
+                    "en": "Because GitHub gives you free hosting",
+                    "th": "GitHub ให้ hosting ฟรี"
+                  }
+                },
+                {
+                  "id": "d",
+                  "text": {
+                    "en": "Only because the workshop requires it",
+                    "th": "เพราะเวิร์กชอปกำหนดเท่านั้น"
+                  }
+                }
+              ]
+            },
+            "B": {
+              "q": {
+                "en": "A participant asks: \"Why should I bother committing every small change instead of one big commit at the end?\" What is the best reason?",
+                "th": "ผู้เข้าร่วมถามว่า \"ทำไมต้อง commit ทุกการเปลี่ยนแปลงเล็ก ๆ แทนที่จะ commit ครั้งเดียวตอนท้าย?\" เหตุผลที่ดีที่สุดคืออะไร?"
+              },
+              "options": [
+                {
+                  "id": "c",
+                  "text": {
+                    "en": "Because committing triggers free automatic deployment",
+                    "th": "เพราะการ commit กระตุ้นการ deploy ฟรีโดยอัตโนมัติ"
+                  }
+                },
+                {
+                  "id": "d",
+                  "text": {
+                    "en": "Because the instructor checks commit frequency as a grade",
+                    "th": "เพราะผู้สอนตรวจความถี่ของ commit เพื่อให้คะแนน"
+                  }
+                },
+                {
+                  "id": "b",
+                  "text": {
+                    "en": "Each commit is a restore point — if something breaks you can roll back to a working state",
+                    "th": "แต่ละ commit คือจุดคืนค่า ถ้าพังสามารถย้อนกลับสู่สถานะที่ใช้งานได้"
+                  }
+                },
+                {
+                  "id": "a",
+                  "text": {
+                    "en": "So teammates can see how impressive the code looks",
+                    "th": "เพื่อให้เพื่อนร่วมทีมเห็นว่า code ดูน่าประทับใจ"
+                  }
+                }
+              ]
+            },
+            "C": {
+              "q": {
+                "en": "After adding a new feature, your app breaks. Which habit would have made it easiest to fix this situation?",
+                "th": "หลังเพิ่ม feature ใหม่ แอปของคุณพัง นิสัยการทำงานใดจะทำให้แก้ปัญหานี้ได้ง่ายที่สุด?"
+              },
+              "options": [
+                {
+                  "id": "a",
+                  "text": {
+                    "en": "Sharing your code publicly so others can help debug",
+                    "th": "แชร์ code ให้สาธารณะเพื่อให้คนอื่นช่วย debug"
+                  }
+                },
+                {
+                  "id": "d",
+                  "text": {
+                    "en": "Keeping all changes in one large commit to reduce noise",
+                    "th": "รวมการเปลี่ยนแปลงทั้งหมดไว้ใน commit เดียวเพื่อลดความยุ่งเหยิง"
+                  }
+                },
+                {
+                  "id": "c",
+                  "text": {
+                    "en": "Using a free hosting plan on GitHub Pages",
+                    "th": "ใช้แผน hosting ฟรีบน GitHub Pages"
+                  }
+                },
+                {
+                  "id": "b",
+                  "text": {
+                    "en": "Committing small, frequent changes so you can pinpoint and revert the broken step",
+                    "th": "commit การเปลี่ยนแปลงเล็ก ๆ บ่อย ๆ เพื่อให้ระบุและย้อนกลับขั้นตอนที่พังได้"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": "deploy-multi1",
+          "type": "multi",
+          "points": 1,
+          "variants": {
+            "A": {
+              "q": {
+                "en": "Which of the following are TRUE about deploying to a cloud platform like Vercel? (pick all that apply)",
+                "th": "ข้อใดต่อไปนี้เป็นความจริงเกี่ยวกับการ deploy บน cloud platform อย่าง Vercel? (เลือกทั้งหมดที่ใช่)"
+              },
+              "options": [
+                {
+                  "id": "a",
+                  "text": {
+                    "en": "The app becomes accessible to anyone with the URL",
+                    "th": "แอปสามารถเข้าถึงได้โดยทุกคนที่มี URL"
+                  }
+                },
+                {
+                  "id": "b",
+                  "text": {
+                    "en": "Your laptop must stay on for the app to work",
+                    "th": "แล็ปท็อปของคุณต้องเปิดอยู่ตลอดเวลาเพื่อให้แอปทำงานได้"
+                  }
+                },
+                {
+                  "id": "c",
+                  "text": {
+                    "en": "Each deployment creates a snapshot you can roll back to",
+                    "th": "การ deploy แต่ละครั้งสร้าง snapshot ที่สามารถย้อนกลับได้"
+                  }
+                },
+                {
+                  "id": "d",
+                  "text": {
+                    "en": "The platform runs the code on its own servers, not yours",
+                    "th": "platform รัน code บน server ของตัวเอง ไม่ใช่ของคุณ"
+                  }
+                },
+                {
+                  "id": "e",
+                  "text": {
+                    "en": "You must manually copy files via USB to the platform's data centre",
+                    "th": "คุณต้องคัดลอกไฟล์ด้วยตนเองผ่าน USB ไปยังศูนย์ข้อมูลของ platform"
+                  }
+                }
+              ]
+            },
+            "B": {
+              "q": {
+                "en": "Which statements about cloud deployment are correct? (pick all that apply)",
+                "th": "ข้อความใดเกี่ยวกับ cloud deployment ถูกต้อง? (เลือกทั้งหมดที่ใช่)"
+              },
+              "options": [
+                {
+                  "id": "b",
+                  "text": {
+                    "en": "The deployed app continues running even when you close your computer",
+                    "th": "แอปที่ deploy แล้วยังคงทำงานต่อแม้คุณปิดคอมพิวเตอร์"
+                  }
+                },
+                {
+                  "id": "e",
+                  "text": {
+                    "en": "Files must be physically mailed to the hosting company on a USB drive",
+                    "th": "ไฟล์ต้องส่งทางไปรษณีย์ไปยังบริษัท hosting บน USB drive"
+                  }
+                },
+                {
+                  "id": "a",
+                  "text": {
+                    "en": "Anyone with the public URL can open the app in a browser",
+                    "th": "ทุกคนที่มี URL สาธารณะสามารถเปิดแอปในเบราว์เซอร์ได้"
+                  }
+                },
+                {
+                  "id": "c",
+                  "text": {
+                    "en": "Previous deploys are saved and can be restored if needed",
+                    "th": "การ deploy ก่อนหน้านี้ถูกบันทึกไว้และสามารถกู้คืนได้หากจำเป็น"
+                  }
+                },
+                {
+                  "id": "d",
+                  "text": {
+                    "en": "The hosting platform provides the compute power, not your machine",
+                    "th": "platform hosting ให้พลังการประมวลผล ไม่ใช่เครื่องของคุณ"
+                  }
+                }
+              ]
+            },
+            "C": {
+              "q": {
+                "en": "Select every correct statement about what cloud deployment means in practice. (pick all that apply)",
+                "th": "เลือกทุกข้อความที่ถูกต้องเกี่ยวกับความหมายของ cloud deployment ในทางปฏิบัติ (เลือกทั้งหมดที่ใช่)"
+              },
+              "options": [
+                {
+                  "id": "d",
+                  "text": {
+                    "en": "The cloud provider's servers handle incoming requests, freeing your device",
+                    "th": "server ของผู้ให้บริการ cloud จัดการคำขอที่เข้ามา ปลดปล่อยอุปกรณ์ของคุณ"
+                  }
+                },
+                {
+                  "id": "e",
+                  "text": {
+                    "en": "Deploying requires shipping a physical hard drive to the data centre",
+                    "th": "การ deploy ต้องส่ง hard drive จริงไปยังศูนย์ข้อมูล"
+                  }
+                },
+                {
+                  "id": "a",
+                  "text": {
+                    "en": "The live URL is reachable by anyone without installing anything",
+                    "th": "URL จริงสามารถเข้าถึงได้โดยทุกคนโดยไม่ต้องติดตั้งอะไร"
+                  }
+                },
+                {
+                  "id": "c",
+                  "text": {
+                    "en": "Deployment history lets you revert to a working version",
+                    "th": "ประวัติการ deploy ช่วยให้คุณย้อนกลับไปยังเวอร์ชันที่ทำงานได้"
+                  }
+                },
+                {
+                  "id": "b",
+                  "text": {
+                    "en": "Your laptop can be shut down; the app stays live",
+                    "th": "แล็ปท็อปของคุณสามารถปิดได้ แอปยังคง live อยู่"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": "deploy-short1",
+          "type": "short",
+          "points": 3,
+          "variants": {
+            "A": {
+              "q": {
+                "en": "Describe two things you would check immediately after deploying a new version of your app to Vercel to confirm it is working correctly.",
+                "th": "อธิบายสิ่งที่คุณจะตรวจสอบทันทีสองอย่างหลังจาก deploy เวอร์ชันใหม่ของแอปบน Vercel เพื่อยืนยันว่าทำงานถูกต้อง"
+              },
+              "rows": 3
+            },
+            "B": {
+              "q": {
+                "en": "Your team just deployed an update to Netlify. List two specific checks you would do right away to make sure the live site is behaving as expected.",
+                "th": "ทีมของคุณเพิ่งปล่อยอัปเดตไปที่ Netlify ระบุการตรวจสอบเฉพาะสองอย่างที่คุณจะทำทันทีเพื่อให้แน่ใจว่าเว็บ live ทำงานตามที่คาดไว้"
+              },
+              "rows": 3
+            },
+            "C": {
+              "q": {
+                "en": "After pushing to Railway and seeing a successful build, what are two things you would verify before telling colleagues the new version is ready?",
+                "th": "หลังจาก push ไปยัง Railway และเห็นว่า build สำเร็จ มีสองสิ่งที่คุณจะตรวจสอบก่อนบอกเพื่อนร่วมงานว่าเวอร์ชันใหม่พร้อมแล้ว คืออะไร?"
+              },
+              "rows": 3
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "data",
+      "emoji": "🗄️",
+      "title": {
+        "en": "Storage & Data",
+        "th": "การเก็บข้อมูล"
+      },
+      "questions": [
+        {
+          "id": "A2",
+          "type": "short",
+          "points": 3,
+          "variants": {
+            "A": {
+              "q": {
+                "en": "In your own words, what is the difference between localStorage and a database like Supabase?",
+                "th": "ในความเข้าใจของคุณ localStorage ต่างจาก database อย่าง Supabase ยังไง?"
+              },
+              "rows": 3
+            },
+            "B": {
+              "q": {
+                "en": "Explain in your own words: when would you use localStorage instead of a cloud database, and when would you not?",
+                "th": "อธิบายด้วยคำพูดของคุณเอง: คุณจะใช้ localStorage แทน cloud database เมื่อไหร่ และเมื่อไหร่จะไม่ใช้?"
+              },
+              "rows": 3
+            },
+            "C": {
+              "q": {
+                "en": "A colleague says \"I'm using localStorage as my database.\" What would you tell them about the key limitations of that approach?",
+                "th": "เพื่อนบอกว่า \"ฉันใช้ localStorage เป็น database\" คุณจะบอกอะไรเขาเกี่ยวกับข้อจำกัดสำคัญของวิธีนั้น?"
+              },
+              "rows": 3
+            }
+          }
+        },
+        {
+          "id": "data-single1",
+          "type": "single",
+          "points": 1,
+          "variants": {
+            "A": {
+              "q": {
+                "en": "A user submits a form on your app, then opens the same app on a different device. Which storage approach would let them see their previous submission?",
+                "th": "user submit form บนแอปของคุณ แล้วเปิดแอปเดิมบนอุปกรณ์อื่น วิธีการเก็บข้อมูลแบบใดจะให้พวกเขาเห็น submission ก่อนหน้านี้?"
+              },
+              "options": [
+                {
+                  "id": "a",
+                  "text": {
+                    "en": "localStorage, because it is fast and built into every browser",
+                    "th": "localStorage เพราะเร็วและมีอยู่ใน browser ทุกตัว"
+                  }
+                },
+                {
+                  "id": "b",
+                  "text": {
+                    "en": "A cloud database like Supabase, because the data is stored centrally and shared across devices",
+                    "th": "cloud database อย่าง Supabase เพราะข้อมูลถูกเก็บส่วนกลางและแชร์ข้ามอุปกรณ์"
+                  }
+                },
+                {
+                  "id": "c",
+                  "text": {
+                    "en": "A cookie on their browser, because cookies follow the user everywhere",
+                    "th": "cookie บน browser ของพวกเขา เพราะ cookie ติดตาม user ทุกที่"
+                  }
+                },
+                {
+                  "id": "d",
+                  "text": {
+                    "en": "A local file on your laptop, because files are the most reliable storage",
+                    "th": "ไฟล์ local บนแล็ปท็อปของคุณ เพราะไฟล์เป็นการเก็บที่น่าเชื่อถือที่สุด"
+                  }
+                }
+              ]
+            },
+            "B": {
+              "q": {
+                "en": "Two colleagues in different cities both need to see the same shared data inside your app. Which storage method makes this possible?",
+                "th": "เพื่อนร่วมงานสองคนในเมืองต่างกันต้องการเห็นข้อมูลที่แชร์กันภายในแอปของคุณ วิธีการเก็บข้อมูลแบบใดทำให้สิ่งนี้เป็นไปได้?"
+              },
+              "options": [
+                {
+                  "id": "c",
+                  "text": {
+                    "en": "A session cookie that expires when the browser closes",
+                    "th": "session cookie ที่หมดอายุเมื่อปิด browser"
+                  }
+                },
+                {
+                  "id": "a",
+                  "text": {
+                    "en": "localStorage on each of their own browsers",
+                    "th": "localStorage บน browser ของแต่ละคน"
+                  }
+                },
+                {
+                  "id": "d",
+                  "text": {
+                    "en": "A text file saved on your personal computer",
+                    "th": "ไฟล์ข้อความที่บันทึกบนคอมพิวเตอร์ส่วนตัวของคุณ"
+                  }
+                },
+                {
+                  "id": "b",
+                  "text": {
+                    "en": "A cloud database such as Supabase, where all users read from and write to the same data store",
+                    "th": "cloud database อย่าง Supabase ที่ user ทุกคนอ่านและเขียนจาก data store เดียวกัน"
+                  }
+                }
+              ]
+            },
+            "C": {
+              "q": {
+                "en": "A user logs in on their phone, saves a note, and expects to read it later on their laptop. Which type of storage supports this correctly?",
+                "th": "user ล็อกอินบนโทรศัพท์ บันทึก note แล้วคาดว่าจะอ่านได้ในภายหลังบนแล็ปท็อป การเก็บข้อมูลประเภทใดรองรับสิ่งนี้ได้อย่างถูกต้อง?"
+              },
+              "options": [
+                {
+                  "id": "a",
+                  "text": {
+                    "en": "localStorage on the phone, because it stores data persistently",
+                    "th": "localStorage บนโทรศัพท์ เพราะมันเก็บข้อมูลอย่างถาวร"
+                  }
+                },
+                {
+                  "id": "c",
+                  "text": {
+                    "en": "A browser cookie on the phone that syncs automatically to the laptop",
+                    "th": "browser cookie บนโทรศัพท์ที่ sync อัตโนมัติไปยังแล็ปท็อป"
+                  }
+                },
+                {
+                  "id": "d",
+                  "text": {
+                    "en": "A local database file on the phone's SD card",
+                    "th": "ไฟล์ database ใน SD card ของโทรศัพท์"
+                  }
+                },
+                {
+                  "id": "b",
+                  "text": {
+                    "en": "A cloud database like Supabase, which stores data centrally and makes it available on any device",
+                    "th": "cloud database อย่าง Supabase ที่เก็บข้อมูลส่วนกลางและทำให้สามารถเข้าถึงได้บนทุกอุปกรณ์"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": "data-rank1",
+          "type": "rank",
+          "points": 1,
+          "variants": {
+            "A": {
+              "q": {
+                "en": "Rank these storage options from LEAST shared/persistent (private to one device/session) to MOST shared/persistent (available to all users across sessions).",
+                "th": "จัดอันดับตัวเลือกการเก็บข้อมูลเหล่านี้จาก ใช้ร่วมกัน/คงอยู่น้อยที่สุด (ส่วนตัวสำหรับอุปกรณ์/session เดียว) ไปยัง ใช้ร่วมกัน/คงอยู่มากที่สุด (พร้อมใช้งานสำหรับ user ทุกคนข้าม session)"
+              },
+              "options": [
+                {
+                  "id": "a",
+                  "text": {
+                    "en": "Session storage (cleared when the browser tab closes)",
+                    "th": "Session storage (ถูกล้างเมื่อปิด tab เบราว์เซอร์)"
+                  }
+                },
+                {
+                  "id": "b",
+                  "text": {
+                    "en": "localStorage (persists on one device, one browser)",
+                    "th": "localStorage (คงอยู่บนอุปกรณ์เดียว เบราว์เซอร์เดียว)"
+                  }
+                },
+                {
+                  "id": "c",
+                  "text": {
+                    "en": "A cloud database (Supabase) shared across all users and devices",
+                    "th": "cloud database (Supabase) ที่แชร์กันในทุก user และอุปกรณ์"
+                  }
+                }
+              ]
+            },
+            "B": {
+              "q": {
+                "en": "Put these storage choices in order from MOST private/temporary to MOST shared/durable.",
+                "th": "จัดอันดับตัวเลือกการเก็บข้อมูลเหล่านี้จาก ส่วนตัว/ชั่วคราวที่สุด ไปยัง ใช้ร่วมกัน/คงทนที่สุด"
+              },
+              "options": [
+                {
+                  "id": "b",
+                  "text": {
+                    "en": "localStorage (one browser, survives page refresh)",
+                    "th": "localStorage (เบราว์เซอร์เดียว อยู่รอดจากการรีเฟรชหน้า)"
+                  }
+                },
+                {
+                  "id": "c",
+                  "text": {
+                    "en": "Cloud database (Supabase) — all users, all devices, all time",
+                    "th": "Cloud database (Supabase) — user ทุกคน ทุกอุปกรณ์ ตลอดเวลา"
+                  }
+                },
+                {
+                  "id": "a",
+                  "text": {
+                    "en": "Session storage (gone when the tab is closed)",
+                    "th": "Session storage (หายไปเมื่อปิด tab)"
+                  }
+                }
+              ]
+            },
+            "C": {
+              "q": {
+                "en": "Order these storage mechanisms from SHORTEST-lived / most isolated to LONGEST-lived / most widely shared.",
+                "th": "เรียงลำดับกลไกการเก็บข้อมูลเหล่านี้จาก อายุสั้นที่สุด/แยกตัวมากที่สุด ไปยัง อายุยาวนานที่สุด/แชร์ได้กว้างขวางที่สุด"
+              },
+              "options": [
+                {
+                  "id": "c",
+                  "text": {
+                    "en": "Supabase cloud database (persistent, multi-user, cross-device)",
+                    "th": "Supabase cloud database (คงอยู่ รองรับหลาย user ข้ามอุปกรณ์)"
+                  }
+                },
+                {
+                  "id": "a",
+                  "text": {
+                    "en": "Session storage (erased on tab close)",
+                    "th": "Session storage (ถูกลบเมื่อปิด tab)"
+                  }
+                },
+                {
+                  "id": "b",
+                  "text": {
+                    "en": "localStorage (single device, single browser, survives restarts)",
+                    "th": "localStorage (อุปกรณ์เดียว เบราว์เซอร์เดียว อยู่รอดหลังรีสตาร์ท)"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "secrets",
+      "emoji": "🔐",
+      "title": {
+        "en": "Secrets & Security",
+        "th": "ความลับและความปลอดภัย"
+      },
+      "questions": [
+        {
+          "id": "A3",
+          "type": "single",
+          "points": 1,
+          "variants": {
+            "A": {
+              "q": {
+                "en": "What does an \"environment variable\" do, in plain language?",
+                "th": "\"environment variable\" ทำอะไร อธิบายแบบเข้าใจง่าย ๆ?"
+              },
+              "options": [
+                {
+                  "id": "a",
+                  "text": {
+                    "en": "It changes the colors of your app",
+                    "th": "เปลี่ยนสีของแอป"
+                  }
+                },
+                {
+                  "id": "b",
+                  "text": {
+                    "en": "It's a setting that lives outside your code, often used to keep secrets out of GitHub",
+                    "th": "ค่าที่อยู่นอก code มักใช้เก็บ secret ไม่ให้ขึ้น GitHub"
+                  }
+                },
+                {
+                  "id": "c",
+                  "text": {
+                    "en": "It's a type of error message",
+                    "th": "รูปแบบข้อความ error"
+                  }
+                },
+                {
+                  "id": "d",
+                  "text": {
+                    "en": "It's a name for the operating system",
+                    "th": "ชื่อของระบบปฏิบัติการ"
+                  }
+                }
+              ]
+            },
+            "B": {
+              "q": {
+                "en": "A developer says they store their API key in an environment variable. What is the main reason for doing this?",
+                "th": "นักพัฒนาบอกว่าเก็บ API key ไว้ใน environment variable เหตุผลหลักของการทำแบบนี้คืออะไร?"
+              },
+              "options": [
+                {
+                  "id": "d",
+                  "text": {
+                    "en": "It gives the app a name for the server's operating system",
+                    "th": "ทำให้แอปรู้จักชื่อระบบปฏิบัติการของ server"
+                  }
+                },
+                {
+                  "id": "b",
+                  "text": {
+                    "en": "It keeps sensitive values out of the code repository, stored as external configuration",
+                    "th": "เก็บค่าที่ละเอียดอ่อนออกไปจาก code repository ไว้เป็น config ภายนอก"
+                  }
+                },
+                {
+                  "id": "c",
+                  "text": {
+                    "en": "It acts as a warning message when the app crashes",
+                    "th": "ทำหน้าที่เป็นข้อความเตือนเมื่อแอปล้มเหลว"
+                  }
+                },
+                {
+                  "id": "a",
+                  "text": {
+                    "en": "It controls the font and theme of the user interface",
+                    "th": "ควบคุมฟอนต์และธีมของ user interface"
+                  }
+                }
+              ]
+            },
+            "C": {
+              "q": {
+                "en": "You want to connect your app to a paid API without exposing the key in your GitHub repo. Which tool is designed exactly for this purpose?",
+                "th": "คุณอยากเชื่อมแอปกับ API แบบเสียเงินโดยไม่เปิดเผย key ใน GitHub repo เครื่องมือใดออกแบบมาเพื่อสิ่งนี้โดยตรง?"
+              },
+              "options": [
+                {
+                  "id": "c",
+                  "text": {
+                    "en": "An error log file that records crashes",
+                    "th": "ไฟล์บันทึก error ที่บันทึกการล้มเหลว"
+                  }
+                },
+                {
+                  "id": "a",
+                  "text": {
+                    "en": "A CSS variable that sets the app's color scheme",
+                    "th": "CSS variable ที่กำหนดสีของแอป"
+                  }
+                },
+                {
+                  "id": "b",
+                  "text": {
+                    "en": "An environment variable — a config value stored outside the codebase",
+                    "th": "environment variable — ค่า config ที่เก็บไว้นอก codebase"
+                  }
+                },
+                {
+                  "id": "d",
+                  "text": {
+                    "en": "The name field in the operating system's user account",
+                    "th": "ช่องชื่อใน user account ของระบบปฏิบัติการ"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": "C2",
+          "type": "multi",
+          "points": 1,
+          "variants": {
+            "A": {
+              "q": {
+                "en": "You realize you accidentally committed your Supabase service key to GitHub yesterday. What should you do? (pick all that apply)",
+                "th": "คุณเพิ่งรู้ว่าเผลอ commit Supabase service key ขึ้น GitHub เมื่อวาน ควรทำอะไร? (เลือกทั้งหมดที่ใช่)"
+              },
+              "options": [
+                {
+                  "id": "a",
+                  "text": {
+                    "en": "Tell your facilitator or dev team immediately",
+                    "th": "บอก facilitator หรือทีมพัฒนาทันที"
+                  }
+                },
+                {
+                  "id": "b",
+                  "text": {
+                    "en": "Delete the commit and assume the key is safe again",
+                    "th": "ลบ commit แล้วถือว่า key ปลอดภัยแล้ว"
+                  }
+                },
+                {
+                  "id": "c",
+                  "text": {
+                    "en": "Rotate (regenerate) the key in Supabase",
+                    "th": "rotate (สร้างใหม่) key ใน Supabase"
+                  }
+                },
+                {
+                  "id": "d",
+                  "text": {
+                    "en": "Move the key to an environment variable going forward",
+                    "th": "ย้าย key ไปอยู่ใน environment variable ต่อจากนี้"
+                  }
+                },
+                {
+                  "id": "e",
+                  "text": {
+                    "en": "Hope no one notices",
+                    "th": "หวังว่าจะไม่มีใครเห็น"
+                  }
+                },
+                {
+                  "id": "f",
+                  "text": {
+                    "en": "Make the GitHub repo private and assume that's enough",
+                    "th": "ทำให้ repo เป็น private แล้วคิดว่าพอแล้ว"
+                  }
+                }
+              ]
+            },
+            "B": {
+              "q": {
+                "en": "You discover your Firebase API key was accidentally pushed to a public GitHub repo this morning. Which actions should you take? (pick all that apply)",
+                "th": "คุณพบว่า Firebase API key ถูก push ไปยัง GitHub repo สาธารณะโดยไม่ตั้งใจเมื่อเช้านี้ ควรทำอะไร? (เลือกทั้งหมดที่ใช่)"
+              },
+              "options": [
+                {
+                  "id": "e",
+                  "text": {
+                    "en": "Ignore it and hope no attacker finds it",
+                    "th": "เพิกเฉยและหวังว่าจะไม่มี attacker เจอ"
+                  }
+                },
+                {
+                  "id": "c",
+                  "text": {
+                    "en": "Regenerate (rotate) the key in the Firebase console immediately",
+                    "th": "สร้าง (rotate) key ใหม่ใน Firebase console ทันที"
+                  }
+                },
+                {
+                  "id": "f",
+                  "text": {
+                    "en": "Switch the repo to private and consider the incident resolved",
+                    "th": "เปลี่ยน repo เป็น private แล้วถือว่าเหตุการณ์นั้นจบแล้ว"
+                  }
+                },
+                {
+                  "id": "a",
+                  "text": {
+                    "en": "Notify your facilitator or development team straight away",
+                    "th": "แจ้ง facilitator หรือทีมพัฒนาทันที"
+                  }
+                },
+                {
+                  "id": "d",
+                  "text": {
+                    "en": "Store the key as an environment variable from this point on",
+                    "th": "เก็บ key เป็น environment variable ตั้งแต่ตอนนี้เป็นต้นไป"
+                  }
+                },
+                {
+                  "id": "b",
+                  "text": {
+                    "en": "Remove the commit from history and assume the key can no longer be found",
+                    "th": "ลบ commit ออกจากประวัติแล้วสรุปว่า key ไม่สามารถค้นพบได้อีกแล้ว"
+                  }
+                }
+              ]
+            },
+            "C": {
+              "q": {
+                "en": "A team member tells you they accidentally included their Vercel deployment token in a commit that has been on GitHub for two days. What are the correct responses? (pick all that apply)",
+                "th": "สมาชิกทีมบอกคุณว่าพวกเขาเผลอใส่ Vercel deployment token ในการ commit ที่อยู่บน GitHub มาสองวันแล้ว การตอบสนองที่ถูกต้องคืออะไร? (เลือกทั้งหมดที่ใช่)"
+              },
+              "options": [
+                {
+                  "id": "d",
+                  "text": {
+                    "en": "From now on, keep the token in an environment variable instead of the code",
+                    "th": "ต่อจากนี้ให้เก็บ token ไว้ใน environment variable แทนที่จะอยู่ใน code"
+                  }
+                },
+                {
+                  "id": "b",
+                  "text": {
+                    "en": "Delete the offending commit and assume the token is unexposed",
+                    "th": "ลบ commit ที่มีปัญหาแล้วสรุปว่า token ไม่ได้ถูกเปิดเผย"
+                  }
+                },
+                {
+                  "id": "a",
+                  "text": {
+                    "en": "Alert the facilitator or dev team immediately",
+                    "th": "แจ้ง facilitator หรือทีมพัฒนาทันที"
+                  }
+                },
+                {
+                  "id": "e",
+                  "text": {
+                    "en": "Do nothing; the token has probably not been seen yet",
+                    "th": "ไม่ทำอะไร token ยังคงไม่ถูกค้นพบ"
+                  }
+                },
+                {
+                  "id": "c",
+                  "text": {
+                    "en": "Revoke and regenerate the token in the Vercel dashboard",
+                    "th": "เพิกถอนและสร้าง token ใหม่ใน Vercel dashboard"
+                  }
+                },
+                {
+                  "id": "f",
+                  "text": {
+                    "en": "Set the repository to private and mark it as resolved",
+                    "th": "ตั้งค่า repository เป็น private และทำเครื่องหมายว่าแก้ไขแล้ว"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": "secrets-short1",
+          "type": "short",
+          "points": 3,
+          "variants": {
+            "A": {
+              "q": {
+                "en": "You are about to push your project to GitHub. Where should your API key NOT be, and where should it be instead? Explain in 2–3 sentences.",
+                "th": "คุณกำลังจะ push โปรเจกต์ไป GitHub API key ของคุณไม่ควรอยู่ที่ไหน และควรอยู่ที่ไหนแทน อธิบายใน 2–3 ประโยค"
+              },
+              "rows": 3
+            },
+            "B": {
+              "q": {
+                "en": "A classmate hard-coded their database password directly into a JavaScript file that is tracked by git. What should they do instead, and why?",
+                "th": "เพื่อนในชั้นเรียน hard-code รหัสผ่าน database ลงในไฟล์ JavaScript ที่ git ติดตามโดยตรง พวกเขาควรทำอะไรแทน และทำไม?"
+              },
+              "rows": 3
+            },
+            "C": {
+              "q": {
+                "en": "Why is it dangerous to put a secret API key directly in your source code? What is the correct alternative?",
+                "th": "ทำไมการใส่ secret API key ลงในซอร์สโค้ดโดยตรงจึงเป็นอันตราย ทางเลือกที่ถูกต้องคืออะไร?"
+              },
+              "rows": 3
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "prompt",
+      "emoji": "💬",
+      "title": {
+        "en": "Prompting Claude",
+        "th": "การสั่งงาน Claude"
+      },
+      "questions": [
+        {
+          "id": "B1",
+          "type": "short",
+          "points": 3,
+          "variants": {
+            "A": {
+              "q": {
+                "en": "Rewrite this vague prompt into a clearer one.",
+                "th": "เขียน prompt คลุมเครือนี้ให้ชัดเจนขึ้น"
+              },
+              "rows": 3,
+              "quote": {
+                "en": "Original: \"the form is broken, fix it\"",
+                "th": "ต้นฉบับ: \"the form is broken, fix it\""
+              }
+            },
+            "B": {
+              "q": {
+                "en": "Improve this vague request so Claude can act on it effectively.",
+                "th": "ปรับปรุง request คลุมเครือนี้ให้ Claude ทำงานได้อย่างมีประสิทธิภาพ"
+              },
+              "rows": 3,
+              "quote": {
+                "en": "Original: \"the button doesn't work, do something\"",
+                "th": "ต้นฉบับ: \"ปุ่มใช้ไม่ได้ ทำอะไรสักอย่าง\""
+              }
+            },
+            "C": {
+              "q": {
+                "en": "Rewrite this unclear instruction as a specific, actionable prompt for Claude.",
+                "th": "เขียนคำสั่งที่ไม่ชัดเจนนี้ใหม่ให้เป็น prompt ที่ระบุและทำงานได้สำหรับ Claude"
+              },
+              "rows": 3,
+              "quote": {
+                "en": "Original: \"the page looks weird, make it better\"",
+                "th": "ต้นฉบับ: \"หน้าเว็บดูแปลก ๆ ทำให้ดีขึ้นหน่อย\""
+              }
+            }
+          }
+        },
+        {
+          "id": "B2",
+          "type": "single",
+          "points": 1,
+          "variants": {
+            "A": {
+              "q": {
+                "en": "Which of these is the best example of \"describe behavior, not implementation\"?",
+                "th": "ข้อใดเป็นตัวอย่างที่ดีที่สุดของ \"อธิบายพฤติกรรม ไม่ใช่วิธีสร้าง\"?"
+              },
+              "options": [
+                {
+                  "id": "a",
+                  "text": {
+                    "en": "\"use a useState hook to track the input value\"",
+                    "th": "\"ใช้ useState hook เก็บค่า input\""
+                  }
+                },
+                {
+                  "id": "b",
+                  "text": {
+                    "en": "\"write a function called handleSubmit that calls fetch with POST\"",
+                    "th": "\"เขียน function ชื่อ handleSubmit ที่ใช้ fetch แบบ POST\""
+                  }
+                },
+                {
+                  "id": "c",
+                  "text": {
+                    "en": "\"when the user submits the form with an empty name field, show a red message saying 'name is required' and don't save\"",
+                    "th": "\"เมื่อ user submit form โดยช่องชื่อว่าง ให้โชว์ข้อความสีแดงว่า 'name is required' แล้วไม่ save\""
+                  }
+                },
+                {
+                  "id": "d",
+                  "text": {
+                    "en": "\"import React and create a component\"",
+                    "th": "\"import React แล้วสร้าง component\""
+                  }
+                }
+              ]
+            },
+            "B": {
+              "q": {
+                "en": "You are writing a prompt for Claude. Which option best demonstrates telling Claude *what should happen* rather than *how to code it*?",
+                "th": "คุณกำลังเขียน prompt ให้ Claude ตัวเลือกใดแสดงให้เห็นการบอก Claude ว่า *ควรเกิดอะไรขึ้น* แทนที่จะบอก *วิธี code* ได้ดีที่สุด?"
+              },
+              "options": [
+                {
+                  "id": "c",
+                  "text": {
+                    "en": "\"if the email field is blank when the user clicks Send, display an error under the field and block the submission\"",
+                    "th": "\"ถ้าช่อง email ว่างเมื่อ user กด Send ให้แสดง error ใต้ช่องและหยุดการส่ง\""
+                  }
+                },
+                {
+                  "id": "a",
+                  "text": {
+                    "en": "\"add a useRef hook to the email input field\"",
+                    "th": "\"เพิ่ม useRef hook ให้กับช่อง input email\""
+                  }
+                },
+                {
+                  "id": "d",
+                  "text": {
+                    "en": "\"create an async arrow function named sendEmail\"",
+                    "th": "\"สร้าง async arrow function ชื่อ sendEmail\""
+                  }
+                },
+                {
+                  "id": "b",
+                  "text": {
+                    "en": "\"call the Supabase insert API inside a try-catch block\"",
+                    "th": "\"เรียก Supabase insert API ภายใน try-catch block\""
+                  }
+                }
+              ]
+            },
+            "C": {
+              "q": {
+                "en": "A junior developer is learning to prompt Claude. Which example best shows the principle of describing *outcome* rather than *code structure*?",
+                "th": "นักพัฒนาใหม่กำลังเรียนเขียน prompt ให้ Claude ตัวอย่างใดแสดงหลักการของการอธิบาย *ผลลัพธ์* แทนที่จะอธิบาย *โครงสร้าง code* ได้ดีที่สุด?"
+              },
+              "options": [
+                {
+                  "id": "b",
+                  "text": {
+                    "en": "\"create a function named validateAge that uses a ternary operator\"",
+                    "th": "\"สร้าง function ชื่อ validateAge ที่ใช้ ternary operator\""
+                  }
+                },
+                {
+                  "id": "d",
+                  "text": {
+                    "en": "\"import useState and useEffect at the top of the component file\"",
+                    "th": "\"import useState และ useEffect ที่ด้านบนของไฟล์ component\""
+                  }
+                },
+                {
+                  "id": "a",
+                  "text": {
+                    "en": "\"attach an onChange listener to the dropdown element\"",
+                    "th": "\"ติด onChange listener เข้ากับ dropdown element\""
+                  }
+                },
+                {
+                  "id": "c",
+                  "text": {
+                    "en": "\"when the user selects a date in the past, highlight the field in red and show a tooltip that says 'must be a future date'\"",
+                    "th": "\"เมื่อ user เลือกวันที่ในอดีต ให้ไฮไลต์ช่องเป็นสีแดงและแสดง tooltip ว่า 'ต้องเป็นวันในอนาคต'\""
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": "prompt-multi1",
+          "type": "multi",
+          "points": 1,
+          "variants": {
+            "A": {
+              "q": {
+                "en": "Which of the following are characteristics of a GOOD prompt for Claude? (pick all that apply)",
+                "th": "ข้อใดต่อไปนี้เป็นลักษณะของ prompt ที่ดีสำหรับ Claude? (เลือกทั้งหมดที่ใช่)"
+              },
+              "options": [
+                {
+                  "id": "a",
+                  "text": {
+                    "en": "It specifies what the user should see or experience after the change",
+                    "th": "ระบุสิ่งที่ user ควรเห็นหรือประสบหลังจากการเปลี่ยนแปลง"
+                  }
+                },
+                {
+                  "id": "b",
+                  "text": {
+                    "en": "It tells Claude exactly which React hooks to use",
+                    "th": "บอก Claude ว่าต้องใช้ React hooks ตัวใดบ้าง"
+                  }
+                },
+                {
+                  "id": "c",
+                  "text": {
+                    "en": "It describes the trigger condition (e.g. \"when the user clicks X\")",
+                    "th": "อธิบายเงื่อนไขที่เรียกใช้ (เช่น \"เมื่อ user คลิก X\")"
+                  }
+                },
+                {
+                  "id": "d",
+                  "text": {
+                    "en": "It includes the expected outcome if something goes wrong (e.g. error message text)",
+                    "th": "รวมผลลัพธ์ที่คาดไว้หากมีบางอย่างผิดพลาด (เช่น ข้อความ error)"
+                  }
+                },
+                {
+                  "id": "e",
+                  "text": {
+                    "en": "It specifies the exact file names and function names Claude must create",
+                    "th": "ระบุชื่อไฟล์และชื่อ function ที่แน่นอนที่ Claude ต้องสร้าง"
+                  }
+                }
+              ]
+            },
+            "B": {
+              "q": {
+                "en": "Select all qualities that make a Claude prompt effective. (pick all that apply)",
+                "th": "เลือกคุณสมบัติทั้งหมดที่ทำให้ Claude prompt มีประสิทธิภาพ (เลือกทั้งหมดที่ใช่)"
+              },
+              "options": [
+                {
+                  "id": "e",
+                  "text": {
+                    "en": "It dictates the exact variable names and class structure Claude should write",
+                    "th": "มันกำหนดชื่อตัวแปรและโครงสร้าง class ที่แน่นอนที่ Claude ควรเขียน"
+                  }
+                },
+                {
+                  "id": "a",
+                  "text": {
+                    "en": "It describes the desired user-visible outcome",
+                    "th": "อธิบายผลลัพธ์ที่ user มองเห็นซึ่งต้องการ"
+                  }
+                },
+                {
+                  "id": "d",
+                  "text": {
+                    "en": "It states what should happen in error cases",
+                    "th": "ระบุสิ่งที่ควรเกิดขึ้นในกรณี error"
+                  }
+                },
+                {
+                  "id": "c",
+                  "text": {
+                    "en": "It identifies the user action that triggers the behaviour",
+                    "th": "ระบุการกระทำของ user ที่เรียกใช้พฤติกรรมนั้น"
+                  }
+                },
+                {
+                  "id": "b",
+                  "text": {
+                    "en": "It instructs Claude which internal state management pattern to follow",
+                    "th": "แนะนำ Claude ว่าจะใช้ pattern การจัดการ state ภายในแบบใด"
+                  }
+                }
+              ]
+            },
+            "C": {
+              "q": {
+                "en": "Which of the following belong in a well-written prompt to Claude? (pick all that apply)",
+                "th": "ข้อใดต่อไปนี้ควรอยู่ใน prompt ที่เขียนดีสำหรับ Claude? (เลือกทั้งหมดที่ใช่)"
+              },
+              "options": [
+                {
+                  "id": "b",
+                  "text": {
+                    "en": "A prescription of which CSS framework to use",
+                    "th": "การกำหนด CSS framework ที่ต้องใช้"
+                  }
+                },
+                {
+                  "id": "c",
+                  "text": {
+                    "en": "The condition under which the behaviour should fire",
+                    "th": "เงื่อนไขที่พฤติกรรมควรเกิดขึ้น"
+                  }
+                },
+                {
+                  "id": "a",
+                  "text": {
+                    "en": "A clear description of what the user will see or be able to do",
+                    "th": "คำอธิบายที่ชัดเจนว่า user จะเห็นอะไรหรือสามารถทำอะไรได้"
+                  }
+                },
+                {
+                  "id": "d",
+                  "text": {
+                    "en": "The expected behaviour when input is invalid or missing",
+                    "th": "พฤติกรรมที่คาดไว้เมื่อ input ไม่ถูกต้องหรือขาดหาย"
+                  }
+                },
+                {
+                  "id": "e",
+                  "text": {
+                    "en": "Explicit instructions on which database library functions to call",
+                    "th": "คำสั่งที่ชัดเจนเกี่ยวกับ database library function ที่ต้องเรียกใช้"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": "prompt-short2",
+          "type": "short",
+          "points": 3,
+          "variants": {
+            "A": {
+              "q": {
+                "en": "A colleague says: \"I just tell Claude to make it work.\" What advice would you give them about writing better prompts, and why does it matter?",
+                "th": "เพื่อนร่วมงานบอกว่า \"ฉันแค่บอก Claude ให้ทำให้มันใช้งานได้\" คุณจะให้คำแนะนำอะไรกับพวกเขาเกี่ยวกับการเขียน prompt ที่ดีขึ้น และทำไมมันจึงสำคัญ?"
+              },
+              "rows": 3
+            },
+            "B": {
+              "q": {
+                "en": "Your teammate gets inconsistent results from Claude because they write one-word prompts like \"fix\" or \"improve\". What would you teach them about effective prompting?",
+                "th": "เพื่อนร่วมทีมได้รับผลลัพธ์ที่ไม่สอดคล้องกันจาก Claude เพราะพวกเขาเขียน prompt คำเดียวอย่าง \"fix\" หรือ \"improve\" คุณจะสอนอะไรพวกเขาเกี่ยวกับการเขียน prompt ที่มีประสิทธิภาพ?"
+              },
+              "rows": 3
+            },
+            "C": {
+              "q": {
+                "en": "Why does it help to include context and expected outcomes when writing a prompt for Claude, rather than just describing the problem in a few words?",
+                "th": "ทำไมการรวมบริบทและผลลัพธ์ที่คาดไว้ไว้ในการเขียน prompt สำหรับ Claude จึงช่วยได้ แทนที่จะอธิบายปัญหาด้วยคำไม่กี่คำ?"
+              },
+              "rows": 3
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "verify",
+      "emoji": "🔬",
+      "title": {
+        "en": "Verification & Testing",
+        "th": "การตรวจสอบและทดสอบ"
+      },
+      "questions": [
+        {
+          "id": "B3",
+          "type": "single",
+          "points": 1,
+          "variants": {
+            "A": {
+              "q": {
+                "en": "After Claude makes a change, what's the best first thing to do?",
+                "th": "หลังจาก Claude แก้ไข สิ่งแรกที่ควรทำคืออะไร?"
+              },
+              "options": [
+                {
+                  "id": "a",
+                  "text": {
+                    "en": "Push to GitHub and deploy immediately",
+                    "th": "push ขึ้น GitHub แล้ว deploy ทันที"
+                  }
+                },
+                {
+                  "id": "b",
+                  "text": {
+                    "en": "Test the change in the running app — does it actually do what you wanted?",
+                    "th": "ทดสอบการเปลี่ยนแปลงในแอปที่กำลังรัน — มันทำตามที่ต้องการจริงไหม?"
+                  }
+                },
+                {
+                  "id": "c",
+                  "text": {
+                    "en": "Ask Claude to make another change while you wait",
+                    "th": "ขอให้ Claude แก้อะไรอีกระหว่างที่คุณรอ"
+                  }
+                },
+                {
+                  "id": "d",
+                  "text": {
+                    "en": "Trust Claude and move on",
+                    "th": "เชื่อ Claude แล้วทำอย่างอื่นต่อ"
+                  }
+                }
+              ]
+            },
+            "B": {
+              "q": {
+                "en": "Claude just updated the checkout page. Before doing anything else, what is the single most important next step?",
+                "th": "Claude เพิ่งอัปเดตหน้า checkout ก่อนทำสิ่งอื่น ขั้นตอนสำคัญที่สุดถัดไปคืออะไร?"
+              },
+              "options": [
+                {
+                  "id": "d",
+                  "text": {
+                    "en": "Trust the output and continue building the next feature",
+                    "th": "เชื่อผลลัพธ์และทำ feature ถัดไปต่อได้เลย"
+                  }
+                },
+                {
+                  "id": "b",
+                  "text": {
+                    "en": "Open the running app and verify the checkout page behaves as intended",
+                    "th": "เปิดแอปที่กำลังรันและตรวจสอบว่าหน้า checkout ทำงานตามที่ตั้งใจ"
+                  }
+                },
+                {
+                  "id": "a",
+                  "text": {
+                    "en": "Commit and deploy to production right away",
+                    "th": "commit แล้ว deploy ขึ้น production ทันที"
+                  }
+                },
+                {
+                  "id": "c",
+                  "text": {
+                    "en": "Queue up more prompts for Claude while the page loads",
+                    "th": "คิว prompt เพิ่มเติมให้ Claude ในขณะที่หน้าเว็บโหลด"
+                  }
+                }
+              ]
+            },
+            "C": {
+              "q": {
+                "en": "Claude finishes editing the login flow. What should you do immediately?",
+                "th": "Claude แก้ไข login flow เสร็จแล้ว คุณควรทำอะไรทันที?"
+              },
+              "options": [
+                {
+                  "id": "c",
+                  "text": {
+                    "en": "Send Claude another prompt for the next task without pausing",
+                    "th": "ส่ง prompt ถัดไปให้ Claude โดยไม่หยุดพัก"
+                  }
+                },
+                {
+                  "id": "a",
+                  "text": {
+                    "en": "Push the changes to GitHub and share the link with the team",
+                    "th": "push การเปลี่ยนแปลงไป GitHub แล้วแชร์ลิงก์ให้ทีม"
+                  }
+                },
+                {
+                  "id": "b",
+                  "text": {
+                    "en": "Walk through the login flow in the live app to confirm it works correctly",
+                    "th": "ทดลองใช้ login flow ใน app จริงเพื่อยืนยันว่าทำงานถูกต้อง"
+                  }
+                },
+                {
+                  "id": "d",
+                  "text": {
+                    "en": "Assume Claude's code is correct because it didn't report any errors",
+                    "th": "สรุปว่า code ของ Claude ถูกต้องเพราะไม่มีรายงาน error"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": "C1",
+          "type": "short",
+          "points": 3,
+          "variants": {
+            "A": {
+              "q": {
+                "en": "You added storage with Claude, and Claude says the data is being saved correctly. List 3 different things you would actually try to verify the storage works.",
+                "th": "คุณเพิ่ม storage กับ Claude และ Claude บอกว่าข้อมูลถูก save ถูกต้องแล้ว ระบุ 3 สิ่งที่คุณจะทำจริง ๆ เพื่อตรวจสอบว่า storage ใช้งานได้"
+              },
+              "rows": 5
+            },
+            "B": {
+              "q": {
+                "en": "Claude implemented a form that saves user responses to a database and says it works. Describe 3 specific checks you would run yourself to confirm the data is actually being stored.",
+                "th": "Claude สร้างฟอร์มที่ save คำตอบของ user ลง database แล้วบอกว่าใช้งานได้แล้ว อธิบาย 3 การตรวจสอบเฉพาะที่คุณจะทำเองเพื่อยืนยันว่าข้อมูลถูกเก็บจริง"
+              },
+              "rows": 5
+            },
+            "C": {
+              "q": {
+                "en": "After building a feature that uploads files to cloud storage, Claude claims the uploads are working. What 3 concrete steps would you take to personally verify this before shipping?",
+                "th": "หลังจากสร้าง feature ที่อัปโหลดไฟล์ไปยัง cloud storage Claude อ้างว่าการอัปโหลดทำงานได้แล้ว คุณจะใช้ 3 ขั้นตอนที่เป็นรูปธรรมอะไรในการตรวจสอบด้วยตัวเองก่อน ship?"
+              },
+              "rows": 5
+            }
+          }
+        },
+        {
+          "id": "verify-rank1",
+          "type": "rank",
+          "points": 1,
+          "variants": {
+            "A": {
+              "q": {
+                "en": "You asked Claude to add a new Save button to a form. Put these verification steps in the correct order (what you should do FIRST to LAST).",
+                "th": "คุณขอให้ Claude เพิ่มปุ่ม Save ใหม่ในฟอร์ม เรียงลำดับขั้นตอนการตรวจสอบเหล่านี้ตามลำดับที่ถูกต้อง (สิ่งที่ควรทำก่อนสุดไปยังสุดท้าย)"
+              },
+              "options": [
+                {
+                  "id": "a",
+                  "text": {
+                    "en": "Open the running app and click the Save button with valid input",
+                    "th": "เปิดแอปที่กำลังรันและคลิกปุ่ม Save พร้อมข้อมูล input ที่ถูกต้อง"
+                  }
+                },
+                {
+                  "id": "b",
+                  "text": {
+                    "en": "Check that the saved data actually appears where it should (e.g. in the database or on the screen)",
+                    "th": "ตรวจสอบว่าข้อมูลที่บันทึกแสดงอยู่ที่ที่ควรจะอยู่จริง (เช่น ใน database หรือบนหน้าจอ)"
+                  }
+                },
+                {
+                  "id": "c",
+                  "text": {
+                    "en": "Commit and push the working code to GitHub",
+                    "th": "commit และ push code ที่ใช้งานได้ไปยัง GitHub"
+                  }
+                },
+                {
+                  "id": "d",
+                  "text": {
+                    "en": "Try submitting the form with an empty required field and confirm an error appears",
+                    "th": "ลอง submit form ที่มีช่องที่จำเป็นว่างเปล่าและยืนยันว่า error ปรากฏขึ้น"
+                  }
+                }
+              ]
+            },
+            "B": {
+              "q": {
+                "en": "Claude added a Delete button. Arrange these steps in the order you should carry them out (FIRST to LAST) to verify the feature works.",
+                "th": "Claude เพิ่มปุ่ม Delete เรียงลำดับขั้นตอนเหล่านี้ตามลำดับที่คุณควรดำเนินการ (ก่อนสุดไปยังสุดท้าย) เพื่อตรวจสอบว่า feature ทำงานได้"
+              },
+              "options": [
+                {
+                  "id": "d",
+                  "text": {
+                    "en": "Test an edge case — try deleting an item that doesn't exist and confirm graceful handling",
+                    "th": "ทดสอบ edge case — ลองลบรายการที่ไม่มีอยู่และยืนยันว่าจัดการได้อย่างราบรื่น"
+                  }
+                },
+                {
+                  "id": "c",
+                  "text": {
+                    "en": "Commit the verified working code to version control",
+                    "th": "commit code ที่ตรวจสอบแล้วและใช้งานได้เข้าสู่ version control"
+                  }
+                },
+                {
+                  "id": "a",
+                  "text": {
+                    "en": "Open the app and click the Delete button on an existing item",
+                    "th": "เปิดแอปและคลิกปุ่ม Delete บนรายการที่มีอยู่"
+                  }
+                },
+                {
+                  "id": "b",
+                  "text": {
+                    "en": "Confirm the item has been removed from the list and the database",
+                    "th": "ยืนยันว่ารายการถูกลบออกจากรายการและ database แล้ว"
+                  }
+                }
+              ]
+            },
+            "C": {
+              "q": {
+                "en": "Claude just added a Search feature. Order these verification actions from FIRST to LAST.",
+                "th": "Claude เพิ่ม feature ค้นหา เรียงลำดับการตรวจสอบเหล่านี้จากก่อนสุดไปยังสุดท้าย"
+              },
+              "options": [
+                {
+                  "id": "b",
+                  "text": {
+                    "en": "Confirm the correct results appear in the list below the search box",
+                    "th": "ยืนยันว่าผลลัพธ์ที่ถูกต้องปรากฏในรายการใต้ช่องค้นหา"
+                  }
+                },
+                {
+                  "id": "c",
+                  "text": {
+                    "en": "Commit and push the verified feature to the repository",
+                    "th": "commit และ push feature ที่ตรวจสอบแล้วไปยัง repository"
+                  }
+                },
+                {
+                  "id": "d",
+                  "text": {
+                    "en": "Try a search term that matches nothing and check that a sensible empty-state message shows",
+                    "th": "ลองคำค้นหาที่ไม่ตรงกับอะไรและตรวจสอบว่าข้อความ empty-state ที่เหมาะสมแสดงขึ้น"
+                  }
+                },
+                {
+                  "id": "a",
+                  "text": {
+                    "en": "Open the live app and type a known search term into the search box",
+                    "th": "เปิดแอป live และพิมพ์คำค้นหาที่รู้จักลงในช่องค้นหา"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "iterate",
+      "emoji": "🔁",
+      "title": {
+        "en": "Iteration Discipline",
+        "th": "การแก้ไขซ้ำอย่างมีวินัย"
+      },
+      "questions": [
+        {
+          "id": "B4",
+          "type": "single",
+          "points": 1,
+          "variants": {
+            "A": {
+              "q": {
+                "en": "Claude says it added the search box AND also built user authentication, role-based permissions, and a notifications system. You only asked for the search box. What do you do?",
+                "th": "Claude บอกว่าเพิ่มช่องค้นหา และทำระบบ authentication, role permission, ระบบ notification ให้แล้ว คุณขอแค่ช่องค้นหา คุณจะทำอะไร?"
+              },
+              "options": [
+                {
+                  "id": "a",
+                  "text": {
+                    "en": "Accept it all — extra is good",
+                    "th": "รับทั้งหมด — มีเกินดีกว่า"
+                  }
+                },
+                {
+                  "id": "b",
+                  "text": {
+                    "en": "Roll back the unrequested changes; only keep the search box",
+                    "th": "ย้อน change ที่ไม่ได้ขอออก เก็บเฉพาะช่องค้นหา"
+                  }
+                },
+                {
+                  "id": "c",
+                  "text": {
+                    "en": "Push to production immediately",
+                    "th": "push ขึ้น production ทันที"
+                  }
+                },
+                {
+                  "id": "d",
+                  "text": {
+                    "en": "Add even more features on top",
+                    "th": "เพิ่ม feature อื่นทับเข้าไปอีก"
+                  }
+                }
+              ]
+            },
+            "B": {
+              "q": {
+                "en": "You asked Claude to add a date-picker to a booking form. Claude's reply says it also refactored the entire state management layer, redesigned the layout, and added an analytics tracker. What is the right response?",
+                "th": "คุณขอให้ Claude เพิ่ม date-picker ในฟอร์มจอง Claude ตอบว่าได้ refactor ทั้ง state management layer ออกแบบ layout ใหม่ และเพิ่ม analytics tracker ด้วย การตอบสนองที่ถูกต้องคืออะไร?"
+              },
+              "options": [
+                {
+                  "id": "a",
+                  "text": {
+                    "en": "Accept everything — unexpected additions show Claude is being thorough",
+                    "th": "รับทั้งหมด — การเพิ่มโดยไม่คาดคิดแสดงว่า Claude ทำงานละเอียดถี่ถ้วน"
+                  }
+                },
+                {
+                  "id": "c",
+                  "text": {
+                    "en": "Deploy all of it to production right now",
+                    "th": "deploy ทั้งหมดขึ้น production ทันที"
+                  }
+                },
+                {
+                  "id": "b",
+                  "text": {
+                    "en": "Revert the unrequested changes and keep only the date-picker addition",
+                    "th": "ย้อนกลับการเปลี่ยนแปลงที่ไม่ได้ขอและเก็บเฉพาะการเพิ่ม date-picker"
+                  }
+                },
+                {
+                  "id": "d",
+                  "text": {
+                    "en": "Use this as a chance to pile on even more new features",
+                    "th": "ใช้โอกาสนี้เพิ่ม feature ใหม่ ๆ เข้าไปอีก"
+                  }
+                }
+              ]
+            },
+            "C": {
+              "q": {
+                "en": "You asked Claude for a simple colour change on the header. Claude changed the header colour AND rewrote the navigation menu, added a dark mode toggle, and updated the footer styling. What should you do?",
+                "th": "คุณขอให้ Claude เปลี่ยนสีของ header เพียงอย่างเดียว Claude เปลี่ยนสี header และยังเขียน navigation menu ใหม่ เพิ่มปุ่ม dark mode และอัปเดตสไตล์ footer ด้วย คุณควรทำอะไร?"
+              },
+              "options": [
+                {
+                  "id": "d",
+                  "text": {
+                    "en": "Layer more design changes on top while you have the momentum",
+                    "th": "เพิ่มการเปลี่ยนแปลงการออกแบบอีกในขณะที่มีแรงขับเคลื่อน"
+                  }
+                },
+                {
+                  "id": "b",
+                  "text": {
+                    "en": "Undo the unrequested changes; keep only the header colour update",
+                    "th": "ยกเลิกการเปลี่ยนแปลงที่ไม่ได้ขอ เก็บเฉพาะการอัปเดตสีของ header"
+                  }
+                },
+                {
+                  "id": "a",
+                  "text": {
+                    "en": "Keep all the changes since they improve the look",
+                    "th": "เก็บการเปลี่ยนแปลงทั้งหมดเพราะทำให้ดูดีขึ้น"
+                  }
+                },
+                {
+                  "id": "c",
+                  "text": {
+                    "en": "Push straight to the live site before anyone notices",
+                    "th": "push ขึ้นเว็บ live ทันทีก่อนที่ใครจะสังเกตเห็น"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": "iterate-single2",
+          "type": "single",
+          "points": 1,
+          "variants": {
+            "A": {
+              "q": {
+                "en": "Claude just made a change to your app. Before giving Claude the next task, what is the most important thing to do?",
+                "th": "Claude เพิ่งทำการเปลี่ยนแปลงกับแอปของคุณ ก่อนให้ Claude ทำงานถัดไป สิ่งสำคัญที่สุดที่ต้องทำคืออะไร?"
+              },
+              "options": [
+                {
+                  "id": "a",
+                  "text": {
+                    "en": "Immediately give Claude the next prompt so you save time",
+                    "th": "ให้ Claude prompt ถัดไปทันทีเพื่อประหยัดเวลา"
+                  }
+                },
+                {
+                  "id": "b",
+                  "text": {
+                    "en": "Test the current change in the running app to confirm it works before moving on",
+                    "th": "ทดสอบการเปลี่ยนแปลงปัจจุบันในแอปที่กำลังรันเพื่อยืนยันว่าทำงานได้ก่อนดำเนินการต่อ"
+                  }
+                },
+                {
+                  "id": "c",
+                  "text": {
+                    "en": "Ask Claude to write unit tests for the change",
+                    "th": "ขอให้ Claude เขียน unit test สำหรับการเปลี่ยนแปลง"
+                  }
+                },
+                {
+                  "id": "d",
+                  "text": {
+                    "en": "Deploy to production so end-users can test it for you",
+                    "th": "deploy ขึ้น production เพื่อให้ end-user ทดสอบแทนคุณ"
+                  }
+                }
+              ]
+            },
+            "B": {
+              "q": {
+                "en": "You and Claude have been building features in a rapid back-and-forth session. At what point should you pause and manually check the app?",
+                "th": "คุณและ Claude กำลังสร้าง feature ในการโต้ตอบอย่างรวดเร็ว ณ จุดใดที่คุณควรหยุดชั่วคราวและตรวจสอบแอปด้วยตนเอง?"
+              },
+              "options": [
+                {
+                  "id": "a",
+                  "text": {
+                    "en": "Only after all planned features are complete",
+                    "th": "หลังจาก feature ที่วางแผนไว้ทั้งหมดเสร็จสิ้นเท่านั้น"
+                  }
+                },
+                {
+                  "id": "d",
+                  "text": {
+                    "en": "Never — trust Claude's confirmations and keep going",
+                    "th": "ไม่มีเลย — ไว้วางใจการยืนยันของ Claude และทำต่อไป"
+                  }
+                },
+                {
+                  "id": "b",
+                  "text": {
+                    "en": "After each change, before queuing the next prompt",
+                    "th": "หลังจากการเปลี่ยนแปลงแต่ละครั้ง ก่อนคิว prompt ถัดไป"
+                  }
+                },
+                {
+                  "id": "c",
+                  "text": {
+                    "en": "Only when Claude reports an error",
+                    "th": "เฉพาะเมื่อ Claude รายงาน error"
+                  }
+                }
+              ]
+            },
+            "C": {
+              "q": {
+                "en": "Which working rhythm is most likely to keep your project stable when building with Claude?",
+                "th": "จังหวะการทำงานแบบใดที่มีแนวโน้มมากที่สุดที่จะรักษาโปรเจกต์ของคุณให้มีเสถียรภาพเมื่อสร้างกับ Claude?"
+              },
+              "options": [
+                {
+                  "id": "d",
+                  "text": {
+                    "en": "Batch all requests into one giant prompt to minimise context switching",
+                    "th": "รวม request ทั้งหมดเป็น prompt ขนาดใหญ่เพื่อลด context switching"
+                  }
+                },
+                {
+                  "id": "a",
+                  "text": {
+                    "en": "Send Claude 10 tasks at once and review all changes together at the end",
+                    "th": "ส่งงาน 10 อย่างให้ Claude พร้อมกันและตรวจสอบการเปลี่ยนแปลงทั้งหมดด้วยกันตอนท้าย"
+                  }
+                },
+                {
+                  "id": "c",
+                  "text": {
+                    "en": "Only work with Claude once a week to limit the number of changes",
+                    "th": "ทำงานกับ Claude สัปดาห์ละครั้งเพื่อจำกัดจำนวนการเปลี่ยนแปลง"
+                  }
+                },
+                {
+                  "id": "b",
+                  "text": {
+                    "en": "One change at a time: prompt → test in app → commit if good → repeat",
+                    "th": "ทีละการเปลี่ยนแปลง: prompt → ทดสอบในแอป → commit ถ้าดี → ทำซ้ำ"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": "iterate-short1",
+          "type": "short",
+          "points": 3,
+          "variants": {
+            "A": {
+              "q": {
+                "en": "Describe what a healthy iterate-with-Claude loop looks like in practice. What do you do after each Claude response before asking for the next change?",
+                "th": "อธิบายว่า loop การ iterate กับ Claude ที่ดีควรมีลักษณะอย่างไรในทางปฏิบัติ คุณทำอะไรหลังจาก Claude ตอบกลับแต่ละครั้งก่อนขอการเปลี่ยนแปลงถัดไป?"
+              },
+              "rows": 3
+            },
+            "B": {
+              "q": {
+                "en": "A classmate keeps sending Claude follow-up prompts without checking the app in between, and ends up with a broken app they can't easily fix. What habit should they adopt instead?",
+                "th": "เพื่อนในชั้นเรียนส่ง prompt ติดตามผลให้ Claude โดยไม่ตรวจสอบแอประหว่างนั้น และจบลงด้วยแอปที่พังซึ่งแก้ไขได้ยาก ควรใช้นิสัยอะไรแทน?"
+              },
+              "rows": 3
+            },
+            "C": {
+              "q": {
+                "en": "Why is it important to commit your code to git after each successful Claude-assisted change, before asking Claude for the next one?",
+                "th": "ทำไมจึงสำคัญที่ต้อง commit code ของคุณไปยัง git หลังจากการเปลี่ยนแปลงที่ Claude ช่วยทำสำเร็จแต่ละครั้ง ก่อนขอให้ Claude ทำครั้งถัดไป?"
+              },
+              "rows": 3
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "risk",
+      "emoji": "⚠️",
+      "title": {
+        "en": "Risk Literacy & Real Data",
+        "th": "ความเสี่ยงและข้อมูลจริง"
+      },
+      "questions": [
+        {
+          "id": "C3",
+          "type": "short",
+          "points": 3,
+          "variants": {
+            "A": {
+              "q": {
+                "en": "Your finance colleague asks: \"Can you build me a tool to track real customer invoice data? It would save me hours every week.\" You're tempted. What do you do?",
+                "th": "เพื่อนทีมการเงินขอ \"ช่วยสร้างเครื่องมือเก็บข้อมูล invoice ลูกค้าจริงให้หน่อย จะประหยัดเวลาเยอะมากทุกสัปดาห์\" คุณอยากทำ คุณทำอะไร?"
+              },
+              "rows": 4
+            },
+            "B": {
+              "q": {
+                "en": "An operations teammate says: \"Build me an app that stores all our real passenger booking records — it would replace this spreadsheet.\" You could do it. What do you do?",
+                "th": "เพื่อนฝ่าย operations บอก \"สร้าง app ให้ฉันที่เก็บข้อมูลการจองผู้โดยสารจริงทั้งหมด มันจะแทนที่ spreadsheet นี้\" คุณทำได้ คุณจะทำอะไร?"
+              },
+              "rows": 4
+            },
+            "C": {
+              "q": {
+                "en": "A sales colleague asks: \"Can you quickly build something to store live customer contact details and deal notes? I'll use it every day.\" What is your response?",
+                "th": "เพื่อนฝ่ายขายถามว่า \"ช่วยสร้างอะไรบางอย่างเร็ว ๆ เพื่อเก็บรายละเอียดลูกค้าจริงและบันทึก deal ได้ไหม ฉันจะใช้ทุกวัน\" คุณจะตอบอะไร?"
+              },
+              "rows": 4
+            }
+          }
+        },
+        {
+          "id": "risk-single1",
+          "type": "single",
+          "points": 1,
+          "variants": {
+            "A": {
+              "q": {
+                "en": "A colleague wants to build a workshop prototype that stores real customer names, passport numbers, and booking history. What is the main risk?",
+                "th": "เพื่อนร่วมงานต้องการสร้าง prototype สำหรับเวิร์กชอปที่เก็บชื่อลูกค้าจริง หมายเลขหนังสือเดินทาง และประวัติการจองจริง ความเสี่ยงหลักคืออะไร?"
+              },
+              "options": [
+                {
+                  "id": "a",
+                  "text": {
+                    "en": "The prototype may be slower than a production system",
+                    "th": "prototype อาจช้ากว่าระบบ production"
+                  }
+                },
+                {
+                  "id": "b",
+                  "text": {
+                    "en": "Real personal and sensitive data could be exposed or mishandled without proper security controls",
+                    "th": "ข้อมูลส่วนบุคคลและข้อมูลที่ละเอียดอ่อนจริงอาจถูกเปิดเผยหรือจัดการผิดพลาดโดยไม่มีการควบคุมความปลอดภัยที่เหมาะสม"
+                  }
+                },
+                {
+                  "id": "c",
+                  "text": {
+                    "en": "Vercel might charge extra fees for storing large datasets",
+                    "th": "Vercel อาจเรียกเก็บค่าธรรมเนียมพิเศษสำหรับการเก็บ dataset ขนาดใหญ่"
+                  }
+                },
+                {
+                  "id": "d",
+                  "text": {
+                    "en": "The UI will look less polished with real data",
+                    "th": "UI จะดูไม่สวยงามเมื่อใช้ข้อมูลจริง"
+                  }
+                }
+              ]
+            },
+            "B": {
+              "q": {
+                "en": "A teammate plans to use their workshop app in production to store real employee salary information. What is the most important concern?",
+                "th": "เพื่อนร่วมทีมวางแผนใช้แอปเวิร์กชอปของพวกเขาใน production เพื่อเก็บข้อมูลเงินเดือนพนักงานจริง ข้อกังวลที่สำคัญที่สุดคืออะไร?"
+              },
+              "options": [
+                {
+                  "id": "c",
+                  "text": {
+                    "en": "The hosting provider might throttle the app at peak hours",
+                    "th": "ผู้ให้บริการ hosting อาจ throttle แอปในชั่วโมงเร่งด่วน"
+                  }
+                },
+                {
+                  "id": "a",
+                  "text": {
+                    "en": "The app interface was designed for demos and may not look professional",
+                    "th": "อินเทอร์เฟซของแอปถูกออกแบบสำหรับ demo และอาจดูไม่เป็นมืออาชีพ"
+                  }
+                },
+                {
+                  "id": "d",
+                  "text": {
+                    "en": "Salary data uses more storage space than typical workshop data",
+                    "th": "ข้อมูลเงินเดือนใช้พื้นที่เก็บข้อมูลมากกว่าข้อมูลเวิร์กชอปทั่วไป"
+                  }
+                },
+                {
+                  "id": "b",
+                  "text": {
+                    "en": "Sensitive employee data could be exposed due to inadequate security in a workshop-grade app",
+                    "th": "ข้อมูลพนักงานที่ละเอียดอ่อนอาจถูกเปิดเผยเนื่องจากความปลอดภัยที่ไม่เพียงพอในแอประดับเวิร์กชอป"
+                  }
+                }
+              ]
+            },
+            "C": {
+              "q": {
+                "en": "A workshop-built tool is being considered for storing live medical appointment records for hospital patients. What is the primary risk of doing this?",
+                "th": "เครื่องมือที่สร้างในเวิร์กชอปกำลังถูกพิจารณาสำหรับการเก็บข้อมูลนัดหมายแพทย์จริงสำหรับผู้ป่วยในโรงพยาบาล ความเสี่ยงหลักของการทำสิ่งนี้คืออะไร?"
+              },
+              "options": [
+                {
+                  "id": "a",
+                  "text": {
+                    "en": "The calendar UI may not match hospital branding",
+                    "th": "UI ปฏิทินอาจไม่ตรงกับ branding ของโรงพยาบาล"
+                  }
+                },
+                {
+                  "id": "d",
+                  "text": {
+                    "en": "The tool will be too slow to handle peak appointment loads",
+                    "th": "เครื่องมือจะช้าเกินไปที่จะรองรับปริมาณนัดหมายสูงสุด"
+                  }
+                },
+                {
+                  "id": "c",
+                  "text": {
+                    "en": "The database schema was not optimised for healthcare queries",
+                    "th": "schema ของ database ไม่ได้รับการปรับปรุงสำหรับ healthcare queries"
+                  }
+                },
+                {
+                  "id": "b",
+                  "text": {
+                    "en": "Confidential patient data could be inadequately protected, creating legal and safety risks",
+                    "th": "ข้อมูลผู้ป่วยที่เป็นความลับอาจได้รับการปกป้องไม่เพียงพอ สร้างความเสี่ยงทางกฎหมายและความปลอดภัย"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": "risk-multi1",
+          "type": "multi",
+          "points": 1,
+          "variants": {
+            "A": {
+              "q": {
+                "en": "Which of the following are warning signs that a workshop-built tool is being used beyond its appropriate scope? (pick all that apply)",
+                "th": "ข้อใดต่อไปนี้เป็นสัญญาณเตือนว่าเครื่องมือที่สร้างในเวิร์กชอปกำลังถูกใช้เกินขอบเขตที่เหมาะสม? (เลือกทั้งหมดที่ใช่)"
+              },
+              "options": [
+                {
+                  "id": "a",
+                  "text": {
+                    "en": "Real customers' personal information is being stored in it",
+                    "th": "ข้อมูลส่วนบุคคลของลูกค้าจริงถูกเก็บไว้ในนั้น"
+                  }
+                },
+                {
+                  "id": "b",
+                  "text": {
+                    "en": "The app uses Tailwind CSS for styling",
+                    "th": "แอปใช้ Tailwind CSS สำหรับการจัดสไตล์"
+                  }
+                },
+                {
+                  "id": "c",
+                  "text": {
+                    "en": "50+ colleagues depend on it for their daily work tasks",
+                    "th": "เพื่อนร่วมงาน 50+ คนพึ่งพาแอปสำหรับงานประจำวัน"
+                  }
+                },
+                {
+                  "id": "d",
+                  "text": {
+                    "en": "Financial transactions or payment data are flowing through it",
+                    "th": "ธุรกรรมทางการเงินหรือข้อมูลการชำระเงินไหลผ่านมัน"
+                  }
+                },
+                {
+                  "id": "e",
+                  "text": {
+                    "en": "The project is hosted on Vercel's free tier",
+                    "th": "โปรเจกต์ถูก host บน Vercel free tier"
+                  }
+                }
+              ]
+            },
+            "B": {
+              "q": {
+                "en": "Select every indicator that a self-built prototype has outgrown its intended scope. (pick all that apply)",
+                "th": "เลือกทุกตัวบ่งชี้ที่แสดงว่า prototype ที่สร้างเองได้เติบโตเกินขอบเขตที่ตั้งใจไว้ (เลือกทั้งหมดที่ใช่)"
+              },
+              "options": [
+                {
+                  "id": "e",
+                  "text": {
+                    "en": "The app is deployed on a subdomain rather than localhost",
+                    "th": "แอปถูก deploy บน subdomain แทนที่จะเป็น localhost"
+                  }
+                },
+                {
+                  "id": "a",
+                  "text": {
+                    "en": "Real customer PII (names, contacts, IDs) is being stored",
+                    "th": "PII ของลูกค้าจริง (ชื่อ ข้อมูลติดต่อ ID) กำลังถูกเก็บ"
+                  }
+                },
+                {
+                  "id": "c",
+                  "text": {
+                    "en": "Many staff depend on the tool to complete critical daily work",
+                    "th": "พนักงานจำนวนมากพึ่งพาเครื่องมือนั้นในการทำงานที่สำคัญในแต่ละวัน"
+                  }
+                },
+                {
+                  "id": "d",
+                  "text": {
+                    "en": "Payment or payroll figures are stored inside the app",
+                    "th": "ตัวเลขการชำระเงินหรือเงินเดือนถูกเก็บไว้ภายในแอป"
+                  }
+                },
+                {
+                  "id": "b",
+                  "text": {
+                    "en": "The developer wrote the app using JavaScript",
+                    "th": "นักพัฒนาเขียนแอปโดยใช้ JavaScript"
+                  }
+                }
+              ]
+            },
+            "C": {
+              "q": {
+                "en": "Which situations signal that a tool built during a workshop now carries real organisational risk? (pick all that apply)",
+                "th": "สถานการณ์ใดส่งสัญญาณว่าเครื่องมือที่สร้างขึ้นระหว่างเวิร์กชอปตอนนี้มีความเสี่ยงต่อองค์กรจริง? (เลือกทั้งหมดที่ใช่)"
+              },
+              "options": [
+                {
+                  "id": "b",
+                  "text": {
+                    "en": "The source code is stored in a private GitHub repository",
+                    "th": "ซอร์สโค้ดถูกเก็บไว้ใน GitHub repository แบบ private"
+                  }
+                },
+                {
+                  "id": "d",
+                  "text": {
+                    "en": "Sensitive financial or payroll data has been entered into it",
+                    "th": "ข้อมูลทางการเงินหรือเงินเดือนที่ละเอียดอ่อนถูกป้อนเข้าไปในนั้น"
+                  }
+                },
+                {
+                  "id": "a",
+                  "text": {
+                    "en": "It now stores real personally identifiable information of customers or employees",
+                    "th": "ตอนนี้มันเก็บข้อมูลที่สามารถระบุตัวตนได้จริงของลูกค้าหรือพนักงาน"
+                  }
+                },
+                {
+                  "id": "e",
+                  "text": {
+                    "en": "The UI was designed using a component library like shadcn",
+                    "th": "UI ถูกออกแบบโดยใช้ component library อย่าง shadcn"
+                  }
+                },
+                {
+                  "id": "c",
+                  "text": {
+                    "en": "Dozens of colleagues now rely on it to carry out their job responsibilities",
+                    "th": "เพื่อนร่วมงานหลายสิบคนตอนนี้พึ่งพามันในการดำเนินความรับผิดชอบในงาน"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "escalate",
+      "emoji": "🤝",
+      "title": {
+        "en": "Escalation & Judgment",
+        "th": "การขอความช่วยเหลือและวิจารณญาณ"
+      },
+      "questions": [
+        {
+          "id": "D1",
+          "type": "single",
+          "points": 1,
+          "variants": {
+            "A": {
+              "q": {
+                "en": "Halfway through your capstone build, you realize the feature you're adding probably needs a real database with proper user accounts. What's the best response?",
+                "th": "กลาง ๆ ของ capstone คุณรู้ว่า feature ที่จะเพิ่มอาจต้องมี database จริงกับ user account ที่ถูกต้อง การตอบสนองที่ดีที่สุดคือ?"
+              },
+              "options": [
+                {
+                  "id": "a",
+                  "text": {
+                    "en": "Push through and let Claude handle it",
+                    "th": "ลุยต่อ ปล่อย Claude จัดการ"
+                  }
+                },
+                {
+                  "id": "b",
+                  "text": {
+                    "en": "Pause, recognize this is beyond workshop scope, and reduce the feature to something simpler",
+                    "th": "หยุด รับว่ามันเกินขอบเขตเวิร์กชอป แล้วลดขนาด feature ให้เล็กลง"
+                  }
+                },
+                {
+                  "id": "c",
+                  "text": {
+                    "en": "Skip the test today and work alone for a week",
+                    "th": "ข้ามแบบทดสอบวันนี้ไปทำคนเดียวอีกสัปดาห์"
+                  }
+                },
+                {
+                  "id": "d",
+                  "text": {
+                    "en": "Ask Claude to skip authentication",
+                    "th": "บอก Claude ข้าม authentication"
+                  }
+                },
+                {
+                  "id": "e",
+                  "text": {
+                    "en": "Both B and discuss with your facilitator",
+                    "th": "ทั้ง B และคุยกับ facilitator"
+                  }
+                }
+              ]
+            },
+            "B": {
+              "q": {
+                "en": "While building your final project, you realise the next feature requires full payment processing and PCI-compliant data handling. What should you do?",
+                "th": "ขณะสร้างโปรเจกต์สุดท้ายคุณตระหนักว่า feature ถัดไปต้องการการประมวลผลการชำระเงินเต็มรูปแบบและการจัดการข้อมูลที่เป็น PCI-compliant คุณควรทำอะไร?"
+              },
+              "options": [
+                {
+                  "id": "c",
+                  "text": {
+                    "en": "Abandon the final project and start over alone next month",
+                    "th": "ละทิ้งโปรเจกต์สุดท้ายและเริ่มใหม่คนเดียวเดือนหน้า"
+                  }
+                },
+                {
+                  "id": "a",
+                  "text": {
+                    "en": "Keep building and rely on Claude to handle the compliance details",
+                    "th": "สร้างต่อไปและพึ่ง Claude จัดการรายละเอียด compliance"
+                  }
+                },
+                {
+                  "id": "e",
+                  "text": {
+                    "en": "Simplify the feature to something within scope AND flag it with your facilitator",
+                    "th": "ลดความซับซ้อน feature ให้อยู่ในขอบเขต และแจ้ง facilitator"
+                  }
+                },
+                {
+                  "id": "d",
+                  "text": {
+                    "en": "Ask Claude to skip the payment validation step",
+                    "th": "บอก Claude ข้ามขั้นตอนการตรวจสอบการชำระเงิน"
+                  }
+                },
+                {
+                  "id": "b",
+                  "text": {
+                    "en": "Stop, acknowledge this exceeds workshop scope, and scope down the feature",
+                    "th": "หยุด ยอมรับว่ามันเกินขอบเขตเวิร์กชอป และลดขนาด feature ลง"
+                  }
+                }
+              ]
+            },
+            "C": {
+              "q": {
+                "en": "You are prototyping a leave-request tool. Midway through you realise it needs to integrate with the HR payroll system and store legal employment records. What is your best course of action?",
+                "th": "คุณกำลัง prototype เครื่องมือ leave-request กลางทางคุณตระหนักว่ามันต้องเชื่อมต่อกับระบบเงินเดือน HR และเก็บบันทึกการจ้างงานตามกฎหมาย แนวทางที่ดีที่สุดของคุณคืออะไร?"
+              },
+              "options": [
+                {
+                  "id": "b",
+                  "text": {
+                    "en": "Recognise this is out of workshop scope and cut the feature back to a simpler version",
+                    "th": "ตระหนักว่านี่อยู่นอกขอบเขตเวิร์กชอปและตัด feature กลับเป็นเวอร์ชันที่เรียบง่ายกว่า"
+                  }
+                },
+                {
+                  "id": "d",
+                  "text": {
+                    "en": "Tell Claude to skip the HR integration and store records locally",
+                    "th": "บอก Claude ข้าม HR integration และเก็บบันทึกแบบ local"
+                  }
+                },
+                {
+                  "id": "e",
+                  "text": {
+                    "en": "Scale back the feature AND bring it to your facilitator's attention",
+                    "th": "ลดขนาด feature และแจ้งให้ facilitator ทราบ"
+                  }
+                },
+                {
+                  "id": "a",
+                  "text": {
+                    "en": "Continue building and let Claude figure out the legal compliance",
+                    "th": "สร้างต่อไปและให้ Claude คิด legal compliance"
+                  }
+                },
+                {
+                  "id": "c",
+                  "text": {
+                    "en": "Drop today's session and spend a week researching payroll APIs alone",
+                    "th": "ยกเลิกเซสชันวันนี้และใช้เวลาหนึ่งสัปดาห์ค้นคว้า payroll API คนเดียว"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": "D2",
+          "type": "multi",
+          "points": 1,
+          "variants": {
+            "A": {
+              "q": {
+                "en": "Which scenarios call for dev team involvement before you proceed solo? (pick all that apply)",
+                "th": "สถานการณ์ใดต้องคุยกับทีมพัฒนาก่อนทำคนเดียว? (เลือกทั้งหมดที่ใช่)"
+              },
+              "options": [
+                {
+                  "id": "a",
+                  "text": {
+                    "en": "You want to pull data from Airportels' internal booking system",
+                    "th": "อยากดึงข้อมูลจากระบบ booking ภายในของ Airportels"
+                  }
+                },
+                {
+                  "id": "b",
+                  "text": {
+                    "en": "You want to build a personal scratch app for yourself only",
+                    "th": "อยากสร้างแอปส่วนตัวใช้คนเดียว"
+                  }
+                },
+                {
+                  "id": "c",
+                  "text": {
+                    "en": "You want to share a tool with 20+ colleagues for daily real work",
+                    "th": "อยากแชร์เครื่องมือให้เพื่อน 20+ คนใช้งานจริงทุกวัน"
+                  }
+                },
+                {
+                  "id": "d",
+                  "text": {
+                    "en": "You want to add a custom domain like tool.airportels.com",
+                    "th": "อยากใช้ domain แบบ tool.airportels.com"
+                  }
+                },
+                {
+                  "id": "e",
+                  "text": {
+                    "en": "You want to add multi-user login with role permissions",
+                    "th": "อยากเพิ่ม login แบบ multi-user มี role permission"
+                  }
+                },
+                {
+                  "id": "f",
+                  "text": {
+                    "en": "You want to make a checklist for your shift on Monday",
+                    "th": "อยากสร้าง checklist สำหรับกะวันจันทร์ของคุณ"
+                  }
+                }
+              ]
+            },
+            "B": {
+              "q": {
+                "en": "Which of the following situations require you to consult the dev team before proceeding? (pick all that apply)",
+                "th": "สถานการณ์ใดต่อไปนี้ต้องการให้คุณปรึกษาทีมพัฒนาก่อนดำเนินการ? (เลือกทั้งหมดที่ใช่)"
+              },
+              "options": [
+                {
+                  "id": "f",
+                  "text": {
+                    "en": "Building a simple to-do list app that only you will use",
+                    "th": "สร้างแอป to-do list ง่าย ๆ ที่คุณใช้คนเดียว"
+                  }
+                },
+                {
+                  "id": "a",
+                  "text": {
+                    "en": "Connecting your tool to Airportels' live flight scheduling database",
+                    "th": "เชื่อมเครื่องมือของคุณกับ database กำหนดการบินจริงของ Airportels"
+                  }
+                },
+                {
+                  "id": "e",
+                  "text": {
+                    "en": "Setting up role-based login so different staff levels see different data",
+                    "th": "ตั้งค่า login ตาม role เพื่อให้พนักงานแต่ละระดับเห็นข้อมูลต่างกัน"
+                  }
+                },
+                {
+                  "id": "b",
+                  "text": {
+                    "en": "Creating a local scratch prototype just for your own experimentation",
+                    "th": "สร้าง prototype เฉพาะกิจสำหรับการทดลองส่วนตัวของคุณ"
+                  }
+                },
+                {
+                  "id": "d",
+                  "text": {
+                    "en": "Pointing a subdomain like portal.airportels.com to your app",
+                    "th": "ชี้ subdomain อย่าง portal.airportels.com ไปที่แอปของคุณ"
+                  }
+                },
+                {
+                  "id": "c",
+                  "text": {
+                    "en": "Rolling out an internal tool to 30+ staff members who will depend on it daily",
+                    "th": "เปิดตัวเครื่องมือภายในให้พนักงาน 30+ คนที่จะใช้งานทุกวัน"
+                  }
+                }
+              ]
+            },
+            "C": {
+              "q": {
+                "en": "Before going solo, which scenarios must involve the dev team? (pick all that apply)",
+                "th": "ก่อนทำคนเดียว สถานการณ์ใดต้องให้ทีมพัฒนาเข้ามาเกี่ยวข้อง? (เลือกทั้งหมดที่ใช่)"
+              },
+              "options": [
+                {
+                  "id": "b",
+                  "text": {
+                    "en": "Making a private sandbox app solely for your own learning",
+                    "th": "สร้างแอป sandbox ส่วนตัวเพื่อการเรียนรู้ของคุณเองเท่านั้น"
+                  }
+                },
+                {
+                  "id": "c",
+                  "text": {
+                    "en": "Deploying a shared workspace tool to 25 ground-operations colleagues",
+                    "th": "deploy เครื่องมือ workspace ที่แชร์กันให้เพื่อนร่วมงาน ground-operations 25 คน"
+                  }
+                },
+                {
+                  "id": "e",
+                  "text": {
+                    "en": "Adding an admin panel where managers can view and edit all staff records",
+                    "th": "เพิ่ม admin panel ที่ผู้จัดการสามารถดูและแก้ไขบันทึกพนักงานทั้งหมด"
+                  }
+                },
+                {
+                  "id": "f",
+                  "text": {
+                    "en": "Building a personal daily checklist app for your own use",
+                    "th": "สร้างแอป checklist ประจำวันส่วนตัวสำหรับใช้งานของคุณเอง"
+                  }
+                },
+                {
+                  "id": "a",
+                  "text": {
+                    "en": "Fetching live passenger data from Airportels' reservation system",
+                    "th": "ดึงข้อมูลผู้โดยสาร live จากระบบจองของ Airportels"
+                  }
+                },
+                {
+                  "id": "d",
+                  "text": {
+                    "en": "Registering ops.airportels.com as the URL for your department tool",
+                    "th": "ลงทะเบียน ops.airportels.com เป็น URL สำหรับเครื่องมือของแผนกคุณ"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": "escalate-rank1",
+          "type": "rank",
+          "points": 1,
+          "variants": {
+            "A": {
+              "q": {
+                "en": "You discover that a secret API key was committed to a public GitHub repo. Put these response actions in the correct order (FIRST action to LAST).",
+                "th": "คุณพบว่า secret API key ถูก commit ไปยัง GitHub repo สาธารณะ เรียงลำดับการตอบสนองเหล่านี้ตามลำดับที่ถูกต้อง (การกระทำแรกถึงสุดท้าย)"
+              },
+              "options": [
+                {
+                  "id": "a",
+                  "text": {
+                    "en": "Immediately revoke and regenerate the exposed key in the service dashboard",
+                    "th": "เพิกถอนและสร้าง key ที่ถูกเปิดเผยใหม่ใน service dashboard ทันที"
+                  }
+                },
+                {
+                  "id": "b",
+                  "text": {
+                    "en": "Alert your facilitator or dev team about the incident",
+                    "th": "แจ้ง facilitator หรือทีมพัฒนาเกี่ยวกับเหตุการณ์"
+                  }
+                },
+                {
+                  "id": "c",
+                  "text": {
+                    "en": "Move the new key to an environment variable so it never appears in code",
+                    "th": "ย้าย key ใหม่ไปไว้ใน environment variable เพื่อไม่ให้ปรากฏใน code อีก"
+                  }
+                },
+                {
+                  "id": "d",
+                  "text": {
+                    "en": "Verify the app still works correctly with the new key in place",
+                    "th": "ตรวจสอบว่าแอปยังทำงานถูกต้องกับ key ใหม่"
+                  }
+                }
+              ]
+            },
+            "B": {
+              "q": {
+                "en": "A database password was accidentally pushed to a public repository. Arrange these recovery steps from FIRST to LAST.",
+                "th": "รหัสผ่าน database ถูก push ไปยัง repository สาธารณะโดยไม่ตั้งใจ เรียงลำดับขั้นตอนการกู้คืนเหล่านี้จากก่อนสุดไปยังสุดท้าย"
+              },
+              "options": [
+                {
+                  "id": "d",
+                  "text": {
+                    "en": "Test the application to confirm it works with the new password",
+                    "th": "ทดสอบแอปพลิเคชันเพื่อยืนยันว่าทำงานได้กับรหัสผ่านใหม่"
+                  }
+                },
+                {
+                  "id": "b",
+                  "text": {
+                    "en": "Inform your facilitator or security team immediately",
+                    "th": "แจ้ง facilitator หรือทีมรักษาความปลอดภัยทันที"
+                  }
+                },
+                {
+                  "id": "c",
+                  "text": {
+                    "en": "Store the new password as an environment variable rather than in code",
+                    "th": "เก็บรหัสผ่านใหม่เป็น environment variable แทนที่จะอยู่ใน code"
+                  }
+                },
+                {
+                  "id": "a",
+                  "text": {
+                    "en": "Reset the password immediately in the database admin console",
+                    "th": "รีเซ็ตรหัสผ่านทันทีใน database admin console"
+                  }
+                }
+              ]
+            },
+            "C": {
+              "q": {
+                "en": "You learn a private Vercel token has been publicly visible in GitHub for 24 hours. Order these actions from FIRST to LAST.",
+                "th": "คุณทราบว่า Vercel token ส่วนตัวถูกเปิดเผยต่อสาธารณะบน GitHub มา 24 ชั่วโมง เรียงลำดับการกระทำเหล่านี้จากก่อนสุดไปยังสุดท้าย"
+              },
+              "options": [
+                {
+                  "id": "c",
+                  "text": {
+                    "en": "Set the replacement token as an environment variable so it stays out of the codebase",
+                    "th": "ตั้งค่า token ทดแทนเป็น environment variable เพื่อให้มันอยู่ห่างจาก codebase"
+                  }
+                },
+                {
+                  "id": "b",
+                  "text": {
+                    "en": "Notify your facilitator or the relevant security contact",
+                    "th": "แจ้ง facilitator หรือผู้ติดต่อด้านความปลอดภัยที่เกี่ยวข้อง"
+                  }
+                },
+                {
+                  "id": "d",
+                  "text": {
+                    "en": "Confirm the deployment pipeline still works correctly with the new token",
+                    "th": "ยืนยันว่า deployment pipeline ยังทำงานถูกต้องกับ token ใหม่"
+                  }
+                },
+                {
+                  "id": "a",
+                  "text": {
+                    "en": "Revoke the exposed token in the Vercel dashboard without delay",
+                    "th": "เพิกถอน token ที่ถูกเปิดเผยใน Vercel dashboard โดยไม่ชักช้า"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": "D3",
+          "type": "short",
+          "points": 3,
+          "variants": {
+            "A": {
+              "q": {
+                "en": "A colleague built a tool 3 months ago that works great for them. Now they want everyone in the department to use it daily, and to start tracking real customer feedback inside it. What advice would you give them?",
+                "th": "เพื่อนคุณสร้างเครื่องมือเมื่อ 3 เดือนก่อน ใช้งานดีกับเขาคนเดียว ตอนนี้อยากให้ทุกคนในแผนกใช้ทุกวัน และเก็บ feedback ลูกค้าจริงใน app ด้วย คุณจะแนะนำอะไร?"
+              },
+              "rows": 4
+            },
+            "B": {
+              "q": {
+                "en": "A coworker built a personal expense-tracker app two months ago and it works well for them alone. Now HR wants to roll it out to 50 employees and use it to store payroll-related figures. What would you advise?",
+                "th": "เพื่อนร่วมงานสร้างแอปติดตามค่าใช้จ่ายส่วนตัวเมื่อสองเดือนก่อนและใช้งานได้ดีสำหรับพวกเขาคนเดียว ตอนนี้ HR ต้องการเปิดตัวให้พนักงาน 50 คนและใช้เพื่อเก็บตัวเลขเกี่ยวกับเงินเดือน คุณจะแนะนำอะไร?"
+              },
+              "rows": 4
+            },
+            "C": {
+              "q": {
+                "en": "Six months ago a teammate built a shift-scheduling spreadsheet replacement that works perfectly for their own team of 4. Now the whole ground-operations division (80 staff) wants to adopt it, and a manager asks to link it to real-time gate assignment data. What is your advice?",
+                "th": "เมื่อหกเดือนก่อน เพื่อนร่วมทีมสร้างสิ่งที่แทน spreadsheet กำหนดกะที่ทำงานได้สมบูรณ์แบบสำหรับทีมเล็ก ๆ 4 คน ตอนนี้แผนก ground-operations ทั้งหมด (80 คน) ต้องการนำมาใช้ และผู้จัดการขอให้เชื่อมต่อกับข้อมูล gate assignment แบบ real-time คุณจะแนะนำอะไร?"
+              },
+              "rows": 4
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

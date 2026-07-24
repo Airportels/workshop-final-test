@@ -1,0 +1,2490 @@
+<!doctype html>
+<!--
+  Facilitator Scoring Console — Workshop Final Test
+  Single-file, no build step. Passcode-gated internal tool.
+  Loads: config.js, supabase CDN, questions.json
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Facilitator Console · Final Test</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#f5f6fa;--surface:#ffffff;--fg:#0f172a;--muted:#64748b;--border:#e2e8f0;
+      --indigo:#4f46e5;--indigo-600:#4338ca;--indigo-soft:#eef2ff;
+      --emerald:#059669;--emerald-soft:#ecfdf5;
+      --amber:#d97706;--amber-soft:#fffbeb;
+      --rose:#e11d48;--rose-soft:#fff1f2;
+      --ink-hero:#1e1b4b;
+      --radius:10px;--radius-sm:6px;
+      --font:'Inter','Sarabun',-apple-system,BlinkMacSystemFont,system-ui,sans-serif;
+      --mono:'SF Mono',ui-monospace,'JetBrains Mono',Menlo,monospace;
+    }
+    *,*::before,*::after{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--font);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+    button{font:inherit;cursor:pointer;color:inherit;border:0;background:none}
+    input,textarea{font:inherit}
+    h1,h2,h3{margin:0;letter-spacing:-0.02em}
+
+    /* ── Passcode screen ── */
+    #passcode-screen{
+      display:flex;align-items:center;justify-content:center;min-height:100vh;
+      background:linear-gradient(135deg,var(--ink-hero),#0f172a);
+    }
+    .pc-box{
+      background:#fff;border-radius:16px;padding:40px 48px;text-align:center;
+      box-shadow:0 20px 60px rgba(0,0,0,.25);max-width:380px;width:100%;
+    }
+    .pc-box h1{font-size:20px;font-weight:700;margin-bottom:6px}
+    .pc-box p{color:var(--muted);font-size:13px;margin:0 0 20px}
+    .pc-box input{
+      width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:var(--radius);
+      font-size:15px;letter-spacing:2px;outline:none;margin-bottom:12px;
+    }
+    .pc-box input:focus{border-color:var(--indigo);box-shadow:0 0 0 3px rgba(79,70,229,.1)}
+    .pc-box .btn-primary{
+      width:100%;background:var(--indigo);color:#fff;padding:10px 20px;
+      border-radius:var(--radius);font-weight:600;font-size:14px;
+    }
+    .pc-box .btn-primary:hover{background:var(--indigo-600)}
+    .pc-error{color:var(--rose);font-size:12px;margin-top:8px;min-height:18px}
+
+    /* ── No-supabase banner ── */
+    #no-supabase{
+      display:none;align-items:center;justify-content:center;min-height:100vh;
+      background:var(--bg);
+    }
+    .ns-box{
+      background:#fff;border-radius:16px;padding:36px 40px;max-width:480px;
+      box-shadow:0 4px 24px rgba(0,0,0,.08);text-align:center;
+    }
+    .ns-box h2{color:var(--rose);font-size:18px;margin-bottom:10px}
+    .ns-box p{color:var(--muted);font-size:14px;line-height:1.6;margin:0}
+    .ns-box code{background:#f1f5f9;padding:2px 6px;border-radius:4px;font-family:var(--mono);font-size:12px}
+
+    /* ── Main console ── */
+    #console{display:none}
+    header.top{
+      position:sticky;top:0;z-index:40;background:rgba(255,255,255,.95);
+      backdrop-filter:blur(10px);border-bottom:1px solid var(--border);
+    }
+    .top-inner{
+      display:flex;align-items:center;gap:12px;padding:10px 20px;
+      max-width:1200px;margin-inline:auto;
+    }
+    .brand{font-weight:700;font-size:14px}
+    .brand span{color:var(--muted);font-weight:500}
+    .spacer{flex:1}
+    .btn{
+      display:inline-flex;align-items:center;gap:6px;padding:6px 14px;
+      border-radius:var(--radius-sm);font-size:13px;font-weight:500;
+      border:1px solid var(--border);background:#fff;color:var(--fg);
+    }
+    .btn:hover{background:#f8fafc;border-color:#cbd5e1}
+    .btn-primary{background:var(--indigo);color:#fff;border-color:var(--indigo)}
+    .btn-primary:hover{background:var(--indigo-600);border-color:var(--indigo-600)}
+    .btn-sm{padding:4px 10px;font-size:12px}
+    .btn-danger{background:var(--rose-soft);color:var(--rose);border-color:#fecdd3}
+    .btn-danger:hover{background:#ffe4e6}
+    .btn-success{background:var(--emerald-soft);color:var(--emerald);border-color:#a7f3d0}
+    .btn-success:hover{background:#d1fae5}
+
+    /* ── Layout ── */
+    .layout{display:flex;max-width:1200px;margin-inline:auto;padding:16px 20px;gap:20px;min-height:calc(100vh - 53px)}
+    .sidebar{width:340px;flex-shrink:0}
+    .main{flex:1;min-width:0}
+
+    /* ── Stats bar ── */
+    .stats-bar{
+      display:flex;align-items:center;gap:12px;padding:10px 14px;
+      background:#fff;border:1px solid var(--border);border-radius:var(--radius);
+      margin-bottom:12px;font-size:13px;
+    }
+    .stats-bar strong{font-weight:600}
+    .pill{
+      display:inline-flex;align-items:center;padding:2px 8px;border-radius:999px;
+      font-size:11px;font-weight:600;
+    }
+    .pill-indigo{background:var(--indigo-soft);color:var(--indigo)}
+    .pill-emerald{background:var(--emerald-soft);color:var(--emerald)}
+    .pill-amber{background:var(--amber-soft);color:var(--amber)}
+
+    /* ── Filter row ── */
+    .filter-row{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+    .filter-row label{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);cursor:pointer}
+    .filter-row input[type=checkbox]{cursor:pointer;accent-color:var(--indigo)}
+
+    /* ── Submissions table ── */
+    .sub-list{
+      background:#fff;border:1px solid var(--border);border-radius:var(--radius);
+      overflow:hidden;
+    }
+    .sub-row{
+      display:grid;grid-template-columns:1fr 40px 70px 60px;
+      align-items:center;gap:8px;
+      padding:9px 12px;border-bottom:1px solid var(--border);
+      cursor:pointer;transition:background .12s;
+    }
+    .sub-row:last-child{border-bottom:none}
+    .sub-row:hover{background:#f8fafc}
+    .sub-row.active{background:var(--indigo-soft)}
+    .sub-name{font-weight:500;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .sub-meta{font-size:11px;color:var(--muted)}
+    .row-toggles{display:flex;gap:6px;margin-top:6px}
+    .row-toggle{font:inherit;font-size:11px;font-weight:600;padding:3px 10px;border-radius:999px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:.12s;white-space:nowrap}
+    .row-toggle:hover{border-color:var(--indigo);color:var(--indigo)}
+    .row-toggle.on{background:var(--indigo);border-color:var(--indigo);color:#fff}
+    .row-toggle.board.on{background:#059669;border-color:#059669}
+    .row-toggle.board:hover:not(.on){border-color:#059669;color:#059669}
+    .sub-form{font-family:var(--mono);font-size:11px;background:#f1f5f9;padding:1px 6px;border-radius:4px;text-align:center}
+    .sub-time{font-size:11px;color:var(--muted);font-family:var(--mono);text-align:right}
+    .empty-state{padding:32px;text-align:center;color:var(--muted);font-size:13px}
+
+    /* ── Detail panel ── */
+    .detail-panel{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:20px}
+    .detail-placeholder{
+      display:flex;align-items:center;justify-content:center;height:300px;
+      background:#fff;border:1px solid var(--border);border-radius:var(--radius);
+      color:var(--muted);font-size:14px;
+    }
+    .detail-header{display:flex;align-items:flex-start;gap:12px;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid var(--border)}
+    .detail-header-info h2{font-size:16px;font-weight:700;margin-bottom:3px}
+    .detail-header-info p{color:var(--muted);font-size:12px;margin:0}
+    .detail-header-actions{margin-left:auto;display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+    .score-big{
+      font-size:28px;font-weight:800;font-family:var(--mono);color:var(--indigo);
+      background:var(--indigo-soft);padding:4px 16px;border-radius:var(--radius);
+      text-align:center;
+    }
+    .score-label{font-size:10px;color:var(--muted);text-align:center;margin-top:2px}
+
+    /* ── Objective summary ── */
+    .obj-summary{
+      display:flex;align-items:center;gap:8px;padding:8px 12px;
+      background:#f8fafc;border-radius:var(--radius-sm);margin-bottom:14px;
+      font-size:12px;
+    }
+    .obj-count{font-weight:700;font-size:14px;font-family:var(--mono)}
+
+    /* ── Question card ── */
+    .q-card{border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:10px;overflow:hidden}
+    .q-card-head{
+      display:flex;align-items:center;gap:10px;padding:8px 12px;
+      background:#f8fafc;border-bottom:1px solid var(--border);
+    }
+    .q-id{font-family:var(--mono);font-size:11px;font-weight:600;color:var(--indigo);min-width:28px}
+    .q-type-badge{font-size:10px;padding:1px 6px;border-radius:999px;font-weight:600}
+    .q-type-single{background:#ede9fe;color:#7c3aed}
+    .q-type-multi{background:#fef3c7;color:#d97706}
+    .q-type-short{background:#e0f2fe;color:#0284c7}
+    .q-type-rank{background:#fce7f3;color:#be185d}
+    .q-points-label{margin-left:auto;font-size:11px;color:var(--muted)}
+    .q-check-icon{font-size:15px;margin-left:4px}
+    .q-body{padding:10px 12px}
+    .q-text{font-size:13px;color:var(--fg);margin-bottom:8px;line-height:1.55}
+    .q-answer-block{margin-bottom:8px}
+    .q-answer-label{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:3px}
+    .q-answer-text{
+      font-size:13px;background:#f8fafc;border-radius:var(--radius-sm);
+      padding:7px 10px;border:1px solid var(--border);color:var(--fg);line-height:1.55;
+    }
+    .q-answer-text.correct{border-color:#a7f3d0;background:var(--emerald-soft)}
+    .q-answer-text.incorrect{border-color:#fecdd3;background:var(--rose-soft)}
+    .q-answer-text.open{border-color:#bfdbfe;background:#eff6ff}
+    .q-points-row{display:flex;align-items:center;gap:8px;margin-top:8px}
+    .q-points-row label{font-size:11px;color:var(--muted)}
+    .q-points-input{
+      width:64px;padding:4px 8px;border:1px solid var(--border);border-radius:var(--radius-sm);
+      font-size:13px;font-weight:600;text-align:center;font-family:var(--mono);
+    }
+    .q-points-input:focus{outline:none;border-color:var(--indigo);box-shadow:0 0 0 2px rgba(79,70,229,.1)}
+    .q-max{font-size:11px;color:var(--muted);font-family:var(--mono)}
+
+    /* ── Save row ── */
+    .save-row{
+      display:flex;align-items:center;gap:10px;padding-top:14px;
+      margin-top:4px;border-top:1px solid var(--border);flex-wrap:wrap;
+    }
+    .facilitator-input{
+      flex:1;min-width:140px;padding:6px 10px;border:1px solid var(--border);
+      border-radius:var(--radius-sm);font-size:13px;
+    }
+    .facilitator-input:focus{outline:none;border-color:var(--indigo);box-shadow:0 0 0 2px rgba(79,70,229,.1)}
+    .save-status{font-size:12px;color:var(--muted);margin-left:4px}
+
+    /* ── Release section ── */
+    .release-row{
+      display:flex;align-items:center;gap:10px;padding:10px 12px;
+      border-radius:var(--radius-sm);border:1px solid var(--border);
+      margin-top:10px;flex-wrap:wrap;gap:8px;
+    }
+    .release-row.released{background:var(--emerald-soft);border-color:#a7f3d0}
+    .release-label{font-size:12px;font-weight:600}
+    .result-link{
+      font-family:var(--mono);font-size:11px;color:var(--indigo);
+      text-decoration:none;word-break:break-all;flex:1;
+    }
+    .result-link:hover{text-decoration:underline}
+
+    /* ── Export row ── */
+    .export-row{display:flex;gap:8px;margin-bottom:14px}
+
+    /* ── Loading spinner ── */
+    .loading{
+      display:flex;align-items:center;justify-content:center;padding:40px;
+      color:var(--muted);font-size:13px;gap:10px;
+    }
+    .spinner{
+      width:18px;height:18px;border:2px solid var(--border);
+      border-top-color:var(--indigo);border-radius:50%;
+      animation:spin .7s linear infinite;
+    }
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    /* ── Toast ── */
+    #toast{
+      position:fixed;bottom:24px;right:24px;z-index:999;
+      background:#1e293b;color:#fff;padding:10px 18px;border-radius:var(--radius);
+      font-size:13px;box-shadow:0 4px 16px rgba(0,0,0,.2);
+      opacity:0;transition:opacity .2s;pointer-events:none;
+    }
+    #toast.show{opacity:1}
+
+    /* ── View tabs ── */
+    .view-tabs{display:flex;gap:4px;background:#f1f5f9;border-radius:var(--radius-sm);padding:3px}
+    .view-tab{
+      padding:5px 16px;border-radius:calc(var(--radius-sm) - 2px);font-size:13px;font-weight:500;
+      color:var(--muted);cursor:pointer;border:0;background:none;transition:background .12s,color .12s;
+    }
+    .view-tab.active{background:#fff;color:var(--fg);box-shadow:0 1px 3px rgba(0,0,0,.1)}
+    .view-tab:hover:not(.active){color:var(--fg)}
+
+    /* ── Codes view ── */
+    .codes-layout{max-width:1200px;margin-inline:auto;padding:16px 20px}
+    .codes-actions{display:flex;gap:16px;margin-bottom:16px;flex-wrap:wrap}
+    .codes-card{
+      background:#fff;border:1px solid var(--border);border-radius:var(--radius);
+      padding:16px 20px;flex:1;min-width:280px;
+    }
+    .codes-card h3{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin:0 0 12px}
+    .codes-form-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+    .codes-input{
+      padding:6px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);
+      font-size:13px;background:#fff;
+    }
+    .codes-input:focus{outline:none;border-color:var(--indigo);box-shadow:0 0 0 2px rgba(79,70,229,.1)}
+    .codes-input-code{width:140px;font-family:var(--mono);text-transform:uppercase}
+    .codes-input-label{width:160px}
+    .codes-input-n{width:80px;font-family:var(--mono)}
+    .codes-select{
+      padding:6px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);
+      font-size:13px;background:#fff;cursor:pointer;
+    }
+    .codes-select:focus{outline:none;border-color:var(--indigo)}
+    .codes-inline-error{font-size:12px;color:var(--rose);margin-top:6px;min-height:16px}
+
+    /* ── Codes table ── */
+    .codes-table-wrap{background:#fff;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+    .codes-table{width:100%;border-collapse:collapse;font-size:13px}
+    .codes-table th{
+      background:#f8fafc;padding:7px 12px;text-align:left;font-size:11px;font-weight:600;
+      color:var(--muted);text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid var(--border);
+    }
+    .codes-table td{padding:8px 12px;border-bottom:1px solid var(--border);vertical-align:middle}
+    .codes-table tr:last-child td{border-bottom:none}
+    .codes-table tr:hover td{background:#f8fafc}
+    .code-cell{font-family:var(--mono);font-weight:600;letter-spacing:.05em}
+    .used-dot{
+      display:inline-block;width:8px;height:8px;border-radius:50%;
+      background:var(--emerald);vertical-align:middle;margin-right:4px;
+    }
+    .unused-dot{
+      display:inline-block;width:8px;height:8px;border-radius:50%;
+      background:var(--border);vertical-align:middle;margin-right:4px;
+    }
+
+    /* ── Rubric panel ── */
+    .rubric-panel{border:1px solid var(--border);border-radius:var(--radius-sm);margin-top:14px;overflow:hidden}
+    .rubric-toggle{
+      display:flex;align-items:center;gap:8px;padding:9px 12px;background:#f8fafc;
+      font-size:13px;font-weight:600;cursor:pointer;width:100%;text-align:left;border:0;
+      border-bottom:1px solid transparent;
+    }
+    .rubric-toggle:hover{background:#f1f5f9}
+    .rubric-toggle.open{border-bottom-color:var(--border)}
+    .rubric-toggle-arrow{font-size:11px;color:var(--muted);transition:transform .15s}
+    .rubric-toggle.open .rubric-toggle-arrow{transform:rotate(90deg)}
+    .rubric-body{display:none;padding:14px 12px}
+    .rubric-body.open{display:block}
+    .axis-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:10px}
+    .axis-label{min-width:160px;font-size:12px;font-weight:600;padding-top:5px}
+    .axis-desc{font-size:11px;color:var(--muted);flex:1;padding-top:5px;line-height:1.5}
+    .axis-btns{display:flex;gap:4px;flex-shrink:0}
+    .axis-btn{
+      width:30px;height:30px;border-radius:var(--radius-sm);border:1px solid var(--border);
+      background:#fff;font-size:13px;font-weight:600;font-family:var(--mono);
+      cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .1s,border-color .1s;
+    }
+    .axis-btn:hover{background:#f1f5f9;border-color:#cbd5e1}
+    .axis-btn.selected{background:var(--indigo);color:#fff;border-color:var(--indigo)}
+    .bucket-row{display:flex;align-items:center;gap:10px;padding-top:10px;border-top:1px solid var(--border);margin-top:4px}
+    .bucket-suggestion{font-size:22px;min-width:28px;text-align:center}
+    .bucket-label{font-size:12px;color:var(--muted)}
+    .bucket-select{
+      padding:4px 8px;border:1px solid var(--border);border-radius:var(--radius-sm);
+      font-size:13px;background:#fff;cursor:pointer;
+    }
+    .bucket-select:focus{outline:none;border-color:var(--indigo);box-shadow:0 0 0 2px rgba(79,70,229,.1)}
+
+    /* ── Responsive ── */
+    @media(max-width:820px){
+      .layout{flex-direction:column}
+      .sidebar{width:100%}
+    }
+
+    /* ── Questions editor view ── */
+    .questions-layout{max-width:1100px;margin-inline:auto;padding:16px 20px}
+    .questions-actions{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+    .q-editor-table-wrap{background:#fff;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:20px}
+    .q-editor-table{width:100%;border-collapse:collapse;font-size:13px}
+    .q-editor-table th{
+      background:#f8fafc;padding:7px 12px;text-align:left;font-size:11px;font-weight:600;
+      color:var(--muted);text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid var(--border);
+    }
+    .q-editor-table td{padding:7px 12px;border-bottom:1px solid var(--border);vertical-align:middle}
+    .q-editor-table tr:last-child td{border-bottom:none}
+    .q-editor-table tr:hover td{background:#f8fafc}
+    .q-editor-form{background:#fff;border:1px solid var(--indigo);border-radius:var(--radius);padding:20px;margin-bottom:20px}
+    .q-editor-form h3{font-size:14px;font-weight:700;margin:0 0 16px}
+    .qf-row{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px;align-items:flex-start}
+    .qf-field{display:flex;flex-direction:column;gap:4px}
+    .qf-field label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+    .qf-input{padding:6px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px;background:#fff}
+    .qf-input:focus{outline:none;border-color:var(--indigo);box-shadow:0 0 0 2px rgba(79,70,229,.1)}
+    .qf-textarea{padding:7px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px;background:#fff;resize:vertical;min-height:70px;width:100%}
+    .qf-textarea:focus{outline:none;border-color:var(--indigo);box-shadow:0 0 0 2px rgba(79,70,229,.1)}
+    .qf-section-label{font-size:12px;font-weight:700;color:var(--fg);margin:14px 0 6px;border-bottom:1px solid var(--border);padding-bottom:4px}
+    .qf-option-row{display:flex;gap:8px;align-items:center;margin-bottom:6px}
+    .qf-option-row .qf-input{flex:1}
+    .qf-options-area{margin-bottom:8px}
+    .qf-answer-section{margin-top:10px;padding:10px 12px;background:#f8fafc;border-radius:var(--radius-sm);border:1px solid var(--border)}
+    .qf-answer-label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px}
+    .qf-radio-row{display:flex;align-items:center;gap:6px;margin-bottom:4px;font-size:13px}
+    .qf-checkbox-row{display:flex;align-items:center;gap:6px;margin-bottom:4px;font-size:13px}
+    .qf-form-actions{display:flex;gap:8px;margin-top:16px;padding-top:14px;border-top:1px solid var(--border)}
+    .qf-status{font-size:12px;color:var(--muted);margin-left:4px}
+    .qf-rank-row{display:flex;gap:8px;align-items:center;margin-bottom:6px}
+    .qf-rank-row .qf-input{flex:1}
+    .qf-rank-select{padding:4px 6px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px;font-family:var(--mono);background:#fff;width:52px}
+    .qf-rank-select:focus{outline:none;border-color:var(--indigo);box-shadow:0 0 0 2px rgba(79,70,229,.1)}
+    .qf-rank-error{font-size:12px;color:var(--rose);margin-top:4px;min-height:16px}
+    .qf-form-switcher{display:flex;align-items:center;gap:6px;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+    .qf-form-switcher-label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-right:4px}
+    .qf-form-btn{padding:4px 14px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px;font-weight:600;background:#fff;cursor:pointer;transition:background .1s,border-color .1s,color .1s}
+    .qf-form-btn:hover{background:var(--indigo-soft);border-color:var(--indigo)}
+    .qf-form-btn.active{background:var(--indigo);color:#fff;border-color:var(--indigo)}
+    .qf-form-badge{font-size:11px;color:var(--muted);margin-left:8px}
+    .qf-copy-from-a{margin-bottom:10px}
+    .rank-order-list{list-style:none;padding:0;margin:0}
+    .rank-order-item{display:flex;align-items:center;gap:8px;padding:4px 8px;background:#f8fafc;border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:4px;font-size:13px}
+    .rank-order-num{font-family:var(--mono);font-weight:700;color:var(--indigo);min-width:20px}
+
+    /* ── Facilitator language switch + marked choice review ── */
+    .fac-lang{display:inline-flex;background:#fff;border:1px solid #e2e8f0;border-radius:999px;padding:3px;margin-left:8px}
+    .fac-lang button{font:inherit;border:0;background:none;cursor:pointer;padding:4px 11px;border-radius:999px;font-size:12px;font-weight:600;color:#64748b}
+    .fac-lang button.on{background:#0f172a;color:#fff}
+    .fac-opt-list{display:flex;flex-direction:column;gap:6px;margin-top:4px}
+    .fac-opt{display:flex;align-items:flex-start;gap:8px;padding:8px 11px;border:1px solid #e2e8f0;border-radius:8px;background:#f8fafc;font-size:13px;line-height:1.45}
+    .fac-opt.correct{border-color:#6ee7b7;background:#f0fdf4}
+    .fac-opt.wrong{border-color:#fca5a5;background:#fff5f5}
+    .fac-opt-id{font-family:var(--mono,monospace);color:#64748b;flex:none}
+    .fac-opt-text{flex:1;color:#1e293b}
+    .fac-badges{display:flex;gap:5px;flex:none;flex-wrap:wrap}
+    .fac-badge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:999px;white-space:nowrap;text-transform:uppercase;letter-spacing:.04em}
+    .fac-badge.picked{background:#fee2e2;color:#991b1b}
+    .fac-badge.picked.on-correct{background:#d1fae5;color:#065f46}
+    .fac-badge.correct{background:#d1fae5;color:#065f46}
+    .fac-rank-cols{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px}
+    .fac-rank-h{font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
+    .fac-rank-col ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
+    .fac-rank-col ol li{font-size:13px;color:#1e293b;padding:4px 7px;border-radius:7px;border:1px solid #e2e8f0;background:#f8fafc}
+    .fac-rank-col ol li.match{border-color:#6ee7b7;background:#f0fdf4}
+    .fac-rank-col ol li.miss{border-color:#fca5a5;background:#fff5f5}
+    .fac-legend{display:flex;gap:14px;flex-wrap:wrap;margin:0 0 14px;font-size:12px;color:#64748b}
+    .fac-legend .lg{display:inline-flex;align-items:center;gap:6px}
+    .fac-legend .sw{width:11px;height:11px;border-radius:3px;border:1px solid}
+    .fac-legend .sw.correct{background:#f0fdf4;border-color:#6ee7b7}
+    .fac-legend .sw.wrong{background:#fff5f5;border-color:#fca5a5}
+    @media(max-width:640px){.fac-rank-cols{grid-template-columns:1fr}}
+
+    /* ── Reviewed checkbox + sticky grade bar (Phase 10 Task 2) ── */
+    .q-reviewed-check{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:#334155;cursor:pointer;user-select:none;margin-left:14px}
+    .q-reviewed-check input{width:15px;height:15px;accent-color:#059669;cursor:pointer}
+    .q-card.is-reviewed{background:#f0fdf4;border-color:#a7f3d0}
+    .list-reviewed{font-size:11px;color:#059669;font-weight:600;margin-left:6px;white-space:nowrap}
+
+    /* ── Flag checkbox (Phase 12 Task 2) ── */
+    .q-flag-check{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:#334155;cursor:pointer;user-select:none;margin-left:12px}
+    .q-flag-check input{width:15px;height:15px;accent-color:#d97706;cursor:pointer}
+    .q-card.is-flagged{border-color:#f59e0b;box-shadow:inset 3px 0 0 #f59e0b}
+    .q-card.is-reviewed.is-flagged{background:#f0fdf4;border-color:#f59e0b}
+    .list-flagged{font-size:11px;color:#b45309;font-weight:600;margin-left:6px;white-space:nowrap}
+    .sticky-grade-bar .sg-flag{font-size:13px;font-weight:600;color:#b45309}
+    .sticky-grade-bar{position:sticky;bottom:0;z-index:30;margin-top:16px;display:flex;align-items:center;gap:14px;
+      padding:12px 16px;background:rgba(255,255,255,.97);backdrop-filter:blur(8px);border:1px solid var(--border);
+      border-radius:var(--radius);box-shadow:0 -2px 10px rgba(15,23,42,.06)}
+    .sticky-grade-bar .sg-prog{font-size:13px;font-weight:600;color:#334155}
+    .sticky-grade-bar .sg-total{font-size:13px;color:#334155}
+    .sticky-grade-bar .sg-total strong{font-size:16px;font-family:var(--mono);color:var(--indigo)}
+    .sticky-grade-bar .sg-dirty{font-size:12px;color:#d97706;font-weight:600}
+    .sticky-grade-bar .sg-dirty[hidden]{display:none}
+    .sticky-grade-bar .sg-spacer{flex:1}
+    @media(max-width:640px){.sticky-grade-bar{flex-wrap:wrap;gap:8px}}
+  </style>
+</head>
+<body>
+
+<!-- Passcode screen -->
+<div id="passcode-screen">
+  <div class="pc-box">
+    <h1>Facilitator Console</h1>
+    <p>Workshop Final Test · Internal scoring tool</p>
+    <input type="password" id="pc-input" placeholder="Passcode" autocomplete="off" />
+    <button class="btn-primary" onclick="checkPasscode()">Enter</button>
+    <div class="pc-error" id="pc-error"></div>
+  </div>
+</div>
+
+<!-- No Supabase screen -->
+<div id="no-supabase">
+  <div class="ns-box">
+    <h2>Supabase not connected</h2>
+    <p>Open <code>config.js</code> and replace the placeholder values with your real<br>
+    <code>SUPABASE_URL</code> and <code>SUPABASE_ANON_KEY</code> to use the console.</p>
+  </div>
+</div>
+
+<!-- Main console -->
+<div id="console">
+  <header class="top">
+    <div class="top-inner">
+      <div class="brand">Facilitator Console <span>· Final Test</span></div>
+      <div class="view-tabs">
+        <button class="view-tab active" id="tab-scoring" onclick="switchView('scoring')">Submissions / Scoring</button>
+        <button class="view-tab" id="tab-codes" onclick="switchView('codes')">Codes</button>
+        <button class="view-tab" id="tab-questions" onclick="switchView('questions')">Questions</button>
+      </div>
+      <span class="fac-lang" role="group" aria-label="Question language">
+        <button type="button" data-lang="en" class="on" onclick="setFacLang('en')">EN</button>
+        <button type="button" data-lang="th" onclick="setFacLang('th')">TH</button>
+      </span>
+      <div class="spacer"></div>
+      <button class="btn btn-sm" id="export-csv-btn" onclick="exportCSV()">⬇ CSV</button>
+      <button class="btn btn-sm" id="export-json-btn" onclick="exportJSON()">⬇ JSON</button>
+      <button class="btn btn-sm btn-primary" id="refresh-btn" onclick="handleRefresh()">↻ Refresh</button>
+    </div>
+  </header>
+
+  <!-- Scoring view -->
+  <div id="view-scoring">
+    <div class="layout">
+      <!-- Sidebar: submissions list -->
+      <div class="sidebar">
+        <div class="stats-bar" id="stats-bar">
+          <span id="stats-text">Loading…</span>
+        </div>
+        <div class="filter-row">
+          <label>
+            <input type="checkbox" id="unscored-filter" onchange="renderList()" />
+            Show unscored only
+          </label>
+          <label style="display:inline-flex;align-items:center;gap:8px;font-size:13px;cursor:pointer">
+            <input type="checkbox" id="board-shownames" onchange="setBoardShowNames(this.checked)">
+            Show names on public board
+          </label>
+          <label style="display:inline-flex;align-items:center;gap:8px;font-size:13px;margin-left:14px">
+            Reveal passcode
+            <input type="text" id="board-reveal-code" placeholder="(none)" style="font:inherit;padding:3px 8px;border:1px solid var(--border);border-radius:6px" onchange="setBoardRevealPasscode(this.value)">
+          </label>
+          <div style="font-size:11px;color:var(--muted);margin-top:4px;flex-basis:100%">Directors can view names via <code>board.html?reveal=&lt;code&gt;</code> without making the board public.</div>
+        </div>
+        <div class="sub-list" id="sub-list">
+          <div class="loading"><div class="spinner"></div> Loading submissions…</div>
+        </div>
+      </div>
+
+      <!-- Main: detail view -->
+      <div class="main" id="main-area">
+        <div class="detail-placeholder">← Select a submission to score</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Questions view -->
+  <div id="view-questions" style="display:none">
+    <div class="questions-layout">
+      <div class="questions-actions">
+        <span id="questions-count-label" style="font-size:13px;color:var(--muted)">Loading…</span>
+        <button class="btn btn-sm" onclick="loadQuestions()">↻ Refresh</button>
+        <button class="btn btn-sm btn-primary" onclick="openQuestionForm(null)">+ Add question</button>
+      </div>
+      <!-- Inline editor form (hidden until Add/Edit) -->
+      <div id="q-editor-form-wrap" style="display:none"></div>
+      <!-- Questions list table -->
+      <div class="q-editor-table-wrap">
+        <table class="q-editor-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Part</th>
+              <th>Type</th>
+              <th>Pts</th>
+              <th>Forms</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="questions-tbody">
+            <tr><td colspan="6" class="empty-state">Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Codes view -->
+  <div id="view-codes" style="display:none">
+    <div class="codes-layout">
+
+      <!-- Action cards row -->
+      <div class="codes-actions">
+
+        <!-- Create one code -->
+        <div class="codes-card">
+          <h3>Create one code</h3>
+          <div class="codes-form-row">
+            <input class="codes-input codes-input-code" type="text" id="new-code-value"
+              placeholder="e.g. PILOT-01" autocomplete="off" />
+            <select class="codes-select" id="new-code-form"></select>
+            <input class="codes-input codes-input-label" type="text" id="new-code-label"
+              placeholder="Label (optional)" autocomplete="off" />
+            <button class="btn btn-primary btn-sm" onclick="createOneCode()">+ Add</button>
+          </div>
+          <div class="codes-inline-error" id="create-error"></div>
+        </div>
+
+        <!-- Generate N codes -->
+        <div class="codes-card">
+          <h3>Generate N codes</h3>
+          <div class="codes-form-row">
+            <input class="codes-input codes-input-n" type="number" id="gen-n"
+              placeholder="N" min="1" max="500" value="10" />
+            <span style="font-size:13px;color:var(--muted)">codes, round-robin across forms</span>
+            <button class="btn btn-primary btn-sm" onclick="generateNCodes()">Generate</button>
+          </div>
+          <div class="codes-inline-error" id="generate-error"></div>
+        </div>
+
+      </div>
+
+      <!-- Codes table -->
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+        <span id="codes-count-label" style="font-size:13px;color:var(--muted)">Loading…</span>
+        <button class="btn btn-sm" onclick="loadCodes()">↻ Refresh</button>
+      </div>
+      <div class="codes-table-wrap">
+        <table class="codes-table">
+          <thead>
+            <tr>
+              <th>Code</th>
+              <th>Form</th>
+              <th>Label</th>
+              <th>Status</th>
+              <th>Used by</th>
+              <th>Used at</th>
+              <th>Created</th>
+            </tr>
+          </thead>
+          <tbody id="codes-tbody">
+            <tr><td colspan="7" class="empty-state">Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<script>
+'use strict';
+
+/* ────────────────────────────────────────────
+   State
+──────────────────────────────────────────── */
+let questionsData = null;    // parsed questions.json
+let dbAnswerKey = null;      // derived from ft_questions rows: { [id]: { [form]: answer } }
+let allDbQuestions = [];     // rows from ft_questions
+let allSubmissions = [];     // rows from ft_submissions
+let allScores = {};          // keyed by submission_id → row from ft_scores
+let selectedId = null;       // currently selected submission id
+let db = null;               // supabase client
+
+// Objective question IDs (auto-checkable: single, multi, rank)
+const OBJECTIVE_IDS = new Set(['A1','A3','A4','B2','B3','B4','C2','D1','D2']);
+
+// Facilitator content language state
+let facLang = 'en';
+let _facSelectedSub = null;   // tracks the currently open submission for re-render on lang toggle
+
+function getSelectedSub(){ return _facSelectedSub; }
+
+function setFacLang(l){
+  if (l === facLang) return;
+  facLang = l;
+  document.querySelectorAll('.fac-lang button').forEach(function(b){
+    b.classList.toggle('on', b.getAttribute('data-lang') === l);
+  });
+  // Re-render the currently open submission detail, if any.
+  const sub = getSelectedSub && getSelectedSub();
+  if (sub) {
+    // Capture unsaved checkbox/points state so renderDetail's re-seed from the
+    // saved row doesn't drop in-progress edits (Phase 10 Task 2, Step 10).
+    window._pendingReviewed = reviewedStates();
+    window._pendingFlagged = flaggedStates();
+    window._pendingPoints = {};
+    document.querySelectorAll('.q-points-input').forEach(function(inp){
+      const id = inp.id.replace(/^pts-/, ''); window._pendingPoints[id] = inp.value;
+    });
+    renderDetail(sub);
+  }
+}
+
+function facOptText(o){ return (o && o.text && (o.text[facLang] || o.text.en)) || String(o && o.id); }
+function facStem(variant, q){
+  const src = (variant && variant.q) || (q && q.q);
+  return src ? (src[facLang] || src.en || '') : '';
+}
+
+function buildFacMarkedChoices(variant, participantAns, correct){
+  const opts = (variant && variant.options) || [];
+  const yourSet = new Set(Array.isArray(participantAns) ? participantAns : (participantAns==null?[]:[participantAns]));
+  const corrSet = new Set(Array.isArray(correct) ? correct : (correct==null?[]:[correct]));
+  const rows = opts.map(function(o){
+    const isC = corrSet.has(o.id), isY = yourSet.has(o.id);
+    let cls = 'fac-opt'; if (isC) cls += ' correct'; else if (isY) cls += ' wrong';
+    let b = '';
+    if (isY) b += '<span class="fac-badge picked'+(isC?' on-correct':'')+'">Picked</span>';
+    if (isC) b += '<span class="fac-badge correct">Correct</span>';
+    return '<div class="'+cls+'"><span class="fac-opt-id">('+esc(String(o.id))+')</span>'+
+           '<span class="fac-opt-text">'+esc(facOptText(o))+'</span>'+
+           (b?'<span class="fac-badges">'+b+'</span>':'')+'</div>';
+  });
+  return '<div class="fac-opt-list">'+rows.join('')+'</div>';
+}
+
+function buildFacRankCompare(variant, participantAns, correct){
+  const opts = (variant && variant.options) || [];
+  const map = {}; opts.forEach(function(o){ map[o.id] = facOptText(o); });
+  const your = Array.isArray(participantAns) ? participantAns : [];
+  const corr = Array.isArray(correct) ? correct : [];
+  const n = Math.max(your.length, corr.length);
+  let yl = '', cl = '';
+  for (let i=0;i<n;i++){
+    const y=your[i], c=corr[i], m = y!=null && c!=null && y===c;
+    if (y!=null) yl += '<li class="'+(m?'match':'miss')+'">'+esc(map[y]||String(y))+'</li>';
+    if (c!=null) cl += '<li class="'+(m?'match':'')+'">'+esc(map[c]||String(c))+'</li>';
+  }
+  if (!your.length) yl = '<li class="fac-rank-empty" style="list-style:none;color:#64748b;font-style:italic">No answer</li>';
+  return '<div class="fac-rank-cols">'+
+    '<div class="fac-rank-col"><div class="fac-rank-h">Participant order</div><ol>'+yl+'</ol></div>'+
+    '<div class="fac-rank-col"><div class="fac-rank-h">Correct order</div><ol>'+cl+'</ol></div></div>';
+}
+
+// 8-topic part metadata — keyed by part code; fixed display order preserved via array
+const PART_META = [
+  { code: 'deploy',   emoji: '🚀', title: 'Web App & Deployment' },
+  { code: 'data',     emoji: '🗄️', title: 'Storage & Data' },
+  { code: 'secrets',  emoji: '🔐', title: 'Secrets & Security' },
+  { code: 'prompt',   emoji: '💬', title: 'Prompting Claude' },
+  { code: 'verify',   emoji: '🔬', title: 'Verification & Testing' },
+  { code: 'iterate',  emoji: '🔁', title: 'Iteration Discipline' },
+  { code: 'risk',     emoji: '⚠️', title: 'Risk Literacy & Real Data' },
+  { code: 'escalate', emoji: '🤝', title: 'Escalation & Judgment' },
+];
+const PART_META_MAP = Object.fromEntries(PART_META.map(p => [p.code, p]));
+
+/* ────────────────────────────────────────────
+   Passcode gate
+──────────────────────────────────────────── */
+function checkPasscode() {
+  const input = document.getElementById('pc-input').value.trim();
+  const expected = window.APP_CONFIG && window.APP_CONFIG.FACILITATOR_PASSCODE;
+  if (!expected || input !== expected) {
+    document.getElementById('pc-error').textContent = 'Incorrect passcode. Try again.';
+    return;
+  }
+  document.getElementById('pc-error').textContent = '';
+  document.getElementById('passcode-screen').style.display = 'none';
+
+  db = window.sbClient ? window.sbClient() : null;
+  if (!db) {
+    document.getElementById('no-supabase').style.display = 'flex';
+    return;
+  }
+  document.getElementById('console').style.display = 'block';
+  init();
+}
+
+document.getElementById('pc-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') checkPasscode();
+});
+
+/* ────────────────────────────────────────────
+   Init: fetch static files + Supabase data
+──────────────────────────────────────────── */
+async function init() {
+  try {
+    // questions.json is required — propagate any failure
+    questionsData = await fetch('questions.json').then(r => {
+      if (!r.ok) throw new Error('questions.json ' + r.status);
+      return r.json();
+    });
+  } catch (err) {
+    showToast('Error loading questions: ' + err.message, true);
+    return;
+  }
+
+  await refreshData();
+  if (sbClient()) await loadBoardConfig();
+}
+
+async function refreshData() {
+  try {
+    const [subRes, scRes, qRes] = await Promise.all([
+      db.from('ft_submissions').select('*').order('created_at', { ascending: false }),
+      db.from('ft_scores').select('*'),
+      db.from('ft_questions').select('*').order('part').order('ord'),
+    ]);
+    if (subRes.error) throw subRes.error;
+    if (scRes.error) throw scRes.error;
+    // ft_questions error is non-fatal — degrade to no auto-check
+    if (qRes.error) {
+      console.warn('ft_questions load error:', qRes.error.message);
+      allDbQuestions = [];
+      dbAnswerKey = null;
+    } else {
+      allDbQuestions = qRes.data || [];
+      // Build answer key map: { [id]: { [form]: answer } } for rows with non-null answer
+      const key = {};
+      for (const row of allDbQuestions) {
+        if (row.answer && typeof row.answer === 'object') {
+          key[row.id] = row.answer;
+        }
+      }
+      dbAnswerKey = Object.keys(key).length > 0 ? key : null;
+    }
+
+    allSubmissions = subRes.data || [];
+    allScores = {};
+    for (const row of (scRes.data || [])) {
+      allScores[row.submission_id] = row;
+    }
+
+    renderStats();
+    renderList();
+
+    // Re-render detail if something was selected
+    if (selectedId) {
+      const sub = allSubmissions.find(s => s.id === selectedId);
+      if (sub) renderDetail(sub);
+    }
+  } catch (err) {
+    showToast('Refresh error: ' + err.message, true);
+  }
+}
+
+/* ────────────────────────────────────────────
+   Stats bar
+──────────────────────────────────────────── */
+function renderStats() {
+  const total = allSubmissions.length;
+  const scored = allSubmissions.filter(s => {
+    const sc = allScores[s.id];
+    return sc && sc.total_points != null;
+  }).length;
+  const released = allSubmissions.filter(s => allScores[s.id]?.released).length;
+  document.getElementById('stats-text').innerHTML =
+    `<strong>${total}</strong> submitted &nbsp;·&nbsp; ` +
+    `<strong>${scored}</strong> scored &nbsp;·&nbsp; ` +
+    `<strong>${released}</strong> released`;
+}
+
+/* ────────────────────────────────────────────
+   Reviewed checkbox / sticky grade bar helpers (Phase 10 Task 2)
+──────────────────────────────────────────── */
+let _gradeDirty = false;
+function reviewedStates(){
+  // current checkbox states from the DOM: { qid: true } for checked
+  const m = {};
+  document.querySelectorAll('input[data-rev-qid]').forEach(function(cb){
+    if (cb.checked) m[cb.getAttribute('data-rev-qid')] = true;
+  });
+  return m;
+}
+function updateReviewProgress(){
+  const boxes = document.querySelectorAll('input[data-rev-qid]');
+  const n = boxes.length;
+  let done = 0; boxes.forEach(function(cb){ if (cb.checked) done++; });
+  const el = document.getElementById('sg-progress');
+  if (el) el.textContent = 'Reviewed ' + done + ' / ' + n;
+}
+function markDirty(){
+  _gradeDirty = true;
+  const d = document.getElementById('sg-dirty');
+  if (d) d.hidden = false;
+}
+function onReviewToggle(cb){
+  const card = cb.closest('.q-card');
+  if (card) card.classList.toggle('is-reviewed', cb.checked);
+  updateReviewProgress();
+  markDirty();
+}
+function flaggedStates(){
+  const m = {};
+  document.querySelectorAll('input[data-flag-qid]').forEach(function(cb){
+    if (cb.checked) m[cb.getAttribute('data-flag-qid')] = true;
+  });
+  return m;
+}
+function updateFlagProgress(){
+  let done = 0;
+  document.querySelectorAll('input[data-flag-qid]').forEach(function(cb){ if (cb.checked) done++; });
+  const el = document.getElementById('sg-flag');
+  if (el) el.textContent = '🚩 ' + done;
+}
+function onFlagToggle(cb){
+  const card = cb.closest('.q-card');
+  if (card) card.classList.toggle('is-flagged', cb.checked);
+  updateFlagProgress();
+  markDirty();
+}
+
+/* ────────────────────────────────────────────
+   Submissions list
+──────────────────────────────────────────── */
+function renderList() {
+  const unscoredOnly = document.getElementById('unscored-filter').checked;
+  let rows = allSubmissions;
+  if (unscoredOnly) {
+    rows = rows.filter(s => {
+      const sc = allScores[s.id];
+      return !sc || sc.total_points == null;
+    });
+  }
+
+  const el = document.getElementById('sub-list');
+  if (!rows.length) {
+    el.innerHTML = '<div class="empty-state">No submissions found.</div>';
+    return;
+  }
+
+  // Question count N — same set of question ids across forms (only variant content differs)
+  const totalQCount = allDbQuestions.length > 0
+    ? allDbQuestions.length
+    : (questionsData ? questionsData.parts.flatMap(p => p.questions).length : 0);
+
+  el.innerHTML = rows.map(s => {
+    const sc = allScores[s.id];
+    const isScored = sc && sc.total_points != null;
+    const isReleased = sc && sc.released;
+    const dt = new Date(s.created_at);
+    const timeStr = dt.toLocaleDateString('en-GB', {day:'2-digit',month:'short'}) + ' ' +
+                    dt.toLocaleTimeString('en-GB', {hour:'2-digit',minute:'2-digit'});
+    const scorePill = isScored
+      ? `<span class="pill pill-emerald">${sc.total_points}pt</span>`
+      : `<span class="pill pill-amber">unscore</span>`;
+    const rv = (sc && sc.reviewed) ? Object.keys(sc.reviewed).filter(function(k){return sc.reviewed[k];}).length : 0;
+    const rvMark = sc ? '<span class="list-reviewed">✓ ' + rv + (totalQCount ? '/' + totalQCount : '') + '</span>' : '';
+    const fl = (sc && sc.flagged) ? Object.keys(sc.flagged).filter(function(k){return sc.flagged[k];}).length : 0;
+    const flMark = fl > 0 ? '<span class="list-flagged">🚩 ' + fl + '</span>' : '';
+    const relOn = !!isReleased;
+    const boardOn = !!(sc && sc.board_included);
+    const chips = `<div class="row-toggles">`
+      + `<button type="button" class="row-toggle${relOn?' on':''}" aria-pressed="${relOn}" title="Release result to participant" onclick="toggleReleaseRow('${s.id}', event)">Release</button>`
+      + `<button type="button" class="row-toggle board${boardOn?' on':''}" aria-pressed="${boardOn}" title="Include on public board" onclick="toggleBoardRow('${s.id}', event)">📢 Board</button>`
+      + `</div>`;
+    const active = s.id === selectedId ? ' active' : '';
+    return `<div class="sub-row${active}" onclick="selectSubmission('${s.id}')">
+      <div>
+        <div class="sub-name">${esc(s.name || '—')}</div>
+        <div class="sub-meta">${esc(s.email || '')} ${scorePill} ${rvMark} ${flMark}</div>
+        ${chips}
+      </div>
+      <div class="sub-form">${esc(s.form || 'A')}</div>
+      <div></div>
+      <div class="sub-time">${timeStr}</div>
+    </div>`;
+  }).join('');
+}
+
+function selectSubmission(id) {
+  selectedId = id;
+  renderList(); // re-render to update active class
+  const sub = allSubmissions.find(s => s.id === id);
+  if (sub) renderDetail(sub);
+}
+
+/* ────────────────────────────────────────────
+   Detail view — helper: group allDbQuestions by PART_META
+──────────────────────────────────────────── */
+function groupDbQuestionsByPart() {
+  // Returns an ordered array of { meta, questions[] }
+  const byCode = {};
+  for (const row of allDbQuestions) {
+    const code = row.part || '__other__';
+    if (!byCode[code]) byCode[code] = [];
+    byCode[code].push(row);
+  }
+  const groups = [];
+  // First: PART_META order
+  for (const meta of PART_META) {
+    if (byCode[meta.code] && byCode[meta.code].length) {
+      groups.push({ meta, questions: byCode[meta.code] });
+    }
+  }
+  // Then: any part codes not in PART_META → "Other"
+  for (const code of Object.keys(byCode)) {
+    if (code === '__other__') continue;
+    if (!PART_META_MAP[code]) {
+      groups.push({ meta: { code, emoji: '', title: 'Other' }, questions: byCode[code] });
+    }
+  }
+  if (byCode['__other__']) {
+    groups.push({ meta: { code: '__other__', emoji: '', title: 'Other' }, questions: byCode['__other__'] });
+  }
+  return groups;
+}
+
+/* ────────────────────────────────────────────
+   Detail view
+──────────────────────────────────────────── */
+function renderDetail(sub) {
+  _facSelectedSub = sub;
+  const form = sub.form || 'A';
+  const existingScore = allScores[sub.id] || {};
+  const existingPerAnswer = existingScore.per_answer || {};
+
+  // Build a map of participant answers by question id
+  const ansMap = {};
+  if (Array.isArray(sub.answers)) {
+    for (const a of sub.answers) ansMap[a.id] = a;
+  }
+
+  // Auto-check all objective questions (only when answer key is available)
+  const objCheck = computeObjectiveAutoCheck(sub, ansMap); // null when key absent
+  const objCorrectCount = objCheck ? Object.values(objCheck).filter(Boolean).length : null;
+
+  // Build question cards using allDbQuestions grouped by PART_META.
+  // Fall back to questionsData.parts if no db questions loaded yet.
+  const useDbQuestions = allDbQuestions.length > 0;
+
+  // Collect all question objects for prefill + total computation
+  const allQObjects = useDbQuestions ? allDbQuestions : questionsData.parts.flatMap(p => p.questions);
+
+  // Compute per-answer prefill
+  const perAnswerPrefill = {};
+  for (const q of allQObjects) {
+    const qid = q.id;
+    if (existingPerAnswer[qid] != null) {
+      perAnswerPrefill[qid] = existingPerAnswer[qid];
+    } else if (objCheck && objCheck[qid] !== undefined) {
+      // Key available and this question is in objCheck: prefill from auto-check
+      perAnswerPrefill[qid] = objCheck[qid] ? q.points : 0;
+    } else {
+      perAnswerPrefill[qid] = 0;
+    }
+  }
+
+  // Compute reviewed prefill from the saved score row
+  const savedReviewed = (existingScore && existingScore.reviewed) || {};
+  const reviewedPrefill = {};
+  allQObjects.forEach(function(q){ reviewedPrefill[q.id] = !!savedReviewed[q.id]; });
+
+  // Compute flagged prefill from the saved score row (Phase 12 Task 2)
+  const savedFlagged = (existingScore && existingScore.flagged) || {};
+  const flaggedPrefill = {};
+  allQObjects.forEach(function(q){ flaggedPrefill[q.id] = !!savedFlagged[q.id]; });
+
+  // Baseline: a freshly-seeded render has no unsaved edits yet. A pending-state
+  // overlay below (language toggle re-render) will flip this back to true.
+  _gradeDirty = false;
+
+  // Language-toggle parity (Phase 9 setFacLang): overlay any unsaved DOM state
+  // captured just before this re-render, so ticks/points aren't dropped.
+  if (window._pendingReviewed) {
+    Object.keys(reviewedPrefill).forEach(function(id){ reviewedPrefill[id] = !!window._pendingReviewed[id]; });
+    window._pendingReviewed = null;
+  }
+  if (window._pendingFlagged) {
+    Object.keys(flaggedPrefill).forEach(function(id){ flaggedPrefill[id] = !!window._pendingFlagged[id]; });
+    window._pendingFlagged = null;
+  }
+  if (window._pendingPoints) {
+    Object.keys(window._pendingPoints).forEach(function(id){
+      if (perAnswerPrefill[id] !== undefined) perAnswerPrefill[id] = Number(window._pendingPoints[id]) || 0;
+    });
+    window._pendingPoints = null;
+    _gradeDirty = true;
+  }
+
+  // Build question cards HTML
+  let qCardsHtml = '';
+
+  if (useDbQuestions) {
+    // Group by PART_META
+    const groups = groupDbQuestionsByPart();
+    for (const { meta, questions } of groups) {
+      const groupLabel = meta.emoji
+        ? `${meta.emoji} ${meta.title}`
+        : meta.title;
+      qCardsHtml += `<div style="font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin:14px 0 6px">${esc(groupLabel)}</div>`;
+      for (const q of questions) {
+        qCardsHtml += buildQuestionCardHtml(q, form, ansMap, objCheck, perAnswerPrefill, reviewedPrefill, flaggedPrefill);
+      }
+    }
+  } else {
+    // Fallback: use questionsData.parts with PART_META lookup for labels
+    for (const part of questionsData.parts) {
+      const meta = PART_META_MAP[part.id];
+      const groupLabel = meta ? `${meta.emoji} ${meta.title}` : `Part ${part.id} — ${part.title ? part.title.en : ''}`;
+      qCardsHtml += `<div style="font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin:14px 0 6px">${esc(groupLabel)}</div>`;
+      for (const q of part.questions) {
+        qCardsHtml += buildQuestionCardHtml(q, form, ansMap, objCheck, perAnswerPrefill, reviewedPrefill, flaggedPrefill);
+      }
+    }
+  }
+
+  // Release section
+  const isReleased = existingScore.released || false;
+  const resultToken = sub.result_token || '';
+  const resultUrl = resultToken ? `result.html?token=${resultToken}` : '';
+  const releaseHtml = `
+    <div class="release-row${isReleased ? ' released' : ''}" id="release-row">
+      <span class="release-label">${isReleased ? '✓ Released' : 'Not released'}</span>
+      ${isReleased && resultUrl
+        ? `<a class="result-link" href="${esc(resultUrl)}" target="_blank">${esc(resultUrl)}</a>
+           <button class="btn btn-sm" data-copy="${esc(resultUrl)}">Copy link</button>`
+        : ''}
+      ${isReleased
+        ? `<button class="btn btn-sm btn-danger" onclick="toggleRelease(false)">Unrelease</button>`
+        : `<button class="btn btn-sm btn-success" onclick="toggleRelease(true)">Release result</button>`}
+    </div>
+    <label class="board-include" style="display:inline-flex;align-items:center;gap:8px;font-size:13px;margin-top:8px;cursor:pointer">
+      <input type="checkbox" ${existingScore.board_included ? 'checked' : ''} onchange="toggleBoardInclude(this.checked)">
+      📢 Include on public board
+    </label>`;
+
+  const dt = new Date(sub.created_at);
+  const dateStr = dt.toLocaleString('en-GB', {day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
+
+  // Compute initial total — clamp each value to [0, q.points]
+  let initTotal = 0;
+  for (const q of allQObjects) {
+    initTotal += Math.max(0, Math.min(q.points, Number(perAnswerPrefill[q.id]) || 0));
+  }
+
+  const maxTotal = allQObjects.reduce((s, q) => s + (q.points || 0), 0);
+
+  // Obj tally: count how many questions are in objCheck
+  const objTotal = objCheck ? Object.keys(objCheck).length : 0;
+
+  const html = `
+  <div class="detail-panel">
+    <div class="detail-header">
+      <div class="detail-header-info">
+        <h2>${esc(sub.name || '—')}</h2>
+        <p>${esc(sub.email || '')} &nbsp;·&nbsp; Form ${esc(form)} &nbsp;·&nbsp; ${dateStr}</p>
+      </div>
+      <div class="detail-header-actions">
+        <div>
+          <div class="score-big" id="total-display">${initTotal}</div>
+          <div class="score-label">/ ${maxTotal} pts</div>
+        </div>
+      </div>
+    </div>
+
+    ${objCheck !== null
+      ? `<div class="obj-summary">
+           <span>Objective auto-check:</span>
+           <span class="obj-count" id="obj-count">${objCorrectCount} / ${objTotal}</span>
+           <span style="color:var(--muted)">correct</span>
+         </div>`
+      : `<div class="obj-summary" style="background:#fffbeb;border:1px solid #fde68a;color:#92400e;font-size:12px;gap:6px">
+           <span style="font-size:15px">⚠</span>
+           <span>Auto-check unavailable (answer key not loaded) — score all answers manually.</span>
+         </div>`
+    }
+
+    <div class="fac-legend">
+      <span class="lg"><span class="sw correct"></span>Correct answer</span>
+      <span class="lg"><span class="sw wrong"></span>Participant wrong pick</span>
+    </div>
+
+    ${qCardsHtml}
+
+    ${buildRubricPanelHtml(existingScore)}
+
+    <div class="save-row">
+      <input class="facilitator-input" type="text" id="facilitator-name"
+        placeholder="Your name (optional)" value="${esc(existingScore.scored_by || '')}" />
+      <span class="save-status" id="save-status"></span>
+    </div>
+
+    ${releaseHtml}
+
+    <div class="sticky-grade-bar">
+      <span class="sg-prog" id="sg-progress">Reviewed 0 / 0</span>
+      <span class="sg-flag" id="sg-flag">🚩 0</span>
+      <span class="sg-total">Total: <strong id="sg-total-val">0</strong> pts</span>
+      <span class="sg-dirty" id="sg-dirty" hidden>• Unsaved changes</span>
+      <span class="sg-spacer"></span>
+      <button class="btn btn-primary" onclick="saveScore()">Save score</button>
+    </div>
+  </div>`;
+
+  document.getElementById('main-area').innerHTML = html;
+
+  // Attach copy-link listener (I2: no token in inline onclick attribute)
+  const copyBtn = document.querySelector('#main-area [data-copy]');
+  if (copyBtn) {
+    copyBtn.addEventListener('click', e => {
+      const url = e.currentTarget.dataset.copy;
+      navigator.clipboard.writeText(url).then(() => showToast('Link copied!')).catch(() => showToast('Copy failed'));
+    });
+  }
+
+  // Seed the sticky bar's progress/total on open, and reflect a restored
+  // unsaved state (language-toggle parity) if this render carried one over.
+  updateReviewProgress();
+  updateFlagProgress();
+  updateTotal();
+  if (_gradeDirty) markDirty();
+}
+
+/* ────────────────────────────────────────────
+   Detail view — build a single question card
+──────────────────────────────────────────── */
+function buildQuestionCardHtml(q, form, ansMap, objCheck, perAnswerPrefill, reviewedPrefill, flaggedPrefill) {
+  // q can come from allDbQuestions (has variants as nested object) or questionsData
+  const variantsObj = q.variants || {};
+  const variant = variantsObj[form] || variantsObj['A'] || {};
+  const isObj = objCheck && objCheck[q.id] !== undefined;
+  const participantAns = ansMap[q.id];
+  const pts = perAnswerPrefill[q.id] != null ? perAnswerPrefill[q.id] : 0;
+  const isReviewed = reviewedPrefill && reviewedPrefill[q.id];
+  const isFlagged = flaggedPrefill && flaggedPrefill[q.id];
+
+  // correct answer for this form (null when no key → no "Correct" marking)
+  const keyEntry = (typeof dbAnswerKey !== 'undefined' && dbAnswerKey) ? dbAnswerKey[q.id] : null;
+  const correct = keyEntry ? (keyEntry[form] !== undefined ? keyEntry[form] : keyEntry['A']) : null;
+  const pAns = participantAns ? participantAns.answer : null;
+  const blank = pAns == null || pAns === '' || (Array.isArray(pAns) && pAns.length === 0);
+
+  let reviewHtml;
+  if (q.type === 'short') {
+    reviewHtml = blank
+      ? '<div class="q-answer-text" style="color:var(--muted,#64748b);font-style:italic">No answer</div>'
+      : '<div class="q-answer-text open">'+esc(String(pAns))+'</div>';
+  } else if (q.type === 'rank') {
+    reviewHtml = buildFacRankCompare(variant, pAns, correct);
+  } else {
+    reviewHtml = buildFacMarkedChoices(variant, pAns, correct);
+  }
+
+  // Type badge
+  const typeBadge = `<span class="q-type-badge q-type-${esc(q.type)}">${esc(q.type)}</span>`;
+
+  // Correctness icon (only when answer key is available and question is in objCheck)
+  let checkIcon = '';
+  if (isObj) {
+    checkIcon = `<span class="q-check-icon">${objCheck[q.id] ? '✓' : '✗'}</span>`;
+  }
+
+  // Quote if present
+  let quoteHtml = '';
+  if (variant.quote) {
+    quoteHtml = `<blockquote style="margin:0 0 8px;padding:6px 10px;border-left:3px solid var(--border);color:var(--muted);font-size:12px">${esc(variant.quote[facLang]||variant.quote.en||'')}</blockquote>`;
+  }
+
+  const qText = facStem(variant, q);
+
+  return `
+  <div class="q-card${isReviewed ? ' is-reviewed' : ''}${isFlagged ? ' is-flagged' : ''}">
+    <div class="q-card-head">
+      <span class="q-id">${esc(q.id)}</span>
+      ${typeBadge}
+      ${checkIcon}
+      <span class="q-points-label" style="margin-left:auto">max ${q.points} pt${q.points !== 1 ? 's' : ''}</span>
+    </div>
+    <div class="q-body">
+      <div class="q-text">${esc(qText)}</div>
+      ${quoteHtml}
+      <div class="q-answer-block">
+        <div class="q-answer-label">Answer review</div>
+        ${reviewHtml}
+      </div>
+      <div class="q-points-row">
+        <label for="pts-${esc(q.id)}">Points:</label>
+        <input
+          class="q-points-input"
+          type="number" min="0" max="${q.points}" step="1"
+          id="pts-${esc(q.id)}"
+          value="${pts}"
+          oninput="updateTotal();markDirty()"
+        />
+        <span class="q-max">/ ${q.points}</span>
+        <label class="q-reviewed-check">
+          <input type="checkbox" data-rev-qid="${esc(q.id)}" ${isReviewed ? 'checked' : ''} onchange="onReviewToggle(this)">
+          Reviewed
+        </label>
+        <label class="q-flag-check">
+          <input type="checkbox" data-flag-qid="${esc(q.id)}" ${isFlagged ? 'checked' : ''} onchange="onFlagToggle(this)">
+          🚩 Flag
+        </label>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ────────────────────────────────────────────
+   Objective auto-check logic
+   - single: correct = (participantAnswer === answerKey[id][form])
+   - multi:  correct = same set (sorted join comparison)
+   - rank:   correct = exact ordered array match
+──────────────────────────────────────────── */
+function computeObjectiveAutoCheck(sub, ansMap) {
+  if (!dbAnswerKey) return null; // key unavailable — caller must check for null
+  const form = sub.form || 'A';
+  const result = {};
+  // Include all db questions that are objective types (single/multi/rank) plus OBJECTIVE_IDS fallback
+  const idsToCheck = new Set(OBJECTIVE_IDS);
+  for (const row of allDbQuestions) {
+    if (row.type === 'rank' && dbAnswerKey[row.id]) idsToCheck.add(row.id);
+  }
+  for (const id of idsToCheck) {
+    const keyEntry = dbAnswerKey[id];
+    if (!keyEntry) { result[id] = false; continue; }
+    const correctAnswer = keyEntry[form] !== undefined ? keyEntry[form] : keyEntry['A'];
+    const participantAns = ansMap[id];
+    if (!participantAns || participantAns.answer == null) { result[id] = false; continue; }
+
+    // Determine question type from allDbQuestions
+    const qRow = allDbQuestions.find(r => r.id === id);
+    const qType = qRow ? qRow.type : null;
+
+    if (qType === 'rank') {
+      // rank: exact order match
+      const pa = Array.isArray(participantAns.answer) ? participantAns.answer : [participantAns.answer];
+      const ca = Array.isArray(correctAnswer) ? correctAnswer : [correctAnswer];
+      result[id] = ca.length === pa.length && ca.every((v, i) => v === pa[i]);
+    } else if (Array.isArray(correctAnswer)) {
+      // multi: compare sorted sets
+      const pa = Array.isArray(participantAns.answer) ? participantAns.answer : [participantAns.answer];
+      result[id] = [...correctAnswer].sort().join(',') === [...pa].sort().join(',');
+    } else {
+      // single: string equality
+      result[id] = String(participantAns.answer).trim() === String(correctAnswer).trim();
+    }
+  }
+  return result;
+}
+
+/* ────────────────────────────────────────────
+   Running total update (called on points input)
+──────────────────────────────────────────── */
+function updateTotal() {
+  if (!questionsData && !allDbQuestions.length) return;
+  const totalQObjects = allDbQuestions.length > 0
+    ? allDbQuestions
+    : questionsData.parts.flatMap(p => p.questions);
+  let total = 0;
+  for (const q of totalQObjects) {
+    const inp = document.getElementById('pts-' + q.id);
+    if (inp) total += Math.max(0, Math.min(q.points, Number(inp.value) || 0));
+  }
+  const el = document.getElementById('total-display');
+  if (el) el.textContent = total;
+  const sgt = document.getElementById('sg-total-val');
+  if (sgt) sgt.textContent = String(total);
+}
+
+/* ────────────────────────────────────────────
+   Rubric panel — bucket suggestion + HTML builder
+──────────────────────────────────────────── */
+function suggestBucket(a){ // a=[axis1..axis5], numbers or null
+  if(a.some(x=>x==null)) return null;
+  if(a[0]<=2 || a[4]<=2) return '🔴';
+  const avg=a.reduce((s,x)=>s+x,0)/5;
+  if(a.every(x=>x>=3) && avg>=3.5) return '🟢';
+  return '🟡';
+}
+
+const AXES = [
+  { id:'axis1', label:'Risk literacy',          desc:'Pauses before risky actions; knows what they don\'t know.' },
+  { id:'axis2', label:'Result verification',    desc:'Tests behavior to confirm it works, not just looks right.' },
+  { id:'axis3', label:'Prompting quality',      desc:'Describes intent clearly — behavior over implementation.' },
+  { id:'axis4', label:'Iteration discipline',   desc:'Course-corrects via reasoning; doesn\'t re-roll blindly.' },
+  { id:'axis5', label:'Escalation behavior',    desc:'Recognizes when to stop and ask for help.' },
+];
+
+function buildRubricPanelHtml(existingScore) {
+  let axesHtml = '';
+  for (const ax of AXES) {
+    const cur = existingScore[ax.id] != null ? existingScore[ax.id] : null;
+    let btnsHtml = '';
+    for (let v = 1; v <= 5; v++) {
+      const sel = cur === v ? ' selected' : '';
+      btnsHtml += `<button type="button" class="axis-btn${sel}" data-axis="${ax.id}" data-val="${v}" onclick="rubricAxisClick(this)">${v}</button>`;
+    }
+    axesHtml += `
+      <div class="axis-row">
+        <span class="axis-label">${esc(ax.label)}</span>
+        <div class="axis-btns">${btnsHtml}</div>
+        <span class="axis-desc">${esc(ax.desc)}</span>
+      </div>`;
+  }
+
+  // Compute initial suggestion
+  const vals = AXES.map(ax => existingScore[ax.id] != null ? existingScore[ax.id] : null);
+  const suggestion = suggestBucket(vals);
+  const suggestionDisplay = suggestion || '—';
+
+  // Build override select — select stored bucket if it differs from suggestion (i.e. was manually set)
+  const storedBucket = existingScore.bucket || null;
+  // If storedBucket equals suggestion (or both null), treat as Auto; otherwise it was overridden
+  const isOverridden = storedBucket && storedBucket !== suggestion;
+  const autoOpt    = `<option value="auto"${!isOverridden ? ' selected' : ''}>Auto</option>`;
+  const greenOpt   = `<option value="🟢"${storedBucket === '🟢' && isOverridden ? ' selected' : ''}>🟢 Green</option>`;
+  const yellowOpt  = `<option value="🟡"${storedBucket === '🟡' && isOverridden ? ' selected' : ''}>🟡 Yellow</option>`;
+  const redOpt     = `<option value="🔴"${storedBucket === '🔴' && isOverridden ? ' selected' : ''}>🔴 Red</option>`;
+
+  return `
+    <div class="rubric-panel">
+      <button type="button" class="rubric-toggle" id="rubric-toggle" onclick="toggleRubricPanel()">
+        <span class="rubric-toggle-arrow">▶</span>
+        Rubric <span style="font-weight:400;color:var(--muted);font-size:12px">(optional)</span>
+      </button>
+      <div class="rubric-body" id="rubric-body">
+        ${axesHtml}
+        <div class="bucket-row">
+          <span class="bucket-label">Bucket suggestion:</span>
+          <span class="bucket-suggestion" id="bucket-suggestion">${suggestionDisplay}</span>
+          <span class="bucket-label">Override:</span>
+          <select class="bucket-select" id="bucket-override" onchange="rubricBucketChange()">
+            ${autoOpt}${greenOpt}${yellowOpt}${redOpt}
+          </select>
+        </div>
+      </div>
+    </div>`;
+}
+
+function toggleRubricPanel() {
+  const toggle = document.getElementById('rubric-toggle');
+  const body   = document.getElementById('rubric-body');
+  if (!toggle || !body) return;
+  const open = body.classList.toggle('open');
+  toggle.classList.toggle('open', open);
+}
+
+function rubricAxisClick(btn) {
+  const axis = btn.dataset.axis;
+  const val  = parseInt(btn.dataset.val, 10);
+  // Deselect all buttons for this axis; select clicked
+  document.querySelectorAll(`.axis-btn[data-axis="${axis}"]`).forEach(b => {
+    b.classList.toggle('selected', parseInt(b.dataset.val, 10) === val);
+  });
+  updateBucketSuggestion();
+}
+
+function rubricBucketChange() {
+  updateBucketSuggestion();
+}
+
+function getAxisValues() {
+  return AXES.map(ax => {
+    const sel = document.querySelector(`.axis-btn.selected[data-axis="${ax.id}"]`);
+    return sel ? parseInt(sel.dataset.val, 10) : null;
+  });
+}
+
+function updateBucketSuggestion() {
+  const vals = getAxisValues();
+  const suggestion = suggestBucket(vals);
+  const el = document.getElementById('bucket-suggestion');
+  if (el) el.textContent = suggestion || '—';
+}
+
+function getStoredBucket() {
+  const override = document.getElementById('bucket-override');
+  if (!override || override.value === 'auto') {
+    return suggestBucket(getAxisValues());
+  }
+  return override.value;
+}
+
+/* ────────────────────────────────────────────
+   Save score (upsert — merges existing axis/notes)
+   total_points = sum of all per_answer point inputs
+   Merges (does not clobber) existing axis1..5, bucket, notes fields
+──────────────────────────────────────────── */
+async function saveScore() {
+  if (!selectedId || !questionsData) return;
+  const sub = allSubmissions.find(s => s.id === selectedId);
+  if (!sub) return;
+
+  const form = sub.form || 'A';
+  const ansMap = {};
+  if (Array.isArray(sub.answers)) for (const a of sub.answers) ansMap[a.id] = a;
+
+  // Build per_answer map and compute total
+  // Use allDbQuestions when loaded (includes rank questions); fallback to questionsData.parts
+  const scoreQObjects = allDbQuestions.length > 0
+    ? allDbQuestions
+    : questionsData.parts.flatMap(p => p.questions);
+  const perAnswer = {};
+  let total = 0;
+  for (const q of scoreQObjects) {
+    const inp = document.getElementById('pts-' + q.id);
+    const v = inp ? Math.max(0, Math.min(q.points, Number(inp.value) || 0)) : 0;
+    perAnswer[q.id] = v;
+    total += v;
+  }
+
+  const objAuto = computeObjectiveAutoCheck(sub, ansMap); // null when answer key absent
+  const facilitatorName = (document.getElementById('facilitator-name')?.value || '').trim();
+  const reviewed = reviewedStates();
+  const flagged = flaggedStates();
+
+  const statusEl = document.getElementById('save-status');
+  if (statusEl) statusEl.textContent = 'Saving…';
+
+  // Preflight read: fetch the current DB row so we never clobber axis/notes
+  // that may have been written by another session since our last cache refresh (C1)
+  const { data: cur } = await sbClient().from('ft_scores').select('*').eq('submission_id', selectedId).maybeSingle();
+  const existing = cur || allScores[selectedId] || {};
+
+  // Read rubric panel values from UI; per-field merge: prefer a real UI value, else keep existing DB value
+  const uiAxisVals = getAxisValues(); // [axis1..5] — null if not set
+  const uiBucket = getStoredBucket(); // null when Auto and axes incomplete
+
+  const row = {
+    submission_id: selectedId,
+    per_answer: perAnswer,
+    objective_auto: objAuto,
+    total_points: total,
+    reviewed: reviewed,
+    flagged: flagged,
+    scored_by: facilitatorName || null,
+    updated_at: new Date().toISOString(),
+    // Per-field merge: use UI value only when non-null; otherwise fall back to existing DB value
+    axis1: (uiAxisVals[0] != null ? uiAxisVals[0] : (existing.axis1 != null ? existing.axis1 : null)),
+    axis2: (uiAxisVals[1] != null ? uiAxisVals[1] : (existing.axis2 != null ? existing.axis2 : null)),
+    axis3: (uiAxisVals[2] != null ? uiAxisVals[2] : (existing.axis3 != null ? existing.axis3 : null)),
+    axis4: (uiAxisVals[3] != null ? uiAxisVals[3] : (existing.axis4 != null ? existing.axis4 : null)),
+    axis5: (uiAxisVals[4] != null ? uiAxisVals[4] : (existing.axis5 != null ? existing.axis5 : null)),
+    // Bucket: use UI bucket when non-null; otherwise preserve existing stored bucket
+    bucket: (uiBucket != null ? uiBucket : (existing.bucket != null ? existing.bucket : null)),
+    notes: existing.notes != null ? existing.notes : null,
+    released: existing.released != null ? existing.released : false,
+  };
+
+  const { error } = await sbClient().from('ft_scores').upsert(row, { onConflict: 'submission_id' });
+  if (error) {
+    if (statusEl) statusEl.textContent = 'Error: ' + error.message;
+    showToast('Save failed: ' + error.message, true);
+    return;
+  }
+
+  // Update local cache with the merged row
+  allScores[selectedId] = { ...existing, ...row };
+  if (statusEl) statusEl.textContent = `Saved at ${new Date().toLocaleTimeString()}`;
+  showToast('Score saved.');
+
+  // Clear the unsaved-changes hint now that points + reviewed are persisted together
+  _gradeDirty = false;
+  const d = document.getElementById('sg-dirty'); if (d) d.hidden = true;
+
+  renderStats();
+  renderList();
+}
+
+/* ────────────────────────────────────────────
+   Release toggle
+   Sets released true/false; drives result.html?token=… link
+──────────────────────────────────────────── */
+async function applyRelease(id, value) {
+  if (!id) return;
+  // Preflight read: get the current DB row so we only change `released` (C1)
+  const { data: cur } = await sbClient().from('ft_scores').select('*').eq('submission_id', id).maybeSingle();
+  const existing = cur || allScores[id] || {};
+  const row = { ...existing, submission_id: id, released: value, updated_at: new Date().toISOString() };
+  const { error } = await sbClient().from('ft_scores').upsert(row, { onConflict: 'submission_id' });
+  if (error) { showToast('Release update failed: ' + error.message, true); return; }
+  allScores[id] = row;
+  showToast(value ? 'Result released.' : 'Result unreleased.');
+  renderStats();
+  renderList();
+  if (id === selectedId) { const sub = allSubmissions.find(s => s.id === id); if (sub) renderDetail(sub); }
+}
+function toggleRelease(value) { applyRelease(selectedId, value); }
+function toggleReleaseRow(id, ev) { ev.stopPropagation(); const sc = allScores[id] || {}; applyRelease(id, !sc.released); }
+
+/* ────────────────────────────────────────────
+   Board-include toggle
+   Immediate upsert of ft_scores.board_included — independent of Save/Release
+──────────────────────────────────────────── */
+async function applyBoardInclude(id, value){
+  if (!id) return;
+  const { data: cur } = await sbClient().from('ft_scores').select('*').eq('submission_id', id).maybeSingle();
+  const existing = cur || allScores[id] || {};
+  const row = { ...existing, submission_id: id, board_included: value };
+  const { error } = await sbClient().from('ft_scores').upsert(row, { onConflict: 'submission_id' });
+  if (error){ showToast('Board update failed: '+error.message, true); return; }
+  allScores[id] = row;
+  showToast(value ? 'Added to board.' : 'Removed from board.');
+  renderList();
+  if (id === selectedId){ const sub = allSubmissions.find(s => s.id === id); if (sub) renderDetail(sub); }
+}
+function toggleBoardInclude(value){ applyBoardInclude(selectedId, value); }
+function toggleBoardRow(id, ev){ ev.stopPropagation(); const sc = allScores[id] || {}; applyBoardInclude(id, !sc.board_included); }
+
+/* ────────────────────────────────────────────
+   Public board config — global show-names switch
+──────────────────────────────────────────── */
+async function loadBoardConfig(){
+  try {
+    const { data } = await sbClient().from('ft_board_config').select('show_names,reveal_passcode').eq('id',1).maybeSingle();
+    const el = document.getElementById('board-shownames');
+    if (el && data) el.checked = !!data.show_names;
+    const rc = document.getElementById('board-reveal-code');
+    if (rc && data) rc.value = data.reveal_passcode || '';
+  } catch(e){ /* leave unchecked */ }
+}
+async function setBoardShowNames(value){
+  const { error } = await sbClient().from('ft_board_config').update({ show_names: value, updated_at: new Date().toISOString() }).eq('id', 1);
+  if (error){ showToast('Board names update failed: '+error.message, true); return; }
+  showToast(value ? 'Board now shows names.' : 'Board is anonymous.');
+}
+async function setBoardRevealPasscode(value){
+  const { error } = await sbClient().from('ft_board_config').update({ reveal_passcode: value || '', updated_at: new Date().toISOString() }).eq('id', 1);
+  if (error){ showToast('Reveal passcode update failed: '+error.message, true); return; }
+  showToast((value && value.trim()) ? 'Reveal passcode set.' : 'Reveal passcode cleared.');
+}
+
+/* ────────────────────────────────────────────
+   Export CSV / JSON
+──────────────────────────────────────────── */
+function buildExportRows() {
+  const rows = [];
+  for (const sub of allSubmissions) {
+    const sc = allScores[sub.id] || {};
+    const pa = sc.per_answer || {};
+    const base = {
+      id: sub.id,
+      name: sub.name || '',
+      email: sub.email || '',
+      form: sub.form || 'A',
+      submitted: sub.created_at || '',
+      total_points: sc.total_points != null ? sc.total_points : '',
+      axis1: sc.axis1 != null ? sc.axis1 : '',
+      axis2: sc.axis2 != null ? sc.axis2 : '',
+      axis3: sc.axis3 != null ? sc.axis3 : '',
+      axis4: sc.axis4 != null ? sc.axis4 : '',
+      axis5: sc.axis5 != null ? sc.axis5 : '',
+      bucket: sc.bucket != null ? sc.bucket : '',
+      released: sc.released ? 'true' : 'false',
+    };
+    // Per-question points
+    if (questionsData) {
+      for (const part of questionsData.parts) {
+        for (const q of part.questions) {
+          base['pts_' + q.id] = pa[q.id] != null ? pa[q.id] : '';
+        }
+      }
+    }
+    rows.push(base);
+  }
+  return rows;
+}
+
+function csvEscape(v) {
+  const s = String(v == null ? '' : v);
+  if (s.includes('"') || s.includes(',') || s.includes('\n') || s.includes('\r')) {
+    return '"' + s.replace(/"/g, '""') + '"';
+  }
+  return s;
+}
+
+function exportCSV() {
+  const rows = buildExportRows();
+  if (!rows.length) { showToast('No submissions to export.'); return; }
+  const headers = Object.keys(rows[0]);
+  const lines = [headers.map(csvEscape).join(',')];
+  for (const row of rows) lines.push(headers.map(h => csvEscape(row[h])).join(','));
+  downloadFile('facilitator-export.csv', lines.join('\n'), 'text/csv');
+}
+
+function exportJSON() {
+  const rows = buildExportRows();
+  if (!rows.length) { showToast('No submissions to export.'); return; }
+  downloadFile('facilitator-export.json', JSON.stringify(rows, null, 2), 'application/json');
+}
+
+function downloadFile(filename, content, mime) {
+  const a = document.createElement('a');
+  const url = URL.createObjectURL(new Blob([content], { type: mime }));
+  a.href = url;
+  a.download = filename;
+  a.click();
+  // Revoke the object URL after the browser has had a chance to start the download (I3)
+  setTimeout(() => URL.revokeObjectURL(url), 0);
+}
+
+/* ────────────────────────────────────────────
+   Utilities
+──────────────────────────────────────────── */
+function esc(str) {
+  if (str == null) return '';
+  return String(str)
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;');
+}
+
+let toastTimer = null;
+function showToast(msg, isError = false) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.style.background = isError ? '#be123c' : '#1e293b';
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+/* ────────────────────────────────────────────
+   View switching — scoring vs codes
+──────────────────────────────────────────── */
+let currentView = 'scoring'; // 'scoring' | 'codes' | 'questions'
+
+function switchView(view) {
+  currentView = view;
+  document.getElementById('view-scoring').style.display   = view === 'scoring'   ? '' : 'none';
+  document.getElementById('view-codes').style.display     = view === 'codes'     ? '' : 'none';
+  document.getElementById('view-questions').style.display = view === 'questions' ? '' : 'none';
+  document.getElementById('tab-scoring').classList.toggle('active', view === 'scoring');
+  document.getElementById('tab-codes').classList.toggle('active', view === 'codes');
+  document.getElementById('tab-questions').classList.toggle('active', view === 'questions');
+
+  // Hide scoring-only header buttons when not on scoring view
+  const csvBtn  = document.getElementById('export-csv-btn');
+  const jsonBtn = document.getElementById('export-json-btn');
+  if (csvBtn)  csvBtn.style.display  = view === 'scoring' ? '' : 'none';
+  if (jsonBtn) jsonBtn.style.display = view === 'scoring' ? '' : 'none';
+
+  if (view === 'codes') {
+    populateFormSelect();
+    loadCodes();
+  }
+  if (view === 'questions') {
+    loadQuestions();
+  }
+}
+
+function handleRefresh() {
+  if (currentView === 'scoring') {
+    refreshData();
+  } else if (currentView === 'codes') {
+    loadCodes();
+  } else if (currentView === 'questions') {
+    loadQuestions();
+  }
+}
+
+/* ────────────────────────────────────────────
+   Codes — state + helpers
+──────────────────────────────────────────── */
+let allCodes = []; // rows from `codes` table
+
+// Populate the form <select> from questionsData.forms
+function populateFormSelect() {
+  const sel = document.getElementById('new-code-form');
+  if (!sel) return;
+  const forms = (questionsData && questionsData.forms) ? questionsData.forms : ['A'];
+  if (sel.options.length === forms.length) return; // already populated
+  sel.innerHTML = '';
+  for (const f of forms) {
+    const opt = document.createElement('option');
+    opt.value = f;
+    opt.textContent = 'Form ' + f;
+    sel.appendChild(opt);
+  }
+}
+
+// Load codes from Supabase
+async function loadCodes() {
+  const tbody = document.getElementById('codes-tbody');
+  if (tbody) tbody.innerHTML = '<tr><td colspan="7" class="empty-state"><div class="loading"><div class="spinner"></div> Loading…</div></td></tr>';
+
+  const { data, error } = await db.from('ft_codes').select('*').order('created_at', { ascending: true });
+  if (error) {
+    showToast('Error loading codes: ' + error.message, true);
+    if (tbody) tbody.innerHTML = `<tr><td colspan="7" class="empty-state" style="color:var(--rose)">Error: ${esc(error.message)}</td></tr>`;
+    return;
+  }
+  allCodes = data || [];
+  renderCodesTable();
+}
+
+// Render the codes table
+function renderCodesTable() {
+  const tbody = document.getElementById('codes-tbody');
+  const countLabel = document.getElementById('codes-count-label');
+  if (!tbody) return;
+
+  if (countLabel) countLabel.textContent = allCodes.length + ' code' + (allCodes.length === 1 ? '' : 's');
+
+  if (!allCodes.length) {
+    tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No codes yet. Create one above.</td></tr>';
+    return;
+  }
+
+  // Build submission_id → name lookup from allSubmissions
+  const subMap = {};
+  for (const s of allSubmissions) subMap[s.id] = s.name || s.email || s.id;
+
+  tbody.innerHTML = allCodes.map(row => {
+    const used = !!row.used_at;
+    const usedBy = row.submission_id ? (subMap[row.submission_id] || row.submission_id) : '—';
+    const usedAt = row.used_at ? new Date(row.used_at).toLocaleString('en-GB', {
+      day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit'
+    }) : '—';
+    const createdAt = row.created_at ? new Date(row.created_at).toLocaleString('en-GB', {
+      day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit'
+    }) : '—';
+    const statusHtml = used
+      ? `<span><span class="used-dot"></span>Used</span>`
+      : `<span><span class="unused-dot"></span>Unused</span>`;
+    return `<tr>
+      <td class="code-cell">${esc(row.code)}</td>
+      <td><span class="sub-form">${esc(row.form || 'A')}</span></td>
+      <td style="color:var(--muted)">${esc(row.label || '—')}</td>
+      <td>${statusHtml}</td>
+      <td style="font-size:12px">${esc(usedBy)}</td>
+      <td style="font-family:var(--mono);font-size:11px;color:var(--muted)">${esc(usedAt)}</td>
+      <td style="font-family:var(--mono);font-size:11px;color:var(--muted)">${esc(createdAt)}</td>
+    </tr>`;
+  }).join('');
+}
+
+/* ────────────────────────────────────────────
+   Codes — create one code
+──────────────────────────────────────────── */
+async function createOneCode() {
+  const codeVal = (document.getElementById('new-code-value')?.value || '').trim().toUpperCase();
+  const formVal = document.getElementById('new-code-form')?.value || 'A';
+  const labelVal = (document.getElementById('new-code-label')?.value || '').trim();
+  const errEl = document.getElementById('create-error');
+
+  if (errEl) errEl.textContent = '';
+
+  if (!codeVal) {
+    if (errEl) errEl.textContent = 'Code cannot be empty.';
+    return;
+  }
+
+  // Check against existing codes list
+  const duplicate = allCodes.find(c => c.code === codeVal);
+  if (duplicate) {
+    if (errEl) errEl.textContent = `Code "${codeVal}" already exists.`;
+    return;
+  }
+
+  const row = { code: codeVal, form: formVal };
+  if (labelVal) row.label = labelVal;
+
+  const { error } = await db.from('ft_codes').insert(row);
+  if (error) {
+    if (errEl) errEl.textContent = 'Insert failed: ' + error.message;
+    showToast('Insert failed: ' + error.message, true);
+    return;
+  }
+
+  // Clear inputs
+  const codeInp = document.getElementById('new-code-value');
+  const labelInp = document.getElementById('new-code-label');
+  if (codeInp)  codeInp.value  = '';
+  if (labelInp) labelInp.value = '';
+
+  showToast('Code created.');
+  await loadCodes();
+}
+
+/* ────────────────────────────────────────────
+   Codes — generate N codes
+   Format: FT-<FORM>-<4 base32-ish chars>
+   Alphabet: ABCDEFGHJKLMNPQRSTUVWXYZ23456789
+   (excludes ambiguous: 0, O, 1, I)
+──────────────────────────────────────────── */
+const CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+
+function randomCodeSuffix(len) {
+  let s = '';
+  for (let i = 0; i < len; i++) {
+    s += CODE_ALPHABET[Math.floor(Math.random() * CODE_ALPHABET.length)];
+  }
+  return s;
+}
+
+function generateCodeForForm(form, existingSet) {
+  // Try up to 100 times to find a unique code
+  for (let attempt = 0; attempt < 100; attempt++) {
+    const candidate = 'FT-' + form + '-' + randomCodeSuffix(4);
+    if (!existingSet.has(candidate)) return candidate;
+  }
+  // Extend to 6 chars on collision exhaustion (extremely unlikely)
+  for (let attempt = 0; attempt < 100; attempt++) {
+    const candidate = 'FT-' + form + '-' + randomCodeSuffix(6);
+    if (!existingSet.has(candidate)) return candidate;
+  }
+  return null;
+}
+
+async function generateNCodes() {
+  const n = parseInt(document.getElementById('gen-n')?.value || '0', 10);
+  const errEl = document.getElementById('generate-error');
+  if (errEl) errEl.textContent = '';
+
+  if (!n || n < 1 || n > 500) {
+    if (errEl) errEl.textContent = 'Enter a number between 1 and 500.';
+    return;
+  }
+
+  const forms = (questionsData && questionsData.forms && questionsData.forms.length)
+    ? questionsData.forms : ['A'];
+
+  // Build a set of all existing codes to guarantee uniqueness
+  const existingSet = new Set(allCodes.map(c => c.code));
+
+  const rows = [];
+  for (let i = 0; i < n; i++) {
+    const form = forms[i % forms.length]; // round-robin
+    const code = generateCodeForForm(form, existingSet);
+    if (!code) {
+      if (errEl) errEl.textContent = 'Could not generate a unique code (too many collisions).';
+      return;
+    }
+    existingSet.add(code); // reserve within this batch
+    rows.push({ code, form });
+  }
+
+  const { error } = await db.from('ft_codes').insert(rows);
+  if (error) {
+    if (errEl) errEl.textContent = 'Insert failed: ' + error.message;
+    showToast('Insert failed: ' + error.message, true);
+    return;
+  }
+
+  showToast(n + ' code' + (n === 1 ? '' : 's') + ' generated.');
+  await loadCodes();
+}
+
+/* ────────────────────────────────────────────
+   Questions tab — load + render list
+──────────────────────────────────────────── */
+async function loadQuestions() {
+  const tbody = document.getElementById('questions-tbody');
+  const countLabel = document.getElementById('questions-count-label');
+  if (tbody) tbody.innerHTML = '<tr><td colspan="6" class="empty-state"><div class="loading"><div class="spinner"></div> Loading…</div></td></tr>';
+
+  const { data, error } = await db.from('ft_questions').select('*').order('part').order('ord');
+  if (error) {
+    showToast('Error loading questions: ' + error.message, true);
+    if (tbody) tbody.innerHTML = `<tr><td colspan="6" class="empty-state" style="color:var(--rose)">Error: ${esc(error.message)}</td></tr>`;
+    return;
+  }
+  allDbQuestions = data || [];
+  // Also rebuild dbAnswerKey so auto-check stays in sync after edits
+  const key = {};
+  for (const row of allDbQuestions) {
+    if (row.answer && typeof row.answer === 'object') key[row.id] = row.answer;
+  }
+  dbAnswerKey = Object.keys(key).length > 0 ? key : null;
+
+  if (countLabel) countLabel.textContent = allDbQuestions.length + ' question' + (allDbQuestions.length === 1 ? '' : 's');
+
+  if (!tbody) return;
+  if (!allDbQuestions.length) {
+    tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No questions yet.</td></tr>';
+    return;
+  }
+  // Group by PART_META order, unknown parts go to end
+  const groups = groupDbQuestionsByPart();
+  const rows = [];
+  for (const { meta, questions } of groups) {
+    const groupLabel = meta.emoji ? `${meta.emoji} ${meta.title}` : meta.title;
+    rows.push(`<tr><td colspan="6" style="background:#f8fafc;padding:6px 12px;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;border-top:1px solid var(--border)">${esc(groupLabel)}</td></tr>`);
+    for (const row of questions) {
+      const forms = row.variants ? Object.keys(row.variants).sort().join(', ') : '—';
+      rows.push(`<tr>
+        <td><span class="q-id">${esc(row.id)}</span></td>
+        <td style="font-size:12px;color:var(--muted)">${esc(row.part)}</td>
+        <td><span class="q-type-badge q-type-${esc(row.type)}">${esc(row.type)}</span></td>
+        <td style="font-family:var(--mono)">${esc(row.points)}</td>
+        <td style="font-size:12px;color:var(--muted)">${esc(forms)}</td>
+        <td style="white-space:nowrap">
+          <button class="btn btn-sm" style="margin-right:4px" onclick="openQuestionForm('${esc(row.id)}')">Edit</button>
+          <button class="btn btn-sm btn-danger" onclick="deleteQuestion('${esc(row.id)}')">Delete</button>
+        </td>
+      </tr>`);
+    }
+  }
+  tbody.innerHTML = rows.join('');
+}
+
+/* ────────────────────────────────────────────
+   Questions tab — open Add / Edit form
+──────────────────────────────────────────── */
+function openQuestionForm(editId) {
+  const wrap = document.getElementById('q-editor-form-wrap');
+  if (!wrap) return;
+
+  const isAdd = editId === null;
+  const existing = isAdd ? null : allDbQuestions.find(r => r.id === editId);
+
+  // Pre-fill shared fields
+  const fId    = isAdd ? '' : (existing ? existing.id : '');
+  const fPart  = existing ? existing.part  : 'A';
+  const fType  = existing ? existing.type  : 'single';
+  const fPts   = existing ? existing.points : 1;
+
+  // Load all three forms into editor state
+  // Each form: { q: {en, th}, options: [{id, text:{en,th}}], answer: any }
+  function loadFormState(formKey) {
+    const varF = existing && existing.variants && existing.variants[formKey] ? existing.variants[formKey] : {};
+    const opts = (fType !== 'short' && varF.options) ? varF.options : [];
+    const ans  = existing && existing.answer && existing.answer[formKey] !== undefined ? existing.answer[formKey] : null;
+    return {
+      q:       { en: varF.q ? (varF.q.en || '') : '', th: varF.q ? (varF.q.th || '') : '' },
+      options: opts.map(o => ({ id: o.id, text: { en: o.text.en || '', th: o.text.th || '' } })),
+      answer:  ans,
+    };
+  }
+
+  window._qfState = {
+    A: loadFormState('A'),
+    B: loadFormState('B'),
+    C: loadFormState('C'),
+    activeForm: 'A',
+  };
+
+  wrap.style.display = '';
+  wrap.innerHTML = buildQuestionFormHtml(isAdd, fId, fPart, fType, fPts);
+}
+
+function buildQuestionFormHtml(isAdd, fId, fPart, fType, fPts) {
+  const partOpts = ['A','B','C','D'].map(p =>
+    `<option value="${p}"${fPart === p ? ' selected':''}>${p}</option>`).join('');
+  const typeOpts = ['single','multi','short','rank'].map(t =>
+    `<option value="${t}"${fType === t ? ' selected':''}>${t}</option>`).join('');
+
+  const formTitle = isAdd ? 'Add question' : `Edit question ${esc(fId)}`;
+
+  // Badge: which forms have a non-empty stem
+  const state = window._qfState || { A:{q:{en:'',th:''}}, B:{q:{en:'',th:''}}, C:{q:{en:'',th:''}}, activeForm:'A' };
+  const formsWithContent = ['A','B','C'].filter(k => {
+    const q = state[k] && state[k].q;
+    return q && (q.en || q.th);
+  });
+  const badgeText = formsWithContent.length ? `forms with content: ${formsWithContent.join(', ')}` : 'no form content yet';
+
+  // Per-form fields HTML (initially Form A)
+  const perFormHtml = buildPerFormFieldsHtml(fType, 'A');
+
+  return `
+  <div class="q-editor-form">
+    <h3>${formTitle}</h3>
+    <div class="qf-row">
+      <div class="qf-field">
+        <label>ID</label>
+        <input class="qf-input" id="qf-id" type="text" value="${esc(fId)}" style="width:100px;font-family:var(--mono)"
+          ${isAdd ? '' : 'readonly style="width:100px;font-family:var(--mono);background:#f1f5f9;color:var(--muted)"'} placeholder="e.g. A1" />
+      </div>
+      <div class="qf-field">
+        <label>Part</label>
+        <select class="qf-input" id="qf-part" style="width:80px">${partOpts}</select>
+      </div>
+      <div class="qf-field">
+        <label>Type</label>
+        <select class="qf-input" id="qf-type" style="width:100px" onchange="qfTypeChanged()">${typeOpts}</select>
+      </div>
+      <div class="qf-field">
+        <label>Points</label>
+        <input class="qf-input" id="qf-pts" type="number" min="0" step="1" value="${esc(fPts)}" style="width:80px" />
+      </div>
+    </div>
+
+    <div class="qf-form-switcher">
+      <span class="qf-form-switcher-label">Form:</span>
+      <button class="qf-form-btn active" id="qf-switcher-A" type="button" onclick="switchQfForm('A')">A</button>
+      <button class="qf-form-btn" id="qf-switcher-B" type="button" onclick="switchQfForm('B')">B</button>
+      <button class="qf-form-btn" id="qf-switcher-C" type="button" onclick="switchQfForm('C')">C</button>
+      <span class="qf-form-badge" id="qf-form-badge">${esc(badgeText)}</span>
+    </div>
+
+    <div id="qf-per-form-fields">${perFormHtml}</div>
+
+    <div class="qf-form-actions">
+      <button class="btn btn-primary" type="button" onclick="saveQuestion(${isAdd ? 'true' : 'false'})">
+        ${isAdd ? 'Add question' : 'Save changes'}
+      </button>
+      <button class="btn" type="button" onclick="closeQuestionForm()">Cancel</button>
+      <span class="qf-status" id="qf-status"></span>
+    </div>
+  </div>`;
+}
+
+function buildPerFormFieldsHtml(fType, formKey) {
+  const state = window._qfState || {};
+  const formState = state[formKey] || { q: {en:'',th:''}, options: [], answer: null };
+  const qEn = formState.q ? (formState.q.en || '') : '';
+  const qTh = formState.q ? (formState.q.th || '') : '';
+  const opts = formState.options && formState.options.length ? formState.options : [{id:'a',text:{en:'',th:''}}];
+  const ans  = formState.answer;
+
+  let optsHtml = '';
+  opts.forEach((opt, i) => {
+    optsHtml += buildOptionRowHtml(i, opt.id, opt.text.en, opt.text.th);
+  });
+
+  const ansHtml = buildAnswerControlHtml(fType, opts, ans);
+
+  const copyFromABtn = (formKey !== 'A')
+    ? `<div class="qf-copy-from-a"><button class="btn btn-sm" type="button" onclick="qfCopyFromA()">Copy from Form A</button></div>`
+    : '';
+
+  return `
+    ${copyFromABtn}
+    <div class="qf-section-label">Form ${esc(formKey)} — Stem</div>
+    <div class="qf-row" style="flex-direction:column;gap:8px">
+      <div class="qf-field" style="width:100%">
+        <label>Question (EN)</label>
+        <textarea class="qf-textarea" id="qf-q-en" rows="3">${esc(qEn)}</textarea>
+      </div>
+      <div class="qf-field" style="width:100%">
+        <label>Question (TH)</label>
+        <textarea class="qf-textarea" id="qf-q-th" rows="3">${esc(qTh)}</textarea>
+      </div>
+    </div>
+
+    <div id="qf-options-section" style="${fType === 'short' ? 'display:none' : ''}">
+      <div class="qf-section-label">Form ${esc(formKey)} — Options</div>
+      <div class="qf-options-area" id="qf-options-area">${optsHtml}</div>
+      <button class="btn btn-sm" type="button" onclick="qfAddOption()">+ Add option</button>
+    </div>
+
+    <div id="qf-answer-section" style="${fType === 'short' ? 'display:none' : ''}">
+      <div class="qf-section-label">Form ${esc(formKey)} — Correct answer</div>
+      <div class="qf-answer-section" id="qf-answer-inner">${ansHtml}</div>
+    </div>`;
+}
+
+/* ─── Per-form switcher helpers ─────────────────────────────────────── */
+
+function qfFlushCurrentFormToState() {
+  const state = window._qfState;
+  if (!state) return;
+  const formKey = state.activeForm;
+  const formState = state[formKey];
+
+  // Flush stem
+  formState.q = {
+    en: (document.getElementById('qf-q-en')?.value || '').trim(),
+    th: (document.getElementById('qf-q-th')?.value || '').trim(),
+  };
+
+  // Flush options
+  const type = document.getElementById('qf-type')?.value || 'single';
+  if (type !== 'short') {
+    formState.options = readCurrentOptions();
+  }
+
+  // Flush answer
+  if (type === 'short') {
+    formState.answer = null;
+  } else if (type === 'single') {
+    const picked = document.querySelector('input[name="qf-answer-single"]:checked');
+    formState.answer = picked ? picked.value : null;
+  } else if (type === 'multi') {
+    const picked = [...document.querySelectorAll('input[name="qf-answer-multi"]:checked')].map(i => i.value);
+    formState.answer = picked.length ? picked : null;
+  } else if (type === 'rank') {
+    const selects = [...document.querySelectorAll('[data-rank-opt]')];
+    const posMap = {};
+    let rankValid = true;
+    for (const sel of selects) {
+      const optId = sel.dataset.rankOpt;
+      const val = sel.value;
+      if (!val) { rankValid = false; break; }
+      posMap[optId] = parseInt(val, 10);
+    }
+    if (rankValid && Object.keys(posMap).length) {
+      const ordered = Object.entries(posMap).sort((a, b) => a[1] - b[1]).map(([id]) => id);
+      formState.answer = ordered;
+    } else {
+      formState.answer = null;
+    }
+  }
+}
+
+function switchQfForm(letter) {
+  const state = window._qfState;
+  if (!state) return;
+
+  // Flush current form DOM into state before switching
+  qfFlushCurrentFormToState();
+
+  state.activeForm = letter;
+
+  // Update switcher button styles
+  ['A','B','C'].forEach(k => {
+    const btn = document.getElementById('qf-switcher-' + k);
+    if (btn) btn.classList.toggle('active', k === letter);
+  });
+
+  // Update badge
+  const formsWithContent = ['A','B','C'].filter(k => {
+    const q = state[k] && state[k].q;
+    return q && (q.en || q.th);
+  });
+  const badgeText = formsWithContent.length ? `forms with content: ${formsWithContent.join(', ')}` : 'no form content yet';
+  const badgeEl = document.getElementById('qf-form-badge');
+  if (badgeEl) badgeEl.textContent = badgeText;
+
+  // Re-render per-form fields
+  const type = document.getElementById('qf-type')?.value || 'single';
+  const perForm = document.getElementById('qf-per-form-fields');
+  if (perForm) perForm.innerHTML = buildPerFormFieldsHtml(type, letter);
+}
+
+function qfCopyFromA() {
+  const state = window._qfState;
+  if (!state) return;
+
+  // Flush current form first so we don't lose edits
+  qfFlushCurrentFormToState();
+
+  const activeKey = state.activeForm;
+  if (activeKey === 'A') return; // no-op
+
+  // Deep copy A into activeForm
+  const srcA = state.A;
+  state[activeKey] = {
+    q:       { en: srcA.q.en, th: srcA.q.th },
+    options: srcA.options.map(o => ({ id: o.id, text: { en: o.text.en, th: o.text.th } })),
+    answer:  Array.isArray(srcA.answer) ? [...srcA.answer] : srcA.answer,
+  };
+
+  // Re-render per-form fields with copied data
+  const type = document.getElementById('qf-type')?.value || 'single';
+  const perForm = document.getElementById('qf-per-form-fields');
+  if (perForm) perForm.innerHTML = buildPerFormFieldsHtml(type, activeKey);
+}
+
+function buildOptionRowHtml(i, optId, textEn, textTh) {
+  return `<div class="qf-option-row" id="qf-opt-row-${i}">
+    <input class="qf-input" style="width:60px;font-family:var(--mono)" type="text"
+      placeholder="id" value="${esc(optId)}" data-opt-field="id" data-opt-idx="${i}" />
+    <input class="qf-input" type="text" placeholder="Text EN" value="${esc(textEn)}"
+      data-opt-field="en" data-opt-idx="${i}" />
+    <input class="qf-input" type="text" placeholder="Text TH" value="${esc(textTh)}"
+      data-opt-field="th" data-opt-idx="${i}" />
+    <button class="btn btn-sm btn-danger" type="button" onclick="qfRemoveOption(${i})">✕</button>
+  </div>`;
+}
+
+function buildAnswerControlHtml(type, opts, currentAnswer) {
+  if (type === 'short') return '';
+  if (type === 'single') {
+    return opts.map(opt => {
+      const checked = currentAnswer === opt.id ? ' checked' : '';
+      return `<label class="qf-radio-row">
+        <input type="radio" name="qf-answer-single" value="${esc(opt.id)}"${checked} />
+        ${esc(opt.id)} — ${esc(opt.text.en || opt.id)}
+      </label>`;
+    }).join('');
+  }
+  if (type === 'multi') {
+    const selected = Array.isArray(currentAnswer) ? currentAnswer : (currentAnswer ? [currentAnswer] : []);
+    return opts.map(opt => {
+      const checked = selected.includes(opt.id) ? ' checked' : '';
+      return `<label class="qf-checkbox-row">
+        <input type="checkbox" name="qf-answer-multi" value="${esc(opt.id)}"${checked} />
+        ${esc(opt.id)} — ${esc(opt.text.en || opt.id)}
+      </label>`;
+    }).join('');
+  }
+  if (type === 'rank') {
+    // currentAnswer = ordered array of option ids (correct order), or null
+    const orderedIds = Array.isArray(currentAnswer) ? currentAnswer : [];
+    // Assign a position 1..n to each option based on currentAnswer; unset options get position ""
+    const n = opts.length;
+    const posOptions = Array.from({length: n}, (_, i) => `<option value="${i+1}">${i+1}</option>`).join('');
+    const rows = opts.map(opt => {
+      const pos = orderedIds.indexOf(opt.id); // 0-based index in correct order, or -1
+      const posVal = pos >= 0 ? pos + 1 : '';
+      const selectOpts = `<option value="">—</option>` + Array.from({length: n}, (_, i) => {
+        const v = i + 1;
+        return `<option value="${v}"${posVal === v ? ' selected' : ''}>${v}</option>`;
+      }).join('');
+      return `<div class="qf-rank-row">
+        <span style="font-family:var(--mono);font-size:12px;min-width:28px">${esc(opt.id)}</span>
+        <span style="flex:1;font-size:13px">${esc(opt.text.en || opt.id)}</span>
+        <label style="font-size:11px;color:var(--muted);margin-right:4px">Position:</label>
+        <select class="qf-rank-select" data-rank-opt="${esc(opt.id)}">${selectOpts}</select>
+      </div>`;
+    }).join('');
+    return rows + `<div class="qf-rank-error" id="qf-rank-error"></div>
+      <div style="font-size:11px;color:var(--muted);margin-top:4px">Assign position 1 (first) to n (last) to each item. Each position must be unique.</div>`;
+  }
+  return '';
+}
+
+function qfTypeChanged() {
+  const type = document.getElementById('qf-type')?.value || 'single';
+  const optsSec = document.getElementById('qf-options-section');
+  const ansSec  = document.getElementById('qf-answer-section');
+  if (optsSec) optsSec.style.display = type === 'short' ? 'none' : '';
+  if (ansSec)  ansSec.style.display  = type === 'short' ? 'none' : '';
+  // Also update section labels to show active form name
+  const state = window._qfState;
+  const activeForm = state ? state.activeForm : 'A';
+  document.querySelectorAll('.qf-section-label').forEach(el => {
+    if (el.textContent.match(/^Form [A-C] — (Options|Correct answer)$/)) {
+      el.textContent = el.textContent.replace(/^Form [A-C]/, `Form ${activeForm}`);
+    }
+  });
+  refreshAnswerControl();
+}
+
+function readCurrentOptions() {
+  const rows = document.querySelectorAll('#qf-options-area .qf-option-row');
+  const opts = [];
+  rows.forEach(row => {
+    const inputs = row.querySelectorAll('input[data-opt-field]');
+    let id = '', en = '', th = '';
+    inputs.forEach(inp => {
+      if (inp.dataset.optField === 'id') id = inp.value.trim();
+      if (inp.dataset.optField === 'en') en = inp.value.trim();
+      if (inp.dataset.optField === 'th') th = inp.value.trim();
+    });
+    if (id) opts.push({ id, text: { en, th } });
+  });
+  return opts;
+}
+
+function refreshAnswerControl() {
+  const type  = document.getElementById('qf-type')?.value || 'single';
+  const inner = document.getElementById('qf-answer-inner');
+  if (!inner) return;
+  const opts = readCurrentOptions();
+  inner.innerHTML = buildAnswerControlHtml(type, opts, null);
+}
+
+function qfAddOption() {
+  const area = document.getElementById('qf-options-area');
+  if (!area) return;
+  const existing = area.querySelectorAll('.qf-option-row').length;
+  const div = document.createElement('div');
+  div.innerHTML = buildOptionRowHtml(existing, '', '', '');
+  area.appendChild(div.firstElementChild);
+  refreshAnswerControl();
+}
+
+function qfRemoveOption(idx) {
+  const row = document.getElementById('qf-opt-row-' + idx);
+  if (row) row.remove();
+  // Re-index remaining rows
+  const area = document.getElementById('qf-options-area');
+  if (!area) return;
+  area.querySelectorAll('.qf-option-row').forEach((r, i) => {
+    r.id = 'qf-opt-row-' + i;
+    r.querySelectorAll('input[data-opt-idx]').forEach(inp => inp.dataset.optIdx = i);
+    const removeBtn = r.querySelector('button');
+    if (removeBtn) removeBtn.setAttribute('onclick', `qfRemoveOption(${i})`);
+  });
+  refreshAnswerControl();
+}
+
+function closeQuestionForm() {
+  const wrap = document.getElementById('q-editor-form-wrap');
+  if (wrap) { wrap.innerHTML = ''; wrap.style.display = 'none'; }
+}
+
+/* ────────────────────────────────────────────
+   Questions tab — save (upsert)
+──────────────────────────────────────────── */
+async function saveQuestion(isAdd) {
+  const statusEl = document.getElementById('qf-status');
+  if (statusEl) statusEl.textContent = 'Saving…';
+
+  const id   = (document.getElementById('qf-id')?.value || '').trim();
+  const part = document.getElementById('qf-part')?.value || 'A';
+  const type = document.getElementById('qf-type')?.value || 'single';
+  const pts  = parseInt(document.getElementById('qf-pts')?.value || '1', 10);
+
+  if (!id) {
+    if (statusEl) statusEl.textContent = 'ID is required.';
+    return;
+  }
+
+  // Flush the currently-visible form into state before reading
+  qfFlushCurrentFormToState();
+
+  const state = window._qfState;
+  if (!state) {
+    if (statusEl) statusEl.textContent = 'Editor state missing; please reopen the form.';
+    return;
+  }
+
+  // Validate Form A always has a stem on Add
+  const stateA = state.A;
+  if (isAdd && !stateA.q.en && !stateA.q.th) {
+    if (statusEl) statusEl.textContent = 'Form A stem is required.';
+    return;
+  }
+
+  // Helper: validate a single form's answer relative to its options
+  // Returns null (ok) or an error string.
+  function validateFormAnswer(formKey, formState) {
+    if (type === 'short') return null;
+    const opts = formState.options || [];
+    const ans  = formState.answer;
+    const optIds = new Set(opts.map(o => o.id));
+
+    if (type === 'single') {
+      if (ans === null || ans === undefined || ans === '') return `Form ${formKey}: correct answer is required.`;
+      if (!optIds.has(ans)) return `Form ${formKey}: answer "${ans}" is not a valid option id.`;
+    } else if (type === 'multi') {
+      if (!Array.isArray(ans) || ans.length === 0) return `Form ${formKey}: at least one correct answer required.`;
+      for (const a of ans) {
+        if (!optIds.has(a)) return `Form ${formKey}: answer "${a}" is not a valid option id.`;
+      }
+    } else if (type === 'rank') {
+      if (!Array.isArray(ans) || ans.length === 0) return `Form ${formKey}: rank answer required.`;
+      if (ans.length !== opts.length) return `Form ${formKey}: rank must include all ${opts.length} options (got ${ans.length}).`;
+      const uniqueAns = new Set(ans);
+      if (uniqueAns.size !== ans.length) return `Form ${formKey}: rank answer has duplicate ids.`;
+      for (const a of ans) {
+        if (!optIds.has(a)) return `Form ${formKey}: rank option "${a}" is not a valid option id.`;
+      }
+    }
+    return null;
+  }
+
+  // Assemble variants and answers from state; only include forms with a non-empty stem
+  const finalVariants = {};
+  const finalAnswerObj = {};
+
+  for (const formKey of ['A', 'B', 'C']) {
+    const formState = state[formKey];
+    const hasContent = formState.q && (formState.q.en || formState.q.th);
+    if (!hasContent) continue; // skip empty forms
+
+    // Build variant object
+    const variantObj = { q: { en: formState.q.en || '', th: formState.q.th || '' } };
+    if (type !== 'short' && formState.options && formState.options.length) {
+      variantObj.options = formState.options;
+    }
+    finalVariants[formKey] = variantObj;
+
+    // Validate and collect answer for this form
+    if (type !== 'short') {
+      const err = validateFormAnswer(formKey, formState);
+      if (err) {
+        if (statusEl) statusEl.textContent = err;
+        return;
+      }
+      if (formState.answer !== null && formState.answer !== undefined) {
+        finalAnswerObj[formKey] = formState.answer;
+      }
+    }
+  }
+
+  // A is always required (at least on add; on edit, preserve if form left blank only if re-editing)
+  if (!finalVariants.A) {
+    if (statusEl) statusEl.textContent = 'Form A stem is required.';
+    return;
+  }
+
+  const finalAnswer = type === 'short' ? null
+    : (Object.keys(finalAnswerObj).length ? finalAnswerObj : null);
+
+  // Compute ord
+  let finalOrd;
+  if (!isAdd) {
+    const existing = allDbQuestions.find(r => r.id === id);
+    finalOrd = existing ? existing.ord : allDbQuestions.reduce((m, r) => Math.max(m, r.ord || 0), 0) + 1;
+  } else {
+    const maxOrd = allDbQuestions.reduce((m, r) => Math.max(m, r.ord || 0), 0);
+    finalOrd = maxOrd + 1;
+  }
+
+  const row = {
+    id,
+    part,
+    ord: finalOrd,
+    type,
+    points: pts,
+    variants: finalVariants,
+    answer: finalAnswer,
+    updated_at: new Date().toISOString(),
+  };
+
+  const { error } = await db.from('ft_questions').upsert(row, { onConflict: 'id' });
+  if (error) {
+    if (statusEl) statusEl.textContent = 'Error: ' + error.message;
+    showToast('Save failed: ' + error.message, true);
+    return;
+  }
+
+  closeQuestionForm();
+  showToast(isAdd ? 'Question added.' : 'Question saved.');
+  await loadQuestions();
+}
+
+/* ────────────────────────────────────────────
+   Questions tab — delete
+──────────────────────────────────────────── */
+async function deleteQuestion(id) {
+  if (!confirm(`Delete question "${id}"? This cannot be undone.`)) return;
+  const { error } = await db.from('ft_questions').delete().eq('id', id);
+  if (error) {
+    showToast('Delete failed: ' + error.message, true);
+    return;
+  }
+  showToast('Question deleted.');
+  await loadQuestions();
+}
+</script>
+</body>
+</html>
